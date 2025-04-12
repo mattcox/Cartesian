@@ -234,7 +234,7 @@ extension Float3x3: MatrixRotation {
 		}
 		
 		if((orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0)) {
-			for i in 0..<T.dimensions {
+			for i in 0..<T.count {
 				radians[i] *= -1.0
 			}
 		}

@@ -25,7 +25,7 @@ extension Vector4 {
 		self = Self([first, second, third, fourth])
 	}
 
-	public static var dimensions: Int {
+	public static var count: Int {
 		4
 	}
 }

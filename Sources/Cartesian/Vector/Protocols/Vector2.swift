@@ -23,7 +23,7 @@ extension Vector2 {
 		self = Self([first, second])
 	}
 
-	public static var dimensions: Int {
+	public static var count: Int {
 		2
 	}
 }

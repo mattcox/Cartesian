@@ -25,7 +25,7 @@ public struct Position<V: Vector> where V.Component: BinaryFloatingPoint {
 ///
 	public init(_ vector: V, unit: Distance<V.Component>.MeasurementUnit = .base) {
 		var components: [V.Component] = []
-		for i in 0..<V.dimensions {
+		for i in 0..<V.count {
 			components.append(Distance(vector[i], unit: unit).get(unit: .base))
 		}
 		self.vector = V(components)
@@ -45,8 +45,8 @@ extension Position: Blendable where V: Blendable {
 extension Position: Vector {
 	public typealias Component = Distance<V.Component>
 
-	public static var dimensions: Int {
-		V.dimensions
+	public static var count: Int {
+		V.count
 	}
 	
 	public init() {

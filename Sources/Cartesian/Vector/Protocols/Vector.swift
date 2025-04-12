@@ -19,9 +19,9 @@ public protocol Vector {
 ///
 	associatedtype Component: Numeric
 
-/// The number of dimensions in the vector.
+/// The number of components in the vector.
 ///
-	static var dimensions: Int { get }
+	static var count: Int { get }
 	
 /// An empty vector.
 ///
@@ -120,25 +120,25 @@ extension Vector {
 	}
 	
 	public init(repeating component: Component) {
-		self = Self(Array(repeating: component, count: Self.dimensions))
+		self = Self(Array(repeating: component, count: Self.count))
 	}
 	
 	public init<T: Vector>(from vector: T) where T.Component == Self.Component {
-		var values = Array(repeating: Component.zero, count: Self.dimensions)
-		for i in 0..<min(T.dimensions, Self.dimensions) {
+		var values = Array(repeating: Component.zero, count: Self.count)
+		for i in 0..<min(T.count, Self.count) {
 			values[i] = vector[i]
 		}
 		self = Self(values)
 	}
 	
 	public init<T: Vector>(repeating vector: T) where T.Component == Self.Component {
-		guard T.dimensions > 0 else {
+		guard T.count > 0 else {
 			self = Self()
 			return
 		}
 		
 		var values: [Component] = []
-		for i in 0..<T.dimensions {
+		for i in 0..<T.count {
 			values.append(vector[i])
 		}
 		
@@ -153,11 +153,11 @@ extension Vector {
 		
 		let componentsCount = components.count
 		
-		let fullRepeats = Self.dimensions / componentsCount
-		let remainder = Self.dimensions % componentsCount
+		let fullRepeats = Self.count / componentsCount
+		let remainder = Self.count % componentsCount
 		
 		var values: [Component] = []
-		values.reserveCapacity(Self.dimensions)
+		values.reserveCapacity(Self.count)
 		
 		for _ in 0..<fullRepeats {
 			values.append(contentsOf: components)

@@ -29,11 +29,22 @@ extension Double4: Blendable {
 
 extension Double4: Codable {
 	public init(from decoder: Decoder) throws {
-		storage = try SIMDRepresentation(from: decoder)
+		// Decode the values as a flat array of components. There should be
+		// 4 values, as this is a 4 dimensional vector.
+		//
+		let values = try Array<Component>(from: decoder)
+		if values.count != Self.count {
+			throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Invalid number of values to decode"))
+		}
+		
+		self.storage = SIMDRepresentation(values[0], values[1], values[2], values[3])
 	}
 
 	public func encode(to encoder: Encoder) throws {
-		try storage.encode(to: encoder)
+		// Values are encoded as a flat array of components. There should be
+		// 4 values as this is a 4 dimensional vector.
+		//
+		try [storage[0], storage[1], storage[2], storage[3]].encode(to: encoder)
 	}
 }
 
@@ -45,7 +56,7 @@ extension Double4: CustomStringConvertible {
 
 extension Double4: Equatable {
 	public static func == (lhs: Self, rhs: Self) -> Bool {
-		for index in 0..<Self.dimensions {
+		for index in 0..<Self.count {
 			if lhs.storage[index] != rhs.storage[index] {
 				return false
 			}
@@ -85,7 +96,7 @@ extension Double4: Vector4 {
 	
 	public init<C: Collection>(_ collection: C) where C.Element == Component {
 		var vector = SIMDRepresentation()
-		for enumerator in collection.prefix(Self.dimensions).enumerated() {
+		for enumerator in collection.prefix(Self.count).enumerated() {
 			vector[enumerator.offset] = enumerator.element
 		}
 		self.storage = vector

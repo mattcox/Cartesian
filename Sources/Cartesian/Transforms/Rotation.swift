@@ -25,7 +25,7 @@ public struct Rotation<V: Vector> where V.Component: BinaryFloatingPoint {
 ///
 	public init(_ vector: V, unit: Angle<V.Component>.MeasurementUnit = .base) {
 		var components: [V.Component] = []
-		for i in 0..<V.dimensions {
+		for i in 0..<V.count {
 			components.append(Angle(vector[i], unit: unit).get(unit: .base))
 		}
 		self.vector = V(components)
@@ -45,8 +45,8 @@ extension Rotation: Blendable where V: Blendable {
 extension Rotation: Vector {
 	public typealias Component = Angle<V.Component>
 
-	public static var dimensions: Int {
-		V.dimensions
+	public static var count: Int {
+		V.count
 	}
 	
 	public init() {
