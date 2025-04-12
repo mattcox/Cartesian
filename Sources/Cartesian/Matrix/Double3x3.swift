@@ -8,7 +8,7 @@
 
 import Units
 
-#if canImport(simd)
+#if canImport(simd) && !SKIP_SIMD_IMPLEMENTATION
 import simd
 
 /// A 3x3 ``Matrix`` containing Double values.
