@@ -1,0 +1,172 @@
+//
+//  Vector.swift
+//  Cartesian
+//
+//  Created by Matt Cox on 02/04/2025.
+//  Copyright © 2025 Matt Cox. All rights reserved.
+//
+
+/// A type that represents a vector of arbitrary size.
+///
+/// A vector is an ordered collection of scalar values, typically used to 
+/// represent quantities such as position, direction, velocity, or other 
+/// multidimensional data in mathematical and computational contexts.
+///
+/// The number of elements in the vector is implementation-defined.
+///
+public protocol Vector {
+/// The scalar type used for specifying the vector components.
+///
+	associatedtype Component: Numeric
+
+/// The number of dimensions in the vector.
+///
+	static var dimensions: Int { get }
+	
+/// An empty vector.
+///
+	static var zero: Self { get }
+
+/// Initialize an empty vector.
+///
+	init()
+	
+/// Initialize the vector, setting all elements to the provided value.
+///
+/// - Parameters:
+///   - component: The value to set all components to.
+///
+	init(repeating component: Component)
+
+/// Initialize the vector with the values in another vector.
+///
+/// The type of component for the two vectors must be the same, however the
+/// number of components in the vectors can be different.
+///
+/// For example, if the source vector has 2 elements, and this vector has
+/// four elements, the layout would become:
+/// ```
+/// [source[0], source[1], zero, zero]
+/// ```
+///
+/// - Parameters:
+///   - vector: The other vector used to initialize this object.
+///
+	init<T: Vector>(from vector: T) where T.Component == Self.Component
+	
+/// Initialize the vector with the values in another vector, repeating the
+/// values from the source vector multiple times to fill the destination
+/// vector.
+///
+/// For example, if the source object has 2 elements, and this object has
+/// five elements, the layout will become:
+/// ```
+/// [source[0], source[1], source[0], source[1], source[0]]
+/// ```
+///
+/// - Parameters:
+///   - vector: The other vector used to initialize this object, repeating
+///   the values as necessary.
+///
+	init<T: Vector>(repeating vector: T) where T.Component == Self.Component
+	
+/// Initialize the vector with a collection of component values.
+///
+/// The type of component for the two vectors must be the same, however the
+/// number of components in the vectors can be different.
+///
+/// For example, if the source object is a collection with 2 elements, and
+/// this object has four elements, the layout will become:
+/// ```
+/// [source[0], source[1], zero, zero]
+/// ```
+///
+/// - Parameters:
+///   - collection: The collection used to initialize this object.
+///
+	init<C: Collection>(_ collection: C) where C.Element == Component
+	
+/// Initialize the vector with the values in another vector, repeating the
+/// values from the collection multiple times to fill the destination
+/// vector.
+///
+/// For example, if the source object is a collection with 2 elements, and
+/// this object has five elements, the layout will become:
+/// ```
+/// [source[0], source[1], source[0], source[1], source[0]]
+/// ```
+///
+/// - Parameters:
+///   - components: The collection used to initialize this object, repeating
+///   the values as necessary.
+///
+	init<C: Collection>(repeating components: C) where C.Element == Component
+	
+/// Access a vector element by index.
+///
+/// - Parameters:
+///   - index: The index of the element in the vector.
+///
+	subscript(_ index: Int) -> Component { get set }
+	
+/// Clear all elements of the vector, setting them to a suitable default.
+///
+	mutating func clear()
+}
+
+extension Vector {
+	static public var zero: Self {
+		Self()
+	}
+	
+	public init(repeating component: Component) {
+		self = Self(Array(repeating: component, count: Self.dimensions))
+	}
+	
+	public init<T: Vector>(from vector: T) where T.Component == Self.Component {
+		var values = Array(repeating: Component.zero, count: Self.dimensions)
+		for i in 0..<min(T.dimensions, Self.dimensions) {
+			values[i] = vector[i]
+		}
+		self = Self(values)
+	}
+	
+	public init<T: Vector>(repeating vector: T) where T.Component == Self.Component {
+		guard T.dimensions > 0 else {
+			self = Self()
+			return
+		}
+		
+		var values: [Component] = []
+		for i in 0..<T.dimensions {
+			values.append(vector[i])
+		}
+		
+		self = Self(repeating: values)
+	}
+	
+	public init<C: Collection>(repeating components: C) where C.Element == Component {
+		guard components.isEmpty == false else {
+			self = Self()
+			return
+		}
+		
+		let componentsCount = components.count
+		
+		let fullRepeats = Self.dimensions / componentsCount
+		let remainder = Self.dimensions % componentsCount
+		
+		var values: [Component] = []
+		values.reserveCapacity(Self.dimensions)
+		
+		for _ in 0..<fullRepeats {
+			values.append(contentsOf: components)
+		}
+		
+		if remainder > 0 {
+			values.append(contentsOf: components.prefix(remainder))
+		}
+		
+		self = Self(values)
+	}
+}

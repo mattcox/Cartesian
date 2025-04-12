@@ -12,9 +12,15 @@ let package = Package(
 			]
 		),
 	],
+	dependencies: [
+		.package(url: "https://github.com/mattcox/Units.git", branch: "main"),
+	],
 	targets: [
 		.target(
-			name: "Cartesian"
+			name: "Cartesian",
+			dependencies: [
+				"Units"
+			]
 		),
 		.testTarget(
 			name: "CartesianTests",
