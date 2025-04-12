@@ -6,15 +6,13 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Units
+
 #if canImport(simd)
 import simd
-#endif
-
-import Units
 
 /// A three-dimensional ``Vector`` containing Float values.
 ///
-#if canImport(simd)
 public struct Float3 {
 	private var storage: SIMDRepresentation
 }

@@ -6,15 +6,13 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Units
+
 #if canImport(simd)
 import simd
-#endif
-
-import Units
 
 /// A 4x4 ``Matrix`` containing Double values.
 ///
-#if canImport(simd)
 public struct Double4x4 {
 /// The matrix data is stored as a simd type where available.
 ///

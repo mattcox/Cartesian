@@ -6,15 +6,13 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Units
+
 #if canImport(simd)
 import simd
-#endif
-
-import Units
 
 /// A ``Quaternion`` containing Float values.
 ///
-#if canImport(simd)
 public struct FloatQuaternion {
 	private var storage: SIMDRepresentation
 }

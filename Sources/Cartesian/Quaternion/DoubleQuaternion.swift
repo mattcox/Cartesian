@@ -6,15 +6,13 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Units
+
 #if canImport(simd)
 import simd
-#endif
-
-import Units
 
 /// A ``Quaternion`` containing Double values.
 ///
-#if canImport(simd)
 public struct DoubleQuaternion {
 	private var storage: SIMDRepresentation
 }

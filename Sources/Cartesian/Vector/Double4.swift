@@ -6,15 +6,13 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Units
+
 #if canImport(simd)
 import simd
-#endif
-
-import Units
 
 /// A four-dimensional ``Vector`` containing Double values.
 ///
-#if canImport(simd)
 public struct Double4 {
 	private var storage: SIMDRepresentation
 }
