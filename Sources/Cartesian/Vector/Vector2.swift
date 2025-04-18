@@ -11,7 +11,7 @@ import Units
 
 /// A vector with two scalar components.
 ///
-public struct Vector2<T: Real & SIMDScalar> {
+public struct Vector2<Component: Real & SIMDScalar> {
 	private var storage: SIMDRepresentation
 }
 
@@ -257,7 +257,7 @@ extension Vector2: MagnitudeAdjustable {
 			Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2))
 		}
 		set {
-			let factor = T(1) / Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2))
+			let factor = Component(1) / Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2))
 			storage.x *= factor * newValue
 			storage.y *= factor * newValue
 		}
@@ -295,7 +295,7 @@ extension Vector2: Sendable where SIMDRepresentation: Sendable {
 }
 
 extension Vector2: SIMDConvertible {
-	public typealias SIMDRepresentation = SIMD2<T>
+	public typealias SIMDRepresentation = SIMD2<Component>
 	
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = simd
@@ -438,8 +438,6 @@ extension Vector2: VectorRefractable {
 }
 
 extension Vector2: VectorProtocol {
-	public typealias Component = SIMDRepresentation.Scalar
-	
 	public static var count: Int {
 		SIMDRepresentation.scalarCount
 	}
