@@ -13,7 +13,7 @@ public protocol Blendable {
 /// The type must specify the scalar value type that is used for
 /// interpolating between the two values.
 ///
-	associatedtype BlendAmount: Numeric
+	associatedtype Blend: Numeric
 
 /// Blend between two values of the same type, by the specified blend
 /// amount.
@@ -27,7 +27,7 @@ public protocol Blendable {
 ///
 /// - Returns: An interpolated value in the range _from_..._to_.
 ///
-	static func blend(from: Self, to: Self, by amount: BlendAmount) -> Self
+	static func blend(from: Self, to: Self, by amount: Blend) -> Self
 	
 /// Blend this value into another value of the same type, by the specified
 /// blend amount.
@@ -38,7 +38,7 @@ public protocol Blendable {
 ///   will return the _from_ value, and a value of 1 will return the _to_
 ///   value.
 ///
-	mutating func blend(to other: Self, by amount: BlendAmount)
+	mutating func blend(to other: Self, by amount: Blend)
 	
 /// Blend this value into another value of the same type, by the specified
 /// blend amount, returning the interpolated value.
@@ -51,11 +51,11 @@ public protocol Blendable {
 ///
 /// - Returns: An interpolated value in the range _from_..._to_.
 ///
-	func blended(to other: Self, by amount: BlendAmount) -> Self
+	func blended(to other: Self, by amount: Blend) -> Self
 }
 
 extension Blendable {
-	public func blended(to other: Self, by amount: BlendAmount) -> Self {
+	public func blended(to other: Self, by amount: Blend) -> Self {
 		Self.blend(from: self, to: other, by: amount)
 	}
 }

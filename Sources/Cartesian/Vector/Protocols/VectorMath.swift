@@ -6,9 +6,9 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-/// A ``Vector`` that supports basic mathematical operations.
+/// A vector that supports basic mathematical operations.
 ///
-public protocol VectorMath: Vector {
+public protocol VectorMath: VectorProtocol {
 /// Finds the minimum numerical value in the vector.
 ///
 /// - Returns: The minimum numerical value in the vector.
@@ -52,33 +52,33 @@ public protocol VectorMath: Vector {
 ///
 	static func += (lhs: inout Self, rhs: Self)
 
-/// Adds a scalar value to every element in the vector.
+/// Adds a scalar value to every component in the vector.
 ///
 /// - Parameters:
 ///   - lhs: The vector in the addition.
-///   - rhs: A scalar value to add to every element in the vector.
+///   - rhs: A scalar value to add to every component in the vector.
 ///
 /// - Returns: A vector containing the result of the addition.
 ///
 	static func + (lhs: Self, rhs: Component) -> Self
 
-/// Adds a scalar value to every element in the vector.
+/// Adds a scalar value to every component in the vector.
 ///
 /// - Parameters:
-///   - lhs: A scalar value to add to every element in the vector.
+///   - lhs: A scalar value to add to every component in the vector.
 ///   - rhs: The vector in the addition.
 ///
 /// - Returns: A vector containing the result of the addition.
 ///
 	static func + (lhs: Component, rhs: Self) -> Self
 
-/// Adds a scalar value to every element in the vector, mutating the
+/// Adds a scalar value to every component in the vector, mutating the
 /// vector.
 ///
 /// - Parameters:
 ///   - lhs: The vector in the addition. This will be updated with the
 ///   result of the addition.
-///   - rhs: A scalar value to add to every element in the vector.
+///   - rhs: A scalar value to add to every component in the vector.
 ///
 /// - Returns: A vector containing the result of the addition.
 ///
@@ -103,33 +103,33 @@ public protocol VectorMath: Vector {
 ///
 	static func -= (lhs: inout Self, rhs: Self)
 
-/// Subtracts a scalar value to every element in the vector.
+/// Subtracts a scalar value to every component in the vector.
 ///
 /// - Parameters:
 ///   - lhs: The vector in the subtraction.
-///   - rhs: A scalar value to subtract from every element in the vector.
+///   - rhs: A scalar value to subtract from every component in the vector.
 ///
 /// - Returns: A vector containing the result of the subtraction.
 ///
 	static func - (lhs: Self, rhs: Component) -> Self
 
-/// Subtracts a scalar value to every element in the vector.
+/// Subtracts a scalar value to every component in the vector.
 ///
 /// - Parameters:
-///   - lhs: A scalar value to subtract from every element in the vector.
+///   - lhs: A scalar value to subtract from every component in the vector.
 ///   - rhs: The vector in the subtraction.
 ///
 /// - Returns: A vector containing the result of the subtraction.
 ///
 	static func - (lhs: Component, rhs: Self) -> Self
 
-/// Subtracts a scalar value to every element in the vector, mutating the
+/// Subtracts a scalar value to every component in the vector, mutating the
 /// vector.
 ///
 /// - Parameters:
 ///   - lhs: The vector in the subtraction. This will be updated with the
 ///   result of the subtraction.
-///   - rhs: A scalar value to subtract from every element in the vector.
+///   - rhs: A scalar value to subtract from every component in the vector.
 ///
 /// - Returns: A vector containing the result of the subtraction.
 ///
@@ -207,7 +207,7 @@ public protocol VectorMath: Vector {
 
 /// Divides one vector by another, returning the divided vector.
 ///
-/// Care should be taken to ensure the _rhs_ vector contains no elements
+/// Care should be taken to ensure the _rhs_ vector contains no components
 /// equal to zero as division by zero is undefined.
 ///
 /// - Parameters:
@@ -220,7 +220,7 @@ public protocol VectorMath: Vector {
 	
 /// Divides one vector by another, mutating the first vector.
 ///
-/// Care should be taken to ensure the _rhs_ vector contains no elements
+/// Care should be taken to ensure the _rhs_ vector contains no components
 /// equal to zero as division by zero is undefined.
 ///
 /// - Parameters:

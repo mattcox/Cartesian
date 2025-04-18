@@ -11,9 +11,9 @@
 public protocol Invertible {
 /// An inverted version of itself.
 ///
-	var inverse: Self { get }
+	var inverse: Self? { get }
 	
 /// Inverts the value.
 ///
-	mutating func invert()
+	mutating func invert() -> Bool
 }

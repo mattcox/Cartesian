@@ -1,8 +1,8 @@
 //
-//  Matrix.swift
+//  MatrixProtocol.swift
 //  Cartesian
 //
-//  Created by Matt Cox on 09/04/2025.
+//  Created by Matt Cox on 14/04/2025.
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
@@ -15,7 +15,7 @@
 /// The size of the matrix is implementation-defined, with a fixed number of 
 /// rows and columns.
 ///
-public protocol Matrix {
+public protocol MatrixProtocol {
 /// The scalar type used for specifying the matrix components.
 ///
 	associatedtype Component: Numeric
@@ -41,7 +41,7 @@ public protocol Matrix {
 /// - Parameters:
 ///   - matrix: The other matrix used to initialize this object.
 ///
-	init<T: Matrix>(from matrix: T) where T.Component == Component
+	init<T: MatrixProtocol>(from matrix: T) where T.Component == Component
 	
 /// Access a matrix element at a specified column and row index.
 ///
@@ -52,11 +52,11 @@ public protocol Matrix {
 	subscript(_ column: Int, _ row: Int) -> Component { get set }
 }
 
-extension Matrix {
-	public init<T: Matrix>(from matrix: T) where T.Component == Component {
+extension MatrixProtocol {
+	public init<T: MatrixProtocol>(from matrix: T) where T.Component == Component {
 		var matrix = Self()
-		for row in 0..<(min(Self.rows, T.rows)) {
-			for column in 0..<(min(Self.columns, T.columns)) {
+		for column in 0..<(min(Self.columns, T.columns)) {
+			for row in 0..<(min(Self.rows, T.rows)) {
 				matrix[column, row] = matrix[column, row]
 			}
 		}

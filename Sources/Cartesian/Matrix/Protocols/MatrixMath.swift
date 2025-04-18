@@ -2,13 +2,13 @@
 //  MatrixMath.swift
 //  Cartesian
 //
-//  Created by Matt Cox on 10/04/2025.
+//  Created by Matt Cox on 18/04/2025.
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-/// A ``Matrix`` that supports basic mathematical operations.
+/// A matrix that supports basic mathematical operations.
 ///
-public protocol MatrixMath: Matrix {	
+public protocol MatrixMath: MatrixProtocol {	
 /// Adds one matrix to another.
 ///
 /// - Parameters:

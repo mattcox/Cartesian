@@ -1,5 +1,5 @@
 //
-//  Vector.swift
+//  VectorProtocol.swift
 //  Cartesian
 //
 //  Created by Matt Cox on 02/04/2025.
@@ -12,9 +12,9 @@
 /// represent quantities such as position, direction, velocity, or other 
 /// multidimensional data in mathematical and computational contexts.
 ///
-/// The number of elements in the vector is implementation-defined.
+/// The number of components in the vector is implementation-defined.
 ///
-public protocol Vector {
+public protocol VectorProtocol {
 /// The scalar type used for specifying the vector components.
 ///
 	associatedtype Component: Numeric
@@ -31,7 +31,7 @@ public protocol Vector {
 ///
 	init()
 	
-/// Initialize the vector, setting all elements to the provided value.
+/// Initialize the vector, setting all components to the provided value.
 ///
 /// - Parameters:
 ///   - component: The value to set all components to.
@@ -43,8 +43,8 @@ public protocol Vector {
 /// The type of component for the two vectors must be the same, however the
 /// number of components in the vectors can be different.
 ///
-/// For example, if the source vector has 2 elements, and this vector has
-/// four elements, the layout would become:
+/// For example, if the source vector has 2 components, and this vector has
+/// four components, the layout would become:
 /// ```
 /// [source[0], source[1], zero, zero]
 /// ```
@@ -52,14 +52,14 @@ public protocol Vector {
 /// - Parameters:
 ///   - vector: The other vector used to initialize this object.
 ///
-	init<T: Vector>(from vector: T) where T.Component == Self.Component
+	init<T: VectorProtocol>(from vector: T) where T.Component == Self.Component
 	
 /// Initialize the vector with the values in another vector, repeating the
 /// values from the source vector multiple times to fill the destination
 /// vector.
 ///
-/// For example, if the source object has 2 elements, and this object has
-/// five elements, the layout will become:
+/// For example, if the source object has 2 components, and this object has
+/// five components, the layout will become:
 /// ```
 /// [source[0], source[1], source[0], source[1], source[0]]
 /// ```
@@ -68,15 +68,15 @@ public protocol Vector {
 ///   - vector: The other vector used to initialize this object, repeating
 ///   the values as necessary.
 ///
-	init<T: Vector>(repeating vector: T) where T.Component == Self.Component
+	init<T: VectorProtocol>(repeating vector: T) where T.Component == Self.Component
 	
 /// Initialize the vector with a collection of component values.
 ///
 /// The type of component for the two vectors must be the same, however the
 /// number of components in the vectors can be different.
 ///
-/// For example, if the source object is a collection with 2 elements, and
-/// this object has four elements, the layout will become:
+/// For example, if the source object is a collection with 2 components, and
+/// this object has four components, the layout will become:
 /// ```
 /// [source[0], source[1], zero, zero]
 /// ```
@@ -90,8 +90,8 @@ public protocol Vector {
 /// values from the collection multiple times to fill the destination
 /// vector.
 ///
-/// For example, if the source object is a collection with 2 elements, and
-/// this object has five elements, the layout will become:
+/// For example, if the source object is a collection with 2 components, and
+/// this object has five components, the layout will become:
 /// ```
 /// [source[0], source[1], source[0], source[1], source[0]]
 /// ```
@@ -102,19 +102,19 @@ public protocol Vector {
 ///
 	init<C: Collection>(repeating components: C) where C.Element == Component
 	
-/// Access a vector element by index.
+/// Access a vector component by index.
 ///
 /// - Parameters:
-///   - index: The index of the element in the vector.
+///   - index: The index of the component in the vector.
 ///
 	subscript(_ index: Int) -> Component { get set }
 	
-/// Clear all elements of the vector, setting them to a suitable default.
+/// Clear all components of the vector, setting them to a suitable default.
 ///
 	mutating func clear()
 }
 
-extension Vector {
+extension VectorProtocol {
 	static public var zero: Self {
 		Self()
 	}
@@ -123,7 +123,7 @@ extension Vector {
 		self = Self(Array(repeating: component, count: Self.count))
 	}
 	
-	public init<T: Vector>(from vector: T) where T.Component == Self.Component {
+	public init<T: VectorProtocol>(from vector: T) where T.Component == Self.Component {
 		var values = Array(repeating: Component.zero, count: Self.count)
 		for i in 0..<min(T.count, Self.count) {
 			values[i] = vector[i]
@@ -131,7 +131,7 @@ extension Vector {
 		self = Self(values)
 	}
 	
-	public init<T: Vector>(repeating vector: T) where T.Component == Self.Component {
+	public init<T: VectorProtocol>(repeating vector: T) where T.Component == Self.Component {
 		guard T.count > 0 else {
 			self = Self()
 			return
