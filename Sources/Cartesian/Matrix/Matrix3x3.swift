@@ -206,6 +206,38 @@ extension Matrix3x3: Equatable {
 	}
 }
 
+extension Matrix3x3: ExpressibleByArrayLiteral {
+/// Initialize the matrix from an array literal.
+///
+/// The array is initialized as three rows, and then transposed into the
+/// column-major storage used by the matrix.
+///
+/// For example, the following matrix is as it appears visually:
+/// ```swift
+/// let matrix: Matrix3x3 = [
+///     [1.0, 2.0, 3.0],
+///     [4.0, 5.0, 6.0],
+///     [7.0, 8.0, 9.0]
+/// ]
+/// ```
+/// But it is stored as three arrays representing the three column vectors:
+/// ```swift
+/// [1.0, 4.0, 7.0], [2.0, 5.0, 8.0], [3.0, 6.0, 9.0]
+/// ```
+///
+	public init(arrayLiteral elements: [Component]...) {
+		var matrix = Self()
+		
+		for x in 0..<min(Self.columns, elements.count) {
+			for y in 0..<min(Self.rows, elements[x].count) {
+				matrix[x, y] = elements[x][y]
+			}
+		}
+		
+		self = matrix.transposed
+	}
+}
+
 extension Matrix3x3: Identity {
 	public static var identity: Self {
 		var matrix = Self()

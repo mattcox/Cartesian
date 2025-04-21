@@ -218,6 +218,39 @@ extension Matrix4x4: Equatable {
 	}
 }
 
+extension Matrix4x4: ExpressibleByArrayLiteral {
+/// Initialize the matrix from an array literal.
+///
+/// The array is initialized as four rows, and then transposed into the
+/// column-major storage used by the matrix.
+///
+/// For example, the following matrix is as it appears visually:
+/// ```swift
+/// let matrix: Matrix4x4 = [
+///     [1.0,   2.0,  3.0,  4.0],
+///     [5.0,   6.0,  7.0,  8.0],
+///     [9.0,  10.0, 11.0, 12.0],
+///     [13.0, 14.0, 15.0, 16.0]
+/// ]
+/// ```
+/// But it is stored as three arrays representing the three column vectors:
+/// ```swift
+/// [1.0, 5.0, 9.0, 13.0], [2.0, 6.0, 10.0, 14.0], [3.0, 7.0, 11.0, 15.0], [4.0, 8.0, 12.0, 16.0],
+/// ```
+///
+	public init(arrayLiteral elements: [Component]...) {
+		var matrix = Self()
+		
+		for x in 0..<min(Self.columns, elements.count) {
+			for y in 0..<min(Self.rows, elements[x].count) {
+				matrix[x, y] = elements[x][y]
+			}
+		}
+		
+		self = matrix.transposed
+	}
+}
+
 extension Matrix4x4: Identity {
 	public static var identity: Self {
 		var matrix = Self()

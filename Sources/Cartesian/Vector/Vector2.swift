@@ -245,6 +245,23 @@ extension Vector2: EuclidianDistanceMeasurable {
 	}
 }
 
+/// Initialize the vector from an array literal.
+///
+/// For example, the vector can be initialized as follows:
+/// ```swift
+/// let vector: Vector2 = [1.0, 2.0]
+/// ```
+///
+extension Vector2: ExpressibleByArrayLiteral {
+	public init(arrayLiteral elements: Component...) {
+		var vector = Self()
+		for index in 0..<Swift.min(Self.count, elements.count) {
+			vector.storage[index] = elements[index]
+		}
+		self = vector
+	}
+}
+
 extension Vector2: MagnitudeMeasurable {
 	
 }

@@ -214,9 +214,6 @@ extension Matrix2x2: ExpressibleByArrayLiteral {
 /// [1.0, 3.0], [2.0, 4.0]
 /// ```
 ///
-/// - Parameters:
-///   - elements: The values in the array.
-///
 	public init(arrayLiteral elements: [Component]...) {
 		var matrix = Self()
 		
