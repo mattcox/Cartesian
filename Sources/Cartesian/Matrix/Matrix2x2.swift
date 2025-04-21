@@ -6,6 +6,7 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
+import Foundation
 import RealModule
 
 /// A 2×2 matrix stored in column-major order.
@@ -13,13 +14,6 @@ import RealModule
 /// Matrix2x2 represents a square matrix with 2 columns and 2 rows. The matrix
 /// is stored in **column-major order**, meaning it consists of two column
 /// vectors, each with two elements.
-///
-/// The matrix is stored as:
-/// ```
-/// [ c0.x  c1.x ]
-/// [ c0.y  c1.y ]
-/// ```
-/// where `c0` and `c1` are column vectors.
 ///
 public struct Matrix2x2<Component: Real & SIMDScalar> {
 /// The underlying storage type for the matrix.
@@ -117,7 +111,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 
 	private var storage: SIMDRepresentation
 	
-/// Initialize the matrix from two columns.
+/// Initialize the matrix with the values for the two columns.
 ///
 /// - Parameters:
 ///   - first: The first column of values.
@@ -127,7 +121,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 		self.storage = SIMDRepresentation(first, second)
 	}
 	
-/// Initialize the matrix from two rows.
+/// Initialize the matrix with the values for the two rows.
 ///
 /// - Parameters:
 ///   - first: The first row of values.
@@ -135,6 +129,22 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 ///
 	public init(rows first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, ) {
 		self = Self(SIMDRepresentation(first, second)).transposed
+	}
+}
+
+extension Matrix2x2 {
+/// Access a matrix column at a specified index.
+///
+/// - Parameters:
+///   - column: The index of the column in the matrix.
+///
+	public subscript(column: Int) -> Storage.Column {
+		get {
+			storage[column]
+		}
+		set {
+			storage[column] = newValue
+		}
 	}
 }
 
@@ -170,11 +180,11 @@ extension Matrix2x2: Codable {
 	}
 }
 
-extension Matrix2x2: CustomStringConvertible {
+extension Matrix2x2: CustomStringConvertible where Component: CVarArg {
 	public var description: String {
 		"""
-		\(storage.columns.0.description),
-		\(storage.columns.1.description),
+		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0])) |
+		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1])) |
 		"""
 	}
 }
@@ -186,7 +196,52 @@ extension Matrix2x2: Equatable {
 	}
 }
 
+extension Matrix2x2: ExpressibleByArrayLiteral {
+/// Initialize the matrix from an array literal.
+///
+/// The array is initialized as two rows, and then transposed into the
+/// column-major storage used by the matrix.
+///
+/// For example, the following matrix is as it appears visually:
+/// ```swift
+/// let matrix: Matrix2x2 = [
+///     [1.0, 2.0],
+///     [3.0, 4.0]
+/// ]
+/// ```
+/// But it is stored as two arrays representing the two column vectors:
+/// ```swift
+/// [1.0, 3.0], [2.0, 4.0]
+/// ```
+///
+/// - Parameters:
+///   - elements: The values in the array.
+///
+	public init(arrayLiteral elements: [Component]...) {
+		var matrix = Self()
+		
+		for x in 0..<min(Self.columns, elements.count) {
+			for y in 0..<min(Self.rows, elements[x].count) {
+				matrix[x, y] = elements[x][y]
+			}
+		}
+		
+		self = matrix.transposed
+	}
+}
+
 extension Matrix2x2: Identity {
+/// Creates an identity matrix.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0 |
+/// | 0  1 |
+/// ```
+///
 	public static var identity: Self {
 		var matrix = Self()
 		for index in 0..<Self.columns {
@@ -194,7 +249,18 @@ extension Matrix2x2: Identity {
 		}
 		return matrix
 	}
-	
+
+/// Returns true if the matrix is identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0 |
+/// | 0  1 |
+/// ```
+///
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -205,7 +271,18 @@ extension Matrix2x2: Identity {
 		}
 		return true
 	}
-	
+
+/// Sets the matrix to identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0 |
+/// | 0  1 |
+/// ```
+///
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -214,6 +291,33 @@ extension Matrix2x2: Identity {
 			}
 		}
 		self = matrix
+	}
+}
+
+extension Matrix2x2: Invertible {
+/// Gets the inverse of this matrix if it exists.
+///
+	public var inverse: Self? {
+		let determinant = self.determinant
+		guard (abs(determinant) < .zero) == false &&
+			determinant.isApproximatelyEqual(to: .zero) == false
+		else {
+			return nil
+		}
+		
+		return self.cofactor * (1 / determinant)
+	}
+	
+/// Inverts this matrix if it can be inverted, mutating the matrix.
+///
+/// - Returns: A boolean indicating if the matrix could be inverted.
+///
+	public mutating func invert() -> Bool {
+		if let inverse = self.inverse {
+			self.storage = inverse.storage
+			return true
+		}
+		return false
 	}
 }
 
@@ -308,15 +412,6 @@ extension Matrix2x2: MatrixProtocol {
 			storage[column, row] = newValue
 		}
 	}
-
-	public subscript(column: Int) -> Storage.Column {
-		get {
-			storage[column]
-		}
-		set {
-			storage[column] = newValue
-		}
-	}
 }
 
 extension Matrix2x2: MatrixVectorMath {
@@ -371,7 +466,22 @@ extension Matrix2x2: SquareMatrix {
 			$0 += self[$1, $1]
 		}
 	}
-	
+
+/// A transposed version of the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1  2 |
+/// | 3  4 |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1  3 |
+/// | 2  4 |
+/// ```
+///
 	public var transposed: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -382,6 +492,21 @@ extension Matrix2x2: SquareMatrix {
 		return matrix
 	}
 	
+/// Transposes this matrix, mutating the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1  2 |
+/// | 3  4 |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1  3 |
+/// | 2  4 |
+/// ```
+///
 	public mutating func transpose() {
 		let temp = self
 		for column in 0..<Self.columns {
