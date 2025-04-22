@@ -426,34 +426,6 @@ extension Vector2: VectorMath {
 	}
 }
 
-extension Vector2: VectorReflectable {
-	public func reflection(withNormal normal: Self) -> Self {
-		let normal = normal.normalized
-		return self - (2 * dot(normal) * normal)
-	}
-}
-
-extension Vector2: VectorRefractable {
-	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
-		let rayDirection = self.normalized
-		let normal = normal.normalized
-		
-		let cosAngleOfIncidence = -rayDirection.dot(normal)
-		let sinSquaredAngleOfRefraction = Component.pow(indexOfRefraction, 2) * (1 - Component.pow(cosAngleOfIncidence, 2))
-		
-		if sinSquaredAngleOfRefraction > 1 {
-			return .zero
-		}
-		
-		let cosAngleOfRefraction = Component.sqrt(1 - sinSquaredAngleOfRefraction)
-		
-		let directionParallelToSurface = rayDirection * indexOfRefraction
-		let directionPerpendicularToSurface = normal * (indexOfRefraction * cosAngleOfIncidence - cosAngleOfRefraction)
-	
-		return directionParallelToSurface + directionPerpendicularToSurface
-	}
-}
-
 extension Vector2: VectorProtocol {
 	public static var count: Int {
 		SIMDRepresentation.scalarCount
@@ -482,5 +454,34 @@ extension Vector2: VectorProtocol {
 	
 	public mutating func clear() {
 		storage = SIMDRepresentation()
+	}
+}
+
+
+extension Vector2: VectorReflectable {
+	public func reflection(withNormal normal: Self) -> Self {
+		let normal = normal.normalized
+		return self - (2 * dot(normal) * normal)
+	}
+}
+
+extension Vector2: VectorRefractable {
+	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
+		let rayDirection = self.normalized
+		let normal = normal.normalized
+		
+		let cosAngleOfIncidence = -rayDirection.dot(normal)
+		let sinSquaredAngleOfRefraction = Component.pow(indexOfRefraction, 2) * (1 - Component.pow(cosAngleOfIncidence, 2))
+		
+		if sinSquaredAngleOfRefraction > 1 {
+			return .zero
+		}
+		
+		let cosAngleOfRefraction = Component.sqrt(1 - sinSquaredAngleOfRefraction)
+		
+		let directionParallelToSurface = rayDirection * indexOfRefraction
+		let directionPerpendicularToSurface = normal * (indexOfRefraction * cosAngleOfIncidence - cosAngleOfRefraction)
+	
+		return directionParallelToSurface + directionPerpendicularToSurface
 	}
 }

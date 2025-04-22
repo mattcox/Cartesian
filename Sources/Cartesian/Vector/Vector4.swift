@@ -430,13 +430,6 @@ extension Vector4: VectorMath {
 	}
 }
 
-extension Vector4: VectorReflectable {
-	public func reflection(withNormal normal: Self) -> Self {
-		let normal = normal.normalized
-		return self - (2 * dot(normal) * normal)
-	}
-}
-
 extension Vector4: VectorProtocol {
 	public static var count: Int {
 		SIMDRepresentation.scalarCount
@@ -465,5 +458,13 @@ extension Vector4: VectorProtocol {
 	
 	public mutating func clear() {
 		storage = SIMDRepresentation()
+	}
+}
+
+
+extension Vector4: VectorReflectable {
+	public func reflection(withNormal normal: Self) -> Self {
+		let normal = normal.normalized
+		return self - (2 * dot(normal) * normal)
 	}
 }
