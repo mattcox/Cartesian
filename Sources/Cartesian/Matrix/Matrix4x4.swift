@@ -147,10 +147,10 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 ///   - first: The first column of values.
 ///   - second: The second column of values.
 ///   - third: The third column of values.
-///   - third: The fourth column of values.
+///   - fourth: The fourth column of values.
 ///
-	public init(columns first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ four: SIMDRepresentation.Column) {
-		self.storage = SIMDRepresentation(first, second, third, four)
+	public init(columns first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ fourth: SIMDRepresentation.Column) {
+		self.storage = SIMDRepresentation(first, second, third, fourth)
 	}
 	
 /// Initialize the matrix from four rows.
@@ -159,10 +159,10 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 ///   - first: The first row of values.
 ///   - second: The second row of values.
 ///   - third: The third row of values.
-///   - third: The fourth column of values.
+///   - fourth: The fourth column of values.
 ///
-	public init(rows first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ four: SIMDRepresentation.Column) {
-		self = Self(SIMDRepresentation(first, second, third, four)).transposed
+	public init(rows first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ fourth: SIMDRepresentation.Column) {
+		self = Self(SIMDRepresentation(first, second, third, fourth)).transposed
 	}
 }
 

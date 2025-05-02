@@ -80,8 +80,6 @@ public protocol VectorMath: VectorProtocol {
 ///   result of the addition.
 ///   - rhs: A scalar value to add to every component in the vector.
 ///
-/// - Returns: A vector containing the result of the addition.
-///
 	static func += (lhs: inout Self, rhs: Component)
 
 /// Subtracts one vector from another.
@@ -130,8 +128,6 @@ public protocol VectorMath: VectorProtocol {
 ///   - lhs: The vector in the subtraction. This will be updated with the
 ///   result of the subtraction.
 ///   - rhs: A scalar value to subtract from every component in the vector.
-///
-/// - Returns: A vector containing the result of the subtraction.
 ///
 	static func -= (lhs: inout Self, rhs: Component)
 	
@@ -201,8 +197,6 @@ public protocol VectorMath: VectorProtocol {
 ///   result of the multiplication.
 ///   - rhs: The scalar value to multiply by.
 ///
-/// - Returns: A vector containing the result of the multiplication.
-///
 	static func *= (lhs: inout Self, rhs: Component)
 
 /// Divides one vector by another, returning the divided vector.
@@ -251,8 +245,6 @@ public protocol VectorMath: VectorProtocol {
 /// - Parameters:
 ///   - lhs: The vector to be divided.
 ///   - rhs: The scalar value to divided by.
-///
-/// - Returns: A vector containing the result of the division.
 ///
 	static func /= (lhs: inout Self, rhs: Component)
 }

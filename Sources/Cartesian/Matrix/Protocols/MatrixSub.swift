@@ -18,7 +18,7 @@ public protocol MatrixSub: MatrixProtocol {
 /// column and row to exclude.
 ///
 /// - Parameters:
-///   - excludingColumn: The column of the matrix to exclude.
+///   - column: The column of the matrix to exclude.
 ///   - row: The row of the matrix to exclude.
 ///
 /// - Returns: A containing only the included rows and columns.

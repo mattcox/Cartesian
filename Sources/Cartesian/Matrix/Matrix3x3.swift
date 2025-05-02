@@ -11,21 +11,11 @@ import RealModule
 /// A 3×3 matrix stored in column-major order.
 ///
 /// Matrix3x3 represents a square matrix with 3 columns and 3 rows. The matrix
-/// is stored in **column-major order**, meaning it consists of three column
-/// vectors, each with three elements.
+/// is stored in **column-major order**, meaning it consists of two column
+/// vectors, each with two elements.
 ///
-/// The matrix is stored as:
-/// ```
-/// [ c0.x  c1.x  c2.x ]
-/// [ c0.y  c1.y  c2.y ]
-/// [ c0.z  c1.z  c2.z ]
-/// ```
-/// where `c0` `c1` and `c2` are column vectors.
-///
-/// This matrix encodes scale and rotation, and is commonly used to transform
-/// 3D vectors without translation.
-///
-/// - Note: To include translation, use a ``Matrix4x4`` instead.
+/// - Note: This matrix encodes scale and rotation, and is commonly used to
+/// transform 3D vectors without translation. To include translation, use a ``Matrix4x4`` instead.
 ///
 public struct Matrix3x3<Component: Real & SIMDScalar> {
 /// The underlying storage type for the matrix.
@@ -156,6 +146,22 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	}
 }
 
+extension Matrix3x3 {
+/// Access a matrix column at a specified index.
+///
+/// - Parameters:
+///   - column: The index of the column in the matrix.
+///
+	public subscript(column: Int) -> Storage.Column {
+		get {
+			storage[column]
+		}
+		set {
+			storage[column] = newValue
+		}
+	}
+}
+
 extension Matrix3x3: Codable {
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
@@ -188,12 +194,12 @@ extension Matrix3x3: Codable {
 	}
 }
 
-extension Matrix3x3: CustomStringConvertible {
+extension Matrix3x3: CustomStringConvertible where Component: CVarArg  {
 	public var description: String {
 		"""
-		\(storage.columns.0.description),
-		\(storage.columns.1.description),
-		\(storage.columns.2.description),
+		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0])) |
+		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1]))  \(String(format: "%.3f", storage[2, 1])) |
+		| \(String(format: "%.3f", storage[0, 2]))  \(String(format: "%.3f", storage[1, 2]))  \(String(format: "%.3f", storage[2, 2])) |
 		"""
 	}
 }
@@ -230,15 +236,27 @@ extension Matrix3x3: ExpressibleByArrayLiteral {
 		
 		for x in 0..<min(Self.columns, elements.count) {
 			for y in 0..<min(Self.rows, elements[x].count) {
-				matrix[x, y] = elements[x][y]
+				matrix[x, y] = elements[y][x]
 			}
 		}
 		
-		self = matrix.transposed
+		self = matrix
 	}
 }
 
 extension Matrix3x3: Identity {
+/// Creates an identity matrix.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0 |
+/// | 0  1  0 |
+/// | 0  0  1 |
+/// ```
+///
 	public static var identity: Self {
 		var matrix = Self()
 		for index in 0..<Self.columns {
@@ -247,6 +265,18 @@ extension Matrix3x3: Identity {
 		return matrix
 	}
 	
+/// Returns true if the matrix is identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0 |
+/// | 0  1  0 |
+/// | 0  0  1 |
+/// ```
+///
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -258,6 +288,18 @@ extension Matrix3x3: Identity {
 		return true
 	}
 	
+/// Sets the matrix to identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0 |
+/// | 0  1  0 |
+/// | 0  0  1 |
+/// ```
+///
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -270,6 +312,8 @@ extension Matrix3x3: Identity {
 }
 
 extension Matrix3x3: Invertible {
+/// Gets the inverse of this matrix if it exists.
+///
 	public var inverse: Self? {
 		let determinant = self.determinant
 		guard (abs(determinant) < .zero) == false &&
@@ -289,6 +333,10 @@ extension Matrix3x3: Invertible {
 		return Matrix3x3(columns: inverse.0, inverse.1, inverse.2) * (1 / determinant)
 	}
 	
+/// Inverts this matrix if it can be inverted, mutating the matrix.
+///
+/// - Returns: A boolean indicating if the matrix could be inverted.
+///
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self.storage = inverse.storage
@@ -508,15 +556,6 @@ extension Matrix3x3: MatrixProtocol {
 			storage[column, row] = newValue
 		}
 	}
-	
-	public subscript(column: Int) -> Storage.Column {
-		get {
-			storage[column]
-		}
-		set {
-			storage[column] = newValue
-		}
-	}
 }
 
 extension Matrix3x3: MatrixSub {
@@ -577,6 +616,23 @@ extension Matrix3x3: SquareMatrix {
 		}
 	}
 	
+/// A transposed version of the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1  2  3 |
+/// | 4  5  6 |
+/// | 7  8  9 |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1  4  7 |
+/// | 2  5  8 |
+/// | 3  6  9 |
+/// ```
+///
 	public var transposed: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -586,7 +642,24 @@ extension Matrix3x3: SquareMatrix {
 		}
 		return matrix
 	}
-	
+
+/// Transposes this matrix, mutating the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1  2  3 |
+/// | 4  5  6 |
+/// | 7  8  9 |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1  4  7 |
+/// | 2  5  8 |
+/// | 3  6  9 |
+/// ```
+///
 	public mutating func transpose() {
 		let temp = self
 		for column in 0..<Self.columns {
