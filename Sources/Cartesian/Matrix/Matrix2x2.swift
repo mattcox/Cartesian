@@ -219,11 +219,11 @@ extension Matrix2x2: ExpressibleByArrayLiteral {
 		
 		for x in 0..<min(Self.columns, elements.count) {
 			for y in 0..<min(Self.rows, elements[x].count) {
-				matrix[x, y] = elements[x][y]
+				matrix[x, y] = elements[y][x]
 			}
 		}
 		
-		self = matrix.transposed
+		self = matrix
 	}
 }
 

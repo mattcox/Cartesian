@@ -33,11 +33,11 @@ struct Matrix2x2Tests {
 	@Test("Initializer")
 	func initializer() async throws {
 		let matrix: Matrix2x2<Double> = Matrix2x2()
-
-		#expect(matrix[0][0] == .zero)
-		#expect(matrix[0][1] == .zero)
-		#expect(matrix[1][0] == .zero)
-		#expect(matrix[1][1] == .zero)
+		for x in 0..<2 {
+			for y in 0..<2 {
+				#expect(matrix[x][y] == .zero)
+			}
+		}
 	}
 	
 /// Tests the column initializer, which is expected to insert the values
@@ -56,7 +56,10 @@ struct Matrix2x2Tests {
 ///
 	@Test("Column Initializer")
 	func columnInitializer() async throws {
-		let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+		let matrix = Matrix2x2(columns:
+			Vector2(1.0, 2.0),
+			Vector2(3.0, 4.0)
+		)
 
 		#expect(matrix[0][0] == 1.0)
 		#expect(matrix[0][1] == 2.0)
@@ -80,7 +83,10 @@ struct Matrix2x2Tests {
 ///
 	@Test("Row Initializer")
 	func rowInitializer() async throws {
-		let matrix = Matrix2x2(rows: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+		let matrix = Matrix2x2(rows:
+			Vector2(1.0, 2.0),
+			Vector2(3.0, 4.0)
+		)
 
 		#expect(matrix[0][0] == 1.0)
 		#expect(matrix[0][1] == 3.0)
@@ -122,23 +128,34 @@ struct Matrix2x2Tests {
 ///
 	@Test("Serialization")
 	func serialization() async throws {
-		let matrix = Matrix2x2(rows: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+		let matrix = Matrix2x2(rows:
+			Vector2(1.0, 2.0),
+			Vector2(3.0, 4.0)
+		)
 		
 		let encoded = try JSONEncoder().encode(matrix)
 		let decoded = try JSONDecoder().decode(Matrix2x2<Double>.self, from: encoded)
 		
-		#expect(matrix[0][0] == decoded[0][0])
-		#expect(matrix[0][1] == decoded[0][1])
-		#expect(matrix[1][0] == decoded[1][0])
-		#expect(matrix[1][1] == decoded[1][1])
+		for x in 0..<2 {
+			for y in 0..<2 {
+				#expect(matrix[x][y] == decoded[x][y])
+			}
+		}
 	}
 	
 /// Test if two matrices are equatable.
 ///
 	@Test("Equatable")
 	func equatable() async throws {
-		let one = Matrix2x2(rows: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
-		let two = Matrix2x2(rows: Vector2(1.0 + Double.ulpOfOne, 2.0 - Double.ulpOfOne), Vector2(3.0 + Double.ulpOfOne, 4.0 - Double.ulpOfOne))
+		let one = Matrix2x2(rows:
+			Vector2(1.0, 2.0),
+			Vector2(3.0, 4.0)
+		)
+		
+		let two = Matrix2x2(rows:
+			Vector2(1.0 + .ulpOfOne, 2.0 - .ulpOfOne),
+			Vector2(3.0 + .ulpOfOne, 4.0 - .ulpOfOne)
+		)
 		
 		#expect(one == one)
 		#expect(one != two)
@@ -160,8 +177,8 @@ extension Matrix2x2Tests {
 		@Test("identity")
 		func identity() async throws {
 			let identity = Matrix2x2<Double>.identity
-			for column in 0..<Matrix2x2<Double>.columns {
-				for row in 0..<Matrix2x2<Double>.rows {
+			for column in 0..<2 {
+				for row in 0..<2 {
 					#expect(identity[column, row] == (column == row ? 1 : 0))
 				}
 			}
@@ -216,8 +233,8 @@ extension Matrix2x2Tests {
 			// Manually create what we think of as an identity matrix.
 			//
 			var matrix = Matrix2x2<Double>()
-			for column in 0..<Matrix2x2<Double>.columns {
-				for row in 0..<Matrix2x2<Double>.rows {
+			for column in 0..<2 {
+				for row in 0..<2 {
 					matrix[column, row] = column == row ? 1 : 0
 				}
 			}
@@ -226,7 +243,7 @@ extension Matrix2x2Tests {
 			// Make a minor change to the values in the main diagonal. It should no
 			// long be identity.
 			//
-			for index in 0..<Matrix2x2<Double>.columns {
+			for index in 0..<2 {
 				matrix[index, index] += ((index % 2) == 0) ? Double.ulpOfOne : -Double.ulpOfOne
 			}
 			#expect(matrix.isIdentity == false)
@@ -249,18 +266,21 @@ extension Matrix2x2Tests {
 	///
 		@Test("toIdentity")
 		func toIdentity() async throws {
-			var matrix = Matrix2x2(rows: Vector2(10.0, 20.0), Vector2(30.0, 40.0))
+			var matrix = Matrix2x2(rows:
+				Vector2(10.0, 20.0),
+				Vector2(30.0, 40.0)
+			)
 			
-			for column in 0..<Matrix2x2<Double>.columns {
-				for row in 0..<Matrix2x2<Double>.rows {
+			for column in 0..<2 {
+				for row in 0..<2 {
 					#expect(matrix[column, row] != (column == row ? 1 : 0))
 				}
 			}
 			
 			matrix.toIdentity()
 			
-			for column in 0..<Matrix2x2<Double>.columns {
-				for row in 0..<Matrix2x2<Double>.rows {
+			for column in 0..<2 {
+				for row in 0..<2 {
 					#expect(matrix[column, row] == (column == row ? 1 : 0))
 				}
 			}
@@ -306,8 +326,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("inverse")
 		func inverse() async throws {
-			let canInvert = Matrix2x2(columns: Vector2(3.0, 1.0), Vector2(2.0, 4.0))
-			let cannotInvert = Matrix2x2(columns: Vector2(2.0, 1.0), Vector2(4.0, 2.0))
+			let canInvert = Matrix2x2(columns:
+				Vector2(3.0, 1.0),
+				Vector2(2.0, 4.0)
+			)
+			
+			let cannotInvert = Matrix2x2(columns:
+				Vector2(2.0, 1.0),
+				Vector2(4.0, 2.0)
+			)
 			
 			let canInvertInverse = canInvert.inverse
 			let cannotInvertInverse = cannotInvert.inverse
@@ -327,10 +354,11 @@ extension Matrix2x2Tests {
 			let canInvertSIMD = simd_double2x2(SIMD2<Double>(3.0, 1.0), SIMD2<Double>(2.0, 4.0))
 			let canInvertSIMDInverse = canInvertSIMD.inverse
 			
-			#expect(canInvertSIMDInverse[0, 0] == canInvertInverse?[0, 0])
-			#expect(canInvertSIMDInverse[0, 1] == canInvertInverse?[0, 1])
-			#expect(canInvertSIMDInverse[1, 0] == canInvertInverse?[1, 0])
-			#expect(canInvertSIMDInverse[1, 1] == canInvertInverse?[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(canInvertSIMDInverse[x, y] == canInvertInverse?[x, y])
+				}
+			}
 		#endif
 		}
 	
@@ -376,8 +404,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("invert")
 		func invert() async throws {
-			var canInvert = Matrix2x2(columns: Vector2(3.0, 1.0), Vector2(2.0, 4.0))
-			var cannotInvert = Matrix2x2(columns: Vector2(2.0, 1.0), Vector2(4.0, 2.0))
+			var canInvert = Matrix2x2(columns:
+				Vector2(3.0, 1.0),
+				Vector2(2.0, 4.0)
+			)
+			
+			var cannotInvert = Matrix2x2(columns:
+				Vector2(2.0, 1.0),
+				Vector2(4.0, 2.0)
+			)
 			
 			#expect(canInvert.invert() == true)
 			#expect(cannotInvert.invert() == false)
@@ -391,13 +426,17 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var canInvertSIMD = simd_double2x2(SIMD2<Double>(3.0, 1.0), SIMD2<Double>(2.0, 4.0))
+			var canInvertSIMD = simd_double2x2(
+				SIMD2<Double>(3.0, 1.0),
+				SIMD2<Double>(2.0, 4.0)
+			)
 			canInvertSIMD = canInvertSIMD.inverse
 			
-			#expect(canInvertSIMD[0, 0] == canInvert[0, 0])
-			#expect(canInvertSIMD[0, 1] == canInvert[0, 1])
-			#expect(canInvertSIMD[1, 0] == canInvert[1, 0])
-			#expect(canInvertSIMD[1, 1] == canInvert[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(canInvertSIMD[x, y] == canInvert[x, y])
+				}
+			}
 		#endif
 		}
 	}
@@ -426,8 +465,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Addition")
 		func addition() async throws {
-			let lhs = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 6.0), Vector2(7.0, 8.0))
+			let lhs = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 6.0),
+				Vector2(7.0, 8.0)
+			)
 			
 			let result = lhs + rhs
 			
@@ -440,15 +486,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let lhsSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 6.0), SIMD2<Double>(7.0, 8.0))
+			let lhsSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 6.0),
+				SIMD2<Double>(7.0, 8.0)
+			)
 			
 			let resultSIMD = lhsSIMD + rhsSIMD
 			
-			#expect(result[0, 0] == resultSIMD[0, 0])
-			#expect(result[0, 1] == resultSIMD[0, 1])
-			#expect(result[1, 0] == resultSIMD[1, 0])
-			#expect(result[1, 1] == resultSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result[x, y] == resultSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -472,8 +526,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Addition Assignment")
 		func additionAssignment() async throws {
-			var lhs = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 6.0), Vector2(7.0, 8.0))
+			var lhs = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 6.0),
+				Vector2(7.0, 8.0)
+			)
 			
 			lhs += rhs
 			
@@ -486,15 +547,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var lhsSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 6.0), SIMD2<Double>(7.0, 8.0))
+			var lhsSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 6.0),
+				SIMD2<Double>(7.0, 8.0)
+			)
 			
 			lhsSIMD += rhsSIMD
 			
-			#expect(lhs[0, 0] == lhsSIMD[0, 0])
-			#expect(lhs[0, 1] == lhsSIMD[0, 1])
-			#expect(lhs[1, 0] == lhsSIMD[1, 0])
-			#expect(lhs[1, 1] == lhsSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(lhs[x, y] == lhsSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -518,7 +587,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("Negation")
 		func negation() async throws {
-			let rhs = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let rhs = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
 			let result = -rhs
 			
 			#expect(result[0, 0] == -1.0)
@@ -530,13 +603,18 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+			
 			let resultSIMD = -rhsSIMD
 			
-			#expect(result[0, 0] == resultSIMD[0, 0])
-			#expect(result[0, 1] == resultSIMD[0, 1])
-			#expect(result[1, 0] == resultSIMD[1, 0])
-			#expect(result[1, 1] == resultSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result[x, y] == resultSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -560,8 +638,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Subtraction")
 		func subtraction() async throws {
-			let lhs = Matrix2x2(columns: Vector2(4.0, 6.0), Vector2(2.0, 8.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 3.0), Vector2(7.0, 1.0))
+			let lhs = Matrix2x2(columns:
+				Vector2(4.0, 6.0),
+				Vector2(2.0, 8.0)
+			)
+
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 3.0),
+				Vector2(7.0, 1.0)
+			)
 			
 			let result = lhs - rhs
 			
@@ -574,15 +659,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let lhsSIMD = simd_double2x2(SIMD2<Double>(4.0, 6.0), SIMD2<Double>(2.0, 8.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 3.0), SIMD2<Double>(7.0, 1.0))
+			let lhsSIMD = simd_double2x2(
+				SIMD2<Double>(4.0, 6.0),
+				SIMD2<Double>(2.0, 8.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 3.0),
+				SIMD2<Double>(7.0, 1.0)
+			)
 			
 			let resultSIMD = lhsSIMD - rhsSIMD
 			
-			#expect(result[0, 0] == resultSIMD[0, 0])
-			#expect(result[0, 1] == resultSIMD[0, 1])
-			#expect(result[1, 0] == resultSIMD[1, 0])
-			#expect(result[1, 1] == resultSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result[x, y] == resultSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -606,8 +699,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Subtraction Assignment")
 		func subtractionAssignment() async throws {
-			var lhs = Matrix2x2(columns: Vector2(4.0, 6.0), Vector2(2.0, 8.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 3.0), Vector2(7.0, 1.0))
+			var lhs = Matrix2x2(columns:
+				Vector2(4.0, 6.0),
+				Vector2(2.0, 8.0)
+			)
+			
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 3.0),
+				Vector2(7.0, 1.0)
+			)
 			
 			lhs -= rhs
 			
@@ -620,15 +720,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var lhsSIMD = simd_double2x2(SIMD2<Double>(4.0, 6.0), SIMD2<Double>(2.0, 8.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 3.0), SIMD2<Double>(7.0, 1.0))
+			var lhsSIMD = simd_double2x2(
+				SIMD2<Double>(4.0, 6.0),
+				SIMD2<Double>(2.0, 8.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 3.0),
+				SIMD2<Double>(7.0, 1.0)
+			)
 			
 			lhsSIMD -= rhsSIMD
 			
-			#expect(lhs[0, 0] == lhsSIMD[0, 0])
-			#expect(lhs[0, 1] == lhsSIMD[0, 1])
-			#expect(lhs[1, 0] == lhsSIMD[1, 0])
-			#expect(lhs[1, 1] == lhsSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(lhs[x, y] == lhsSIMD[x, y])
+				}
+			}
 		#endif
 		}
 	
@@ -652,8 +760,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Multiplication")
 		func multiplication() async throws {
-			let lhs = Matrix2x2(columns: Vector2(4.0, 6.0), Vector2(2.0, 8.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 3.0), Vector2(7.0, 1.0))
+			let lhs = Matrix2x2(columns:
+				Vector2(4.0, 6.0),
+				Vector2(2.0, 8.0)
+			)
+			
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 3.0),
+				Vector2(7.0, 1.0)
+			)
 			
 			let result = lhs * rhs
 			
@@ -666,15 +781,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let lhsSIMD = simd_double2x2(SIMD2<Double>(4.0, 6.0), SIMD2<Double>(2.0, 8.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 3.0), SIMD2<Double>(7.0, 1.0))
+			let lhsSIMD = simd_double2x2(
+				SIMD2<Double>(4.0, 6.0),
+				SIMD2<Double>(2.0, 8.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 3.0),
+				SIMD2<Double>(7.0, 1.0)
+			)
 			
 			let resultSIMD = lhsSIMD * rhsSIMD
 			
-			#expect(result[0, 0] == resultSIMD[0, 0])
-			#expect(result[0, 1] == resultSIMD[0, 1])
-			#expect(result[1, 0] == resultSIMD[1, 0])
-			#expect(result[1, 1] == resultSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result[x, y] == resultSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -698,8 +821,15 @@ extension Matrix2x2Tests {
 	///
 		@Test("Multiplication Assignment")
 		func multiplicationAssignment() async throws {
-			var lhs = Matrix2x2(columns: Vector2(4.0, 6.0), Vector2(2.0, 8.0))
-			let rhs = Matrix2x2(columns: Vector2(5.0, 3.0), Vector2(7.0, 1.0))
+			var lhs = Matrix2x2(columns:
+				Vector2(4.0, 6.0),
+				Vector2(2.0, 8.0)
+			)
+			
+			let rhs = Matrix2x2(columns:
+				Vector2(5.0, 3.0),
+				Vector2(7.0, 1.0)
+			)
 			
 			lhs *= rhs
 			
@@ -712,15 +842,23 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var lhsSIMD = simd_double2x2(SIMD2<Double>(4.0, 6.0), SIMD2<Double>(2.0, 8.0))
-			let rhsSIMD = simd_double2x2(SIMD2<Double>(5.0, 3.0), SIMD2<Double>(7.0, 1.0))
+			var lhsSIMD = simd_double2x2(
+				SIMD2<Double>(4.0, 6.0),
+				SIMD2<Double>(2.0, 8.0)
+			)
+			
+			let rhsSIMD = simd_double2x2(
+				SIMD2<Double>(5.0, 3.0),
+				SIMD2<Double>(7.0, 1.0)
+			)
 			
 			lhsSIMD *= rhsSIMD
 			
-			#expect(lhs[0, 0] == lhsSIMD[0, 0])
-			#expect(lhs[0, 1] == lhsSIMD[0, 1])
-			#expect(lhs[1, 0] == lhsSIMD[1, 0])
-			#expect(lhs[1, 1] == lhsSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(lhs[x, y] == lhsSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -744,16 +882,21 @@ extension Matrix2x2Tests {
 	///
 		@Test("Scalar Multiplication")
 		func scalarMultiplication() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
 			let scalar = 3.0
 			
 			let result1 = matrix * scalar
 			let result2 = scalar * matrix
 			
-			#expect(result1[0, 0] == result2[0, 0])
-			#expect(result1[0, 1] == result2[0, 1])
-			#expect(result1[1, 0] == result2[1, 0])
-			#expect(result1[1, 1] == result2[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result1[x, y] == result2[x, y])
+				}
+			}
 			
 			#expect(result1[0, 0] == 3.0)
 			#expect(result1[0, 1] == 6.0)
@@ -764,20 +907,20 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let matrixSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			let matrixSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
 			
 			let resultSIMD1 = matrixSIMD * scalar
 			let resultSIMD2 = scalar * matrixSIMD
 			
-			#expect(resultSIMD1[0, 0] == resultSIMD2[0, 0])
-			#expect(resultSIMD1[0, 1] == resultSIMD2[0, 1])
-			#expect(resultSIMD1[1, 0] == resultSIMD2[1, 0])
-			#expect(resultSIMD1[1, 1] == resultSIMD2[1, 1])
-			
-			#expect(result1[0, 0] == resultSIMD1[0, 0])
-			#expect(result1[0, 1] == resultSIMD1[0, 1])
-			#expect(result1[1, 0] == resultSIMD1[1, 0])
-			#expect(result1[1, 1] == resultSIMD1[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(resultSIMD1[x, y] == resultSIMD2[x, y])
+					#expect(result1[x, y] == resultSIMD1[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -801,7 +944,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("Scalar Multiplication Assignment")
 		func scalarMultiplicationAssignment() async throws {
-			var lhs = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			var lhs = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
 			let rhs = 3.0
 			
 			lhs *= rhs
@@ -815,14 +962,18 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var lhsSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			var lhsSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
 			
 			lhsSIMD *= rhs
 			
-			#expect(lhs[0, 0] == lhsSIMD[0, 0])
-			#expect(lhs[0, 1] == lhsSIMD[0, 1])
-			#expect(lhs[1, 0] == lhsSIMD[1, 0])
-			#expect(lhs[1, 1] == lhsSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(lhs[x, y] == lhsSIMD[x, y])
+				}
+			}
 		#endif
 		}
 	}
@@ -848,7 +999,11 @@ extension Matrix2x2Tests {
 	struct MatrixVectorMath {
 		@Test("Vector Multiplication")
 		func multiplication() async throws {
-			let lhs = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let lhs = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
 			let rhs = Vector2(5.0, 6.0)
 			
 			let result = lhs * rhs
@@ -860,7 +1015,11 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let lhsSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			let lhsSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+			
 			let rhsSIMD = simd_double2(5.0, 6.0)
 			
 			let resultSIMD = lhsSIMD * rhsSIMD
@@ -889,7 +1048,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("adjugate")
 		func adjugate() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+
 			let adjugate = matrix.adjugate
 			
 			#expect(adjugate[0, 0] ==  4.0)
@@ -914,7 +1077,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("cofactor")
 		func cofactor() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+
 			let cofactor = matrix.cofactor
 			
 			#expect(cofactor[0, 0] ==  4.0)
@@ -942,7 +1109,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("determinant")
 		func determinant() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+			
 			let determinant = matrix.determinant
 			
 			#expect(determinant == -2.0)
@@ -951,7 +1122,10 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let matrixSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			let matrixSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
 			let determinantSIMD = matrixSIMD.determinant
 			
 			#expect(determinant == determinantSIMD)
@@ -973,10 +1147,12 @@ extension Matrix2x2Tests {
 	///
 		@Test("trace")
 		func trace() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
-			let trace = matrix.trace
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
 			
-			#expect(trace == 5)
+			#expect(matrix.trace == 5)
 		}
 		
 	/// Tests transposing the matrix.
@@ -999,7 +1175,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("transposed")
 		func transposed() async throws {
-			let matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			let matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+
 			let result = matrix.transposed
 			
 			#expect(result[0, 0] == 1.0)
@@ -1011,13 +1191,18 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let matrixSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			let matrixSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+			
 			let resultSIMD = matrixSIMD.transpose
 			
-			#expect(result[0, 0] == resultSIMD[0, 0])
-			#expect(result[0, 1] == resultSIMD[0, 1])
-			#expect(result[1, 0] == resultSIMD[1, 0])
-			#expect(result[1, 1] == resultSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(result[x, y] == resultSIMD[x, y])
+				}
+			}
 		#endif
 		}
 		
@@ -1041,7 +1226,11 @@ extension Matrix2x2Tests {
 	///
 		@Test("transpose")
 		func transpose() async throws {
-			var matrix = Matrix2x2(columns: Vector2(1.0, 2.0), Vector2(3.0, 4.0))
+			var matrix = Matrix2x2(columns:
+				Vector2(1.0, 2.0),
+				Vector2(3.0, 4.0)
+			)
+
 			matrix.transpose()
 			
 			#expect(matrix[0, 0] == 1.0)
@@ -1053,13 +1242,18 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			var matrixSIMD = simd_double2x2(SIMD2<Double>(1.0, 2.0), SIMD2<Double>(3.0, 4.0))
+			var matrixSIMD = simd_double2x2(
+				SIMD2<Double>(1.0, 2.0),
+				SIMD2<Double>(3.0, 4.0)
+			)
+
 			matrixSIMD = matrixSIMD.transpose
 			
-			#expect(matrix[0, 0] == matrixSIMD[0, 0])
-			#expect(matrix[0, 1] == matrixSIMD[0, 1])
-			#expect(matrix[1, 0] == matrixSIMD[1, 0])
-			#expect(matrix[1, 1] == matrixSIMD[1, 1])
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(matrix[x, y] == matrixSIMD[x, y])
+				}
+			}
 		#endif
 		}
 	}
