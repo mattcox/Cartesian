@@ -1,0 +1,92 @@
+//
+//  Force+VectorProtocol.swift
+//  Cartesian
+//
+//  Created by Matt Cox on 02/05/2025.
+//  Copyright © 2025 Matt Cox. All rights reserved.
+//
+
+import Foundation
+import RealModule
+import Units
+
+extension Force: Blendable {
+	public static func blend(from: Self, to: Self, by amount: Component.Value) -> Self {
+		var componentTotals: [Component] = []
+		for index in 0..<Self.count {
+			componentTotals.append(from[index] + (to[index] - from[index]) * amount)
+		}
+		return Self(componentTotals)
+	}
+	
+	public mutating func blend(to other: Self, by amount: Component.Value) {
+		self = Self.blend(from: self, to: other, by: amount)
+	}
+}
+
+extension Force: MagnitudeMeasurable {
+	
+}
+
+extension Force: MagnitudeAdjustable {
+	public var magnitude: Component {
+		get {
+			var components: [Component] = []
+			for index in 0..<Self.count {
+				components.append(self[index])
+			}
+			
+			let total = components
+				.map {
+					$0 * $0
+				}
+				.reduce(Component.zero) {
+					$0 + $1
+				}
+				
+			return sqrt(total)
+		}
+		set {
+			let factor = Component(1.0) / self.magnitude
+			for index in 0..<Self.count {
+				self[index] *= factor * newValue
+			}
+		}
+	}
+}
+
+extension Force: Normalizable {
+	public var normalized: Self {
+		self / magnitude
+	}
+
+	public mutating func normalize() {
+		self /= magnitude
+	}
+}
+
+extension Force: VectorMath {
+	
+}
+
+extension Force: VectorProtocol {
+	public static var count: Int {
+		Value.scalarCount
+	}
+	
+	public init() {
+		self = .zero
+	}
+
+	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
+		var value: Self = .zero
+		for enumerator in collection.prefix(Self.count).enumerated() {
+			value[enumerator.offset] = enumerator.element
+		}
+		self = value
+	}
+
+	public mutating func clear() {
+		self = .zero
+	}
+}
