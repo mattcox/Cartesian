@@ -24,6 +24,23 @@ extension Force: Blendable {
 	}
 }
 
+extension Force: @retroactive ExpressibleByArrayLiteral {
+/// Initialize the force from an array literal.
+///
+/// For example, the force can be initialized as follows:
+/// ```swift
+/// let force: Force<SIMD2<Double>> = [.newtons(1.0), .newtons(2.0)]
+/// ```
+///
+	public init(arrayLiteral elements: Component...) {
+		var vector = Self()
+		for index in 0..<Swift.min(Self.count, elements.count) {
+			vector[index] = elements[index]
+		}
+		self = vector
+	}
+}
+
 extension Force: MagnitudeMeasurable {
 	
 }

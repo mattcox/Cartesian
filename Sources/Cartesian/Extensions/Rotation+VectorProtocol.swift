@@ -10,6 +10,23 @@ import Foundation
 import RealModule
 import Units
 
+extension Rotation: @retroactive ExpressibleByArrayLiteral {
+/// Initialize the rotation from an array literal.
+///
+/// For example, the rotation can be initialized as follows:
+/// ```swift
+/// let rotation: Rotation<SIMD2<Double>> = [.degrees(45.0), .meters(90.0)]
+/// ```
+///
+	public init(arrayLiteral elements: Component...) {
+		var vector = Self()
+		for index in 0..<Swift.min(Self.count, elements.count) {
+			vector[index] = elements[index]
+		}
+		self = vector
+	}
+}
+
 extension Rotation: Normalizable {
 	
 }

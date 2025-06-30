@@ -73,6 +73,23 @@ extension Position: EuclidianDistanceMeasurable {
 	}
 }
 
+extension Position: @retroactive ExpressibleByArrayLiteral {
+/// Initialize the position from an array literal.
+///
+/// For example, the position can be initialized as follows:
+/// ```swift
+/// let position: Position<SIMD2<Double>> = [.meters(1.0), .meters(2.0)]
+/// ```
+///
+	public init(arrayLiteral elements: Component...) {
+		var vector = Self()
+		for index in 0..<Swift.min(Self.count, elements.count) {
+			vector[index] = elements[index]
+		}
+		self = vector
+	}
+}
+
 extension Position: MagnitudeMeasurable {
 	
 }
