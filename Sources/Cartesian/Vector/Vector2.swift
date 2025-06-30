@@ -187,9 +187,11 @@ extension Vector2: CrossProduct {
 	}
 }
 
-extension Vector2: CustomStringConvertible {
+extension Vector2: CustomStringConvertible where Component: CVarArg {
 	public var description: String {
-		storage.description
+		"""
+		[ \(String(format: "%.3f", storage[0]))  \(String(format: "%.3f", storage[1])) ]
+		"""
 	}
 }
 
@@ -245,6 +247,7 @@ extension Vector2: EuclidianDistanceMeasurable {
 	}
 }
 
+extension Vector2: ExpressibleByArrayLiteral {
 /// Initialize the vector from an array literal.
 ///
 /// For example, the vector can be initialized as follows:
@@ -252,7 +255,6 @@ extension Vector2: EuclidianDistanceMeasurable {
 /// let vector: Vector2 = [1.0, 2.0]
 /// ```
 ///
-extension Vector2: ExpressibleByArrayLiteral {
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for index in 0..<Swift.min(Self.count, elements.count) {
@@ -260,10 +262,6 @@ extension Vector2: ExpressibleByArrayLiteral {
 		}
 		self = vector
 	}
-}
-
-extension Vector2: MagnitudeMeasurable {
-	
 }
 
 extension Vector2: MagnitudeAdjustable {
@@ -279,6 +277,10 @@ extension Vector2: MagnitudeAdjustable {
 			storage.y *= factor * newValue
 		}
 	}
+}
+
+extension Vector2: MagnitudeMeasurable {
+	
 }
 
 extension Vector2: Normalizable {

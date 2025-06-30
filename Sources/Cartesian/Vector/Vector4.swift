@@ -183,9 +183,11 @@ extension Vector4: Codable {
 	}
 }
 
-extension Vector4: CustomStringConvertible {
+extension Vector4: CustomStringConvertible where Component: CVarArg {
 	public var description: String {
-		storage.description
+		"""
+		[ \(String(format: "%.3f", storage[0]))  \(String(format: "%.3f", storage[1]))  \(String(format: "%.3f", storage[2]))  \(String(format: "%.3f", storage[3])) ]
+		"""
 	}
 }
 
@@ -247,6 +249,7 @@ extension Vector4: EuclidianDistanceMeasurable {
 	}
 }
 
+extension Vector4: ExpressibleByArrayLiteral {
 /// Initialize the vector from an array literal.
 ///
 /// For example, the vector can be initialized as follows:
@@ -254,7 +257,6 @@ extension Vector4: EuclidianDistanceMeasurable {
 /// let vector: Vector4 = [1.0, 2.0, 3.0, 4.0]
 /// ```
 ///
-extension Vector4: ExpressibleByArrayLiteral {
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for index in 0..<Swift.min(Self.count, elements.count) {
@@ -262,10 +264,6 @@ extension Vector4: ExpressibleByArrayLiteral {
 		}
 		self = vector
 	}
-}
-
-extension Vector4: MagnitudeMeasurable {
-	
 }
 
 extension Vector4: MagnitudeAdjustable {
@@ -283,6 +281,10 @@ extension Vector4: MagnitudeAdjustable {
 			storage.w *= factor * newValue
 		}
 	}
+}
+
+extension Vector4: MagnitudeMeasurable {
+	
 }
 
 extension Vector4: Normalizable {

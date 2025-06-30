@@ -21,7 +21,7 @@ let package = Package(
 			name: "Cartesian",
 			dependencies: [
 				.product(name: "RealModule", package: "swift-numerics"),
-				"Units"
+				.product(name: "Units", package: "Units")
 			]
 		),
 		.testTarget(
