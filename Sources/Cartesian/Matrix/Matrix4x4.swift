@@ -198,13 +198,13 @@ extension Matrix4x4: Codable {
 	}
 }
 
-extension Matrix4x4: CustomStringConvertible {
+extension Matrix4x4: CustomStringConvertible where Component: CVarArg  {
 	public var description: String {
 		"""
-		\(storage.columns.0.description),
-		\(storage.columns.1.description),
-		\(storage.columns.2.description),
-		\(storage.columns.3.description),
+		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0]))  \(String(format: "%.3f", storage[3, 0])) |
+		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1]))  \(String(format: "%.3f", storage[2, 1]))  \(String(format: "%.3f", storage[3, 1])) |
+		| \(String(format: "%.3f", storage[0, 2]))  \(String(format: "%.3f", storage[1, 2]))  \(String(format: "%.3f", storage[2, 2]))  \(String(format: "%.3f", storage[3, 2])) |
+		| \(String(format: "%.3f", storage[0, 3]))  \(String(format: "%.3f", storage[1, 3]))  \(String(format: "%.3f", storage[2, 3]))  \(String(format: "%.3f", storage[3, 3])) |
 		"""
 	}
 }
