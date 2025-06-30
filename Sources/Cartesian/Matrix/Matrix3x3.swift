@@ -7,6 +7,7 @@
 //
 
 import RealModule
+import Units
 
 /// A 3×3 matrix stored in column-major order.
 ///
@@ -346,26 +347,22 @@ extension Matrix3x3: Invertible {
 	}
 }
 
-extension Matrix3x3: MatrixLinearTransform {
-	public typealias Rotation = Vector3<Component>
+extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint {
+	public typealias Rotation = Units.Rotation<SIMD3<Component>>
 	public typealias Scale = Vector3<Component>
 	
 	public var scale: Scale {
 		get {
-			let row0 = Scale(storage.columns.0[0], storage.columns.1[0], storage.columns.2[0])
-			let row1 = Scale(storage.columns.0[1], storage.columns.1[1], storage.columns.2[1])
-			let row2 = Scale(storage.columns.0[2], storage.columns.1[2], storage.columns.2[2])
-			
-			return Scale(row0.magnitude, row1.magnitude, row2.magnitude)
+			Scale(
+				storage.columns.0.magnitude,
+				storage.columns.1.magnitude,
+				storage.columns.2.magnitude
+			)
 		}
 		set {
-			let row0 = Scale(storage.columns.0[0], storage.columns.1[0], storage.columns.2[0]).normalized * newValue[0]
-			let row1 = Scale(storage.columns.0[1], storage.columns.1[1], storage.columns.2[1]).normalized * newValue[1]
-			let row2 = Scale(storage.columns.0[2], storage.columns.1[2], storage.columns.2[2]).normalized * newValue[2]
-			
-			storage.columns.0 = Storage.Column(row0[0], row1[0], row2[0])
-			storage.columns.1 = Storage.Column(row0[1], row1[1], row2[1])
-			storage.columns.2 = Storage.Column(row0[2], row1[2], row2[2])
+			storage.columns.0 *= newValue[0]
+			storage.columns.1 *= newValue[1]
+			storage.columns.2 *= newValue[2]
 		}
 	}
 	
@@ -393,21 +390,48 @@ extension Matrix3x3: MatrixLinearTransform {
 	
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let orders = [order[0].index, order[1].index, order[2].index]
-
-		var rotation = Rotation()
-		let scalar = Component.sqrt(Component.pow(storage[orders[0], orders[0]], 2) + Component.pow(storage[orders[1], orders[0]], 2))
-		if scalar > (16 * Component.ulpOfOne) {
-			rotation[0] = Component.atan2(y: storage[orders[1], orders[2]], x: storage[orders[2], orders[2]])
-			rotation[1] = Component.atan2(y: -storage[orders[0], orders[2]], x: scalar)
-			rotation[2] = Component.atan2(y: storage[orders[0], orders[1]], x: storage[orders[0], orders[0]])
-		}
-		else {
-			rotation[0] = Component.atan2(y: -storage[orders[2], orders[1]], x: storage[orders[1], orders[1]])
-			rotation[1] = Component.atan2(y: -storage[orders[0], orders[2]], x: scalar)
-			rotation[2] = .zero
-		}
+		let scalar = Component.sqrt(
+			Component.pow(storage[orders[0], orders[0]], 2) +
+			Component.pow(storage[orders[1], orders[0]], 2)
+		)
 		
-		if((orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0)) {
+		var rotation: Rotation = {
+			var rotation = Rotation()
+			if scalar > (16 * Component.ulpOfOne) {
+				rotation[0] = Angle(Component.atan2(
+					y: storage[orders[1], orders[2]],
+					x: storage[orders[2], orders[2]]
+				))
+				
+				rotation[1] = Angle(Component.atan2(
+					y: -storage[orders[0], orders[2]],
+					x: scalar
+				))
+				
+				rotation[2] = Angle(Component.atan2(
+					y: storage[orders[0], orders[1]],
+					x: storage[orders[0], orders[0]]
+				))
+			}
+			else {
+				rotation[0] = Angle(Component.atan2(
+					y: -storage[orders[2], orders[1]],
+					x: storage[orders[1], orders[1]]
+				))
+				
+				rotation[1] = Angle(Component.atan2(
+					y: -storage[orders[0], orders[2]],
+					x: scalar
+				))
+	
+				rotation[2] = .zero
+			}
+			return rotation
+		}()
+		
+		if((orders[0] == 0 && orders[1] != 1) ||
+		   (orders[0] == 1 && orders[1] != 2) ||
+		   (orders[0] == 2 && orders[1] != 0)) {
 			for i in 0..<Rotation.count {
 				rotation[i] *= -1
 			}
@@ -417,27 +441,42 @@ extension Matrix3x3: MatrixLinearTransform {
 	}
 	
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
-		var result = Self.identity
+		let normalizedRotation = rotation.normalized
+		let cos = Vector3(
+			Component.cos(normalizedRotation[0].radians),
+			Component.cos(normalizedRotation[1].radians),
+			Component.cos(normalizedRotation[2].radians)
+		)
 		
-		for i in 0..<Self.columns {
-			let orderAxis = order[i].index
-			if rotation[orderAxis].isApproximatelyEqual(to: .zero) {
-				continue
-			}
-			let axis = [[2, 1], [0, 2], [1, 0]]
-			let sin = Component.sin(rotation[orderAxis])
-			
-			var temporary = Self.identity
-			
-			temporary[axis[orderAxis][1], axis[orderAxis][0]] =  sin
-			temporary[axis[orderAxis][0], axis[orderAxis][1]] = -sin
-			temporary[axis[orderAxis][0], axis[orderAxis][0]] =  Component.cos(rotation[orderAxis])
-			temporary[axis[orderAxis][1], axis[orderAxis][1]] =  temporary[axis[orderAxis][0], axis[orderAxis][0]]
-			
-			result *= temporary
-		}
+		let sin = Vector3(
+			Component.sin(normalizedRotation[0].radians),
+			Component.sin(normalizedRotation[1].radians),
+			Component.sin(normalizedRotation[2].radians)
+		)
 		
-		self = result
+		let x: Self = [
+			[1, 0, 0],
+			[0, cos[0], -sin[0]],
+			[0, sin[0], cos[0]]
+		]
+		
+		let y: Self = [
+			[cos[1], 0, sin[1]],
+			[0, 1, 0],
+			[-sin[1], 0, cos[1]]
+		]
+		
+		let z: Self = [
+			[cos[2], -sin[2], 0],
+			[sin[2], cos[2], 0],
+			[0, 0, 1]
+		]
+		
+		let matrices: [Self] = [x, y, z]
+
+		self = matrices[order.first.index] *
+			   matrices[order.second.index] *
+			   matrices[order.third.index]
 	}
 }
 
