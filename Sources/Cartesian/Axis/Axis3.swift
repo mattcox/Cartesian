@@ -1,5 +1,5 @@
 //
-//  Axis.swift
+//  Axis3.swift
 //  Cartesian
 //
 //  Created by Matt Cox on 09/04/2025.
@@ -8,7 +8,7 @@
 
 /// A type representing an Axis in 3D euclidean space.
 ///
-public enum Axis {
+public enum Axis3 {
 /// The X axis.
 ///
 /// - Parameters:
@@ -32,19 +32,19 @@ public enum Axis {
 	
 /// The X axis.
 ///
-	static var X: Axis {
+	static var X: Self {
 		.x(negative: false)
 	}
 
 /// The Y axis.
 ///
-	static var Y: Axis {
+	static var Y: Self {
 		.y(negative: false)
 	}
 
 /// The Z axis.
 ///
-	static var Z: Axis {
+	static var Z: Self {
 		.z(negative: false)
 	}
 	
@@ -79,7 +79,7 @@ public enum Axis {
 	}
 }
 
-extension Axis {
+extension Axis3 {
 	public var inverse: Self {
 		switch self {
 			case .x(let negative):
@@ -107,10 +107,10 @@ extension Axis {
 	}
 }
 
-extension Axis: Equatable {
+extension Axis3: Equatable {
 	
 }
 
-extension Axis: Sendable {
+extension Axis3: Sendable {
 	
 }

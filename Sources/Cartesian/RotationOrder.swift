@@ -62,7 +62,7 @@ public enum RotationOrder: Int {
 /// The first element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
-	var first: Axis {
+	var first: Axis3 {
 		switch(self) {
 			case .XYZ, .XZY:
 				return .X
@@ -76,7 +76,7 @@ public enum RotationOrder: Int {
 /// The second element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
-	var second: Axis {
+	var second: Axis3 {
 		switch(self) {
 			case .YXZ, .ZXY:
 				return .X
@@ -90,7 +90,7 @@ public enum RotationOrder: Int {
 /// The third element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
-	var third: Axis {
+	var third: Axis3 {
 		switch(self) {
 			case .YZX, .ZYX:
 				return .X
@@ -103,7 +103,7 @@ public enum RotationOrder: Int {
 	
 /// Returns the element in the rotation order, specified by index.
 ///
-	subscript(index: Int) -> Axis {
+	subscript(index: Int) -> Axis3 {
 		switch(index) {
 			case 0:
 				return first
