@@ -1,5 +1,5 @@
 //
-//  Matrix2x2Tests.swift
+//  Matrix2x2.swift
 //  Cartesian
 //
 //  Created by Matt Cox on 09/04/2025.
@@ -351,7 +351,11 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let canInvertSIMD = simd_double2x2(SIMD2<Double>(3.0, 1.0), SIMD2<Double>(2.0, 4.0))
+			let canInvertSIMD = simd_double2x2(
+				SIMD2<Double>(3.0, 1.0),
+				SIMD2<Double>(2.0, 4.0)
+			)
+				
 			let canInvertSIMDInverse = canInvertSIMD.inverse
 			
 			for x in 0..<2 {
@@ -977,7 +981,9 @@ extension Matrix2x2Tests {
 		#endif
 		}
 	}
-	
+}
+
+extension Matrix2x2Tests {
 	/// Tests multiplying a vector by a matrix.
 	///
 	/// Input:
@@ -1029,7 +1035,9 @@ extension Matrix2x2Tests {
 		#endif
 		}
 	}
+}
 
+extension Matrix2x2Tests {
 	@Suite("SquareMatrix")
 	struct SquareMatrix {
 	/// Tests getting the adjugate matrix of the matrix.

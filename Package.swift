@@ -28,7 +28,8 @@ let package = Package(
 			name: "CartesianTests",
 			dependencies: [
 				"Cartesian"
-			]
+			],
+			sources: ["Cartesian"]
 		),
 	]
 )
