@@ -9,8 +9,8 @@
 /// A type that defines the order that rotations are applied to a gimbal in 3D
 /// space.
 ///
-/// When calculating rotation in 3D space - specifically using a
-/// ``MatrixProtocol``, the order the rotations are applied matters.
+/// When calculating rotation in 3D space, the order the rotations are applied
+/// matters.
 ///
 /// If the rotations represent three nested gimbals:
 /// ```
