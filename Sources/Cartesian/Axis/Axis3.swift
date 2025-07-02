@@ -80,6 +80,8 @@ public enum Axis3 {
 }
 
 extension Axis3 {
+/// The inverse of this axis.
+///
 	public var inverse: Self {
 		switch self {
 			case .x(let negative):
@@ -93,6 +95,8 @@ extension Axis3 {
 		}
 	}
 	
+/// Invert the axis.
+///
 	public mutating func invert() {
 		switch self {
 			case .x(let negative):

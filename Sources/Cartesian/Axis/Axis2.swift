@@ -6,7 +6,7 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-/// A type representing an Axis in 2D space.
+/// A type representing an Axis in 2D euclidean space.
 ///
 public enum Axis2 {
 /// The U axis.
@@ -63,6 +63,8 @@ public enum Axis2 {
 }
 
 extension Axis2 {
+/// The inverse of this axis.
+///
 	public var inverse: Self {
 		switch self {
 			case .u(let negative):
@@ -73,6 +75,8 @@ extension Axis2 {
 		}
 	}
 	
+/// Invert the axis.
+///
 	public mutating func invert() {
 		switch self {
 			case .u(let negative):
