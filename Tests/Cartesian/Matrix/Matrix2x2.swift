@@ -183,11 +183,10 @@ extension Matrix2x2Tests {
 				}
 			}
 		}
-
+		
 	/// Test the `isIdentity` function to see if it correctly identifies
 	/// matrices that are identity.
 	///
-	/// ## Test 1
 	/// Input:
 	/// ```swift
 	/// | 0  0 |
@@ -199,7 +198,17 @@ extension Matrix2x2Tests {
 	/// false
 	/// ```
 	///
-	/// ## Test 2
+		@Test("isIdentity #1")
+		func isIdentity_1() async throws {
+			// The default initializer should create an empty matrix, so this is
+			// expected to not be identity.
+			//
+			#expect(Matrix2x2<Double>().isIdentity == false)
+		}
+		
+	/// Test the `isIdentity` function to see if it correctly identifies
+	/// matrices that are identity.
+	///
 	/// Input:
 	/// ```swift
 	/// | 1  0 |
@@ -211,7 +220,22 @@ extension Matrix2x2Tests {
 	/// true
 	/// ```
 	///
-	/// ## Test 3
+		@Test("isIdentity #2")
+		func isIdentity_2() async throws {
+			// Manually create what we think of as an identity matrix.
+			//
+			var matrix = Matrix2x2<Double>()
+			for column in 0..<2 {
+				for row in 0..<2 {
+					matrix[column, row] = column == row ? 1 : 0
+				}
+			}
+			#expect(matrix.isIdentity == true)
+		}
+
+	/// Test the `isIdentity` function to see if it correctly identifies
+	/// matrices that are identity.
+	///
 	/// Input:
 	/// ```swift
 	/// | 1+ε   0  |
@@ -223,26 +247,12 @@ extension Matrix2x2Tests {
 	/// false
 	/// ```
 	///
-		@Test("isIdentity")
-		func isIdentity() async throws {
-			// The default initializer should create an empty matrix, so this is
-			// expected to not be identity.
+		@Test("isIdentity #3")
+		func isIdentity_3() async throws {
+			// Make a minor change to the values in the main diagonal of an
+			// identity matrix. It should no longer be identity.
 			//
-			#expect(Matrix2x2<Double>().isIdentity == false)
-			
-			// Manually create what we think of as an identity matrix.
-			//
-			var matrix = Matrix2x2<Double>()
-			for column in 0..<2 {
-				for row in 0..<2 {
-					matrix[column, row] = column == row ? 1 : 0
-				}
-			}
-			#expect(matrix.isIdentity == true)
-			
-			// Make a minor change to the values in the main diagonal. It should no
-			// long be identity.
-			//
+			var matrix = Matrix2x2<Double>.identity
 			for index in 0..<2 {
 				matrix[index, index] += ((index % 2) == 0) ? Double.ulpOfOne : -Double.ulpOfOne
 			}
@@ -291,11 +301,8 @@ extension Matrix2x2Tests {
 extension Matrix2x2Tests {
 	@Suite("Invertible")
 	struct Invertible {
-	/// Attempt to invert two matrices; one that can be inverted and another
-	/// that cannot be.
+	/// Attempt to invert a matrix.
 	///
-	///
-	/// ## Test 1
 	/// Input:
 	/// ```swift
 	/// | 3  2 |
@@ -308,7 +315,46 @@ extension Matrix2x2Tests {
 	/// | -0.1   0.3 |
 	/// ```
 	///
-	/// ## Test 2
+	/// - Note:
+	///   On platforms where the simd library is available, the results are
+	///   compared against the `simd_double2x2` type.
+	///
+		@Test("inverse #1")
+		func inverse_1() async throws {
+			let matrix = Matrix2x2(columns:
+				Vector2(3.0, 1.0),
+				Vector2(2.0, 4.0)
+			)
+			
+			let matrixInverse = matrix.inverse
+			
+			#expect(matrixInverse != nil)
+			#expect(matrixInverse?[0, 0].isApproximatelyEqual(to: 0.4) ?? false)
+			#expect(matrixInverse?[0, 1].isApproximatelyEqual(to: -0.1) ?? false)
+			#expect(matrixInverse?[1, 0].isApproximatelyEqual(to: -0.2) ?? false)
+			#expect(matrixInverse?[1, 1].isApproximatelyEqual(to: 0.3) ?? false)
+			
+		#if canImport(simd)
+			// Test the same functionality on a simd matrix and compare the
+			// result.
+			//
+			let matrixSIMD = simd_double2x2(
+				SIMD2<Double>(3.0, 1.0),
+				SIMD2<Double>(2.0, 4.0)
+			)
+				
+			let matrixSIMDInverse = matrixSIMD.inverse
+			
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(matrixSIMDInverse[x, y] == matrixInverse?[x, y])
+				}
+			}
+		#endif
+		}
+	
+	/// Attempt to invert a matrix.
+	///
 	/// Input:
 	/// ```swift
 	/// | 2  4 |
@@ -320,57 +366,18 @@ extension Matrix2x2Tests {
 	/// nil  // This matrix cannot be inverted
 	/// ```
 	///
-	/// - Note:
-	///   On platforms where the simd library is available, the results are
-	///   compared against the `simd_double2x2` type.
-	///
-		@Test("inverse")
-		func inverse() async throws {
-			let canInvert = Matrix2x2(columns:
-				Vector2(3.0, 1.0),
-				Vector2(2.0, 4.0)
-			)
-			
-			let cannotInvert = Matrix2x2(columns:
+		@Test("inverse #2")
+		func inverse_2() async throws {
+			let matrix = Matrix2x2(columns:
 				Vector2(2.0, 1.0),
 				Vector2(4.0, 2.0)
 			)
 			
-			let canInvertInverse = canInvert.inverse
-			let cannotInvertInverse = cannotInvert.inverse
-			
-			#expect(canInvertInverse != nil)
-			#expect(canInvertInverse?[0, 0].isApproximatelyEqual(to: 0.4) ?? false)
-			#expect(canInvertInverse?[0, 1].isApproximatelyEqual(to: -0.1) ?? false)
-			#expect(canInvertInverse?[1, 0].isApproximatelyEqual(to: -0.2) ?? false)
-			#expect(canInvertInverse?[1, 1].isApproximatelyEqual(to: 0.3) ?? false)
-			
-			#expect(cannotInvertInverse == nil)
-			
-		#if canImport(simd)
-			// Test the same functionality on a simd matrix and compare the
-			// result.
-			//
-			let canInvertSIMD = simd_double2x2(
-				SIMD2<Double>(3.0, 1.0),
-				SIMD2<Double>(2.0, 4.0)
-			)
-				
-			let canInvertSIMDInverse = canInvertSIMD.inverse
-			
-			for x in 0..<2 {
-				for y in 0..<2 {
-					#expect(canInvertSIMDInverse[x, y] == canInvertInverse?[x, y])
-				}
-			}
-		#endif
+			#expect(matrix.inverse == nil)
 		}
 	
-	/// Attempt to invert two matrices; one that can be inverted and another
-	/// that cannot be.
+	/// Attempt to invert a matrix.
 	///
-	///
-	/// ## Test 1
 	/// Input:
 	/// ```swift
 	/// | 3  2 |
@@ -386,7 +393,44 @@ extension Matrix2x2Tests {
 	/// | -0.1   0.3 |
 	/// ```
 	///
-	/// ## Test 2
+	/// - Note:
+	///   On platforms where the simd library is available, the results are
+	///   compared against the `simd_double2x2` type.
+	///
+		@Test("invert #1")
+		func invert_1() async throws {
+			var matrix = Matrix2x2(columns:
+				Vector2(3.0, 1.0),
+				Vector2(2.0, 4.0)
+			)
+			
+			#expect(matrix.invert() == true)
+			
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.4))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.1))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: -0.2))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.3))
+			
+		#if canImport(simd)
+			// Test the same functionality on a simd matrix and compare the
+			// result.
+			//
+			let matrixSIMD = simd_double2x2(
+				SIMD2<Double>(3.0, 1.0),
+				SIMD2<Double>(2.0, 4.0)
+			)
+			let matrixSIMDInverse = matrixSIMD.inverse
+			
+			for x in 0..<2 {
+				for y in 0..<2 {
+					#expect(matrixSIMDInverse[x, y] == matrix[x, y])
+				}
+			}
+		#endif
+		}
+	
+	/// Attempt to invert a matrix.
+	///
 	/// Input:
 	/// ```swift
 	/// | 2  4 |
@@ -402,46 +446,19 @@ extension Matrix2x2Tests {
 	/// | 1  2 |
 	/// ```
 	///
-	/// - Note:
-	///   On platforms where the simd library is available, the results are
-	///   compared against the `simd_double2x2` type.
-	///
-		@Test("invert")
-		func invert() async throws {
-			var canInvert = Matrix2x2(columns:
-				Vector2(3.0, 1.0),
-				Vector2(2.0, 4.0)
-			)
-			
-			var cannotInvert = Matrix2x2(columns:
+		@Test("invert #2")
+		func invert_2() async throws {
+			var matrix = Matrix2x2(columns:
 				Vector2(2.0, 1.0),
 				Vector2(4.0, 2.0)
 			)
 			
-			#expect(canInvert.invert() == true)
-			#expect(cannotInvert.invert() == false)
-			
-			#expect(canInvert[0, 0].isApproximatelyEqual(to: 0.4))
-			#expect(canInvert[0, 1].isApproximatelyEqual(to: -0.1))
-			#expect(canInvert[1, 0].isApproximatelyEqual(to: -0.2))
-			#expect(canInvert[1, 1].isApproximatelyEqual(to: 0.3))
-			
-		#if canImport(simd)
-			// Test the same functionality on a simd matrix and compare the
-			// result.
-			//
-			var canInvertSIMD = simd_double2x2(
-				SIMD2<Double>(3.0, 1.0),
-				SIMD2<Double>(2.0, 4.0)
-			)
-			canInvertSIMD = canInvertSIMD.inverse
-			
-			for x in 0..<2 {
-				for y in 0..<2 {
-					#expect(canInvertSIMD[x, y] == canInvert[x, y])
-				}
-			}
-		#endif
+			#expect(matrix.invert() == false)
+
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 2.0))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: 1.0))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 4.0))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 2.0))
 		}
 	}
 }
@@ -984,6 +1001,8 @@ extension Matrix2x2Tests {
 }
 
 extension Matrix2x2Tests {
+	@Suite("MatrixVectorMath")
+	struct MatrixVectorMath {
 	/// Tests multiplying a vector by a matrix.
 	///
 	/// Input:
@@ -1001,8 +1020,6 @@ extension Matrix2x2Tests {
 	///   On platforms where the simd library is available, the results are
 	///   compared against the `simd_double2x2` type.
 	///
-	@Suite("MatrixVectorMath")
-	struct MatrixVectorMath {
 		@Test("Vector Multiplication")
 		func multiplication() async throws {
 			let lhs = Matrix2x2(columns:
