@@ -25,7 +25,7 @@ let package = Package(
 )
 ```
 
-If you’d like to use Cartesian within an iOS, macOS, watchOS or tvOS app, then use Xcode’s `File > Add Packages...` menu command to add it to your project.
+If you’d like to use Cartesian within an iOS, macOS, watchOS, tvOS or visionOS app, then use Xcode’s `File > Add Packages...` menu command to add it to your project.
 
 Import Cartesian wherever you’d like to use it:
 ```swift
