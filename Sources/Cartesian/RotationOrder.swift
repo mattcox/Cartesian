@@ -47,7 +47,7 @@
 /// align, preventing rotation along the third axis. This can be solved by
 /// choosing a more suitable rotation order to compute the rotation.
 ///
-public enum RotationOrder: Int {
+public enum RotationOrder: Int, CaseIterable {
 	case XYZ
 	case XZY
 	case YXZ
@@ -113,6 +113,25 @@ public enum RotationOrder: Int {
 				return third
 			default:
 				preconditionFailure("Index out of Bounds")
+		}
+	}
+}
+
+extension RotationOrder: CustomStringConvertible {
+	public var description: String {
+		switch self {
+			case .XYZ:
+				"XYZ"
+			case .XZY:
+				"XZY"
+			case .YXZ:
+				"YXZ"
+			case .YZX:
+				"YZX"
+			case .ZXY:
+				"ZXY"
+			case .ZYX:
+				"ZYX"
 		}
 	}
 }
