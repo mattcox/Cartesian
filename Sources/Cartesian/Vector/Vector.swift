@@ -19,14 +19,16 @@ import Units
 /// only be used for non-standard vector sizes or cases where SIMD acceleration
 /// is not required.
 ///
+/// - Precondition: `numberOfComponents` must be greater than zero.
+///
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-public struct Vector<let count: Int, Component: Real & SIMDScalar> {
-	private typealias Storage = InlineArray<count, Component>
+public struct Vector<let numberOfComponents: Int, Component: Real & SIMDScalar> {
+	private typealias Storage = InlineArray<numberOfComponents, Component>
 	private var storage: Storage
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector where count == 2 {
+extension Vector where numberOfComponents == 2 {
 /// Initialize the vector using individual X and Y components.
 ///
 /// - Parameters:
@@ -55,6 +57,32 @@ extension Vector where count == 2 {
 ///
 	public init(_ first: Component, _ second: Component) {
 		self.storage = [first, second]
+	}
+	
+/// Initialize from a Vector2.
+///
+/// - Parameters:
+///   - vector: The two component vector used to initialize this vector.
+///
+	public init(_ vector: Vector2<Component>) {
+		self = Vector(vector[0], vector[1])
+	}
+	
+/// Get the vector as a SIMD compatible object.
+///
+	public var simd: Vector2<Component>.SIMDRepresentation {
+		Vector2<Component>.SIMDRepresentation(self[0], self[1])
+	}
+	
+/// Get the vector as a Vector2.
+///
+	public var fixed: Vector2<Component> {
+		Vector2(self[0], self[1])
+	}
+	
+/// Initialize from a SIMD representation.
+	public init(simd: Vector2<Component>.SIMDRepresentation) {
+		self.storage = [simd[0], simd[1]]
 	}
 	
 /// The first component of the vector.
@@ -125,7 +153,7 @@ extension Vector where count == 2 {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector where count == 3 {
+extension Vector where numberOfComponents == 3 {
 /// Initialize the vector using individual X, Y and Z components.
 ///
 /// - Parameters:
@@ -146,6 +174,32 @@ extension Vector where count == 3 {
 ///
 	public init(_ first: Component, _ second: Component, _ third: Component) {
 		self.storage = [first, second, third]
+	}
+	
+/// Initialize from a Vector3.
+///
+/// - Parameters:
+///   - vector: The three component vector used to initialize this vector.
+///
+	public init(_ vector: Vector3<Component>) {
+		self = Vector(vector[0], vector[1], vector[2])
+	}
+	
+/// Get the vector as a SIMD compatible object.
+///
+	public var simd: Vector3<Component>.SIMDRepresentation {
+		Vector3<Component>.SIMDRepresentation(self[0], self[1], self[2])
+	}
+	
+/// Get the vector as a Vector3.
+///
+	public var fixed: Vector3<Component> {
+		Vector3(self[0], self[1], self[2])
+	}
+	
+/// Initialize from a SIMD representation.
+	public init(simd: Vector3<Component>.SIMDRepresentation) {
+		self.storage = [simd[0], simd[1], simd[2]]
 	}
 	
 /// The first component of the vector.
@@ -216,7 +270,7 @@ extension Vector where count == 3 {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector where count == 4 {
+extension Vector where numberOfComponents == 4 {
 /// Initialize the vector using individual X, Y, Z and W components.
 ///
 /// - Parameters:
@@ -241,6 +295,32 @@ extension Vector where count == 4 {
 		self.storage = [first, second, third, fourth]
 	}
 	
+/// Initialize from a Vector4.
+///
+/// - Parameters:
+///   - vector: The four component vector used to initialize this vector.
+///
+	public init(_ vector: Vector4<Component>) {
+		self = Vector(vector[0], vector[1], vector[2], vector[3])
+	}
+
+/// Get the vector as a SIMD compatible object.
+///
+	public var simd: Vector4<Component>.SIMDRepresentation {
+		Vector4<Component>.SIMDRepresentation(self[0], self[1], self[2], self[3])
+	}
+	
+/// Get the vector as a Vector4.
+///
+	public var fixed: Vector4<Component> {
+		Vector4(self[0], self[1], self[2], self[3])
+	}
+
+/// Initialize from a SIMD representation.
+	public init(simd: Vector4<Component>.SIMDRepresentation) {
+		self.storage = [simd[0], simd[1], simd[2], simd[3]]
+	}
+
 /// The first component of the vector.
 ///
 	public var first: Component {
@@ -351,7 +431,7 @@ extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
 		let fromNormalized = (from - by).normalized
 		let toNormalized = (to - by).normalized
 		
-		let dotProduct = fromNormalized.dot(toNormalized)
+		let dotProduct = fromNormalized.dot(toNormalized).clamped(between: -1, and: 1)
 		
 		return Angle(radians: Component.acos(dotProduct))
 	}
@@ -371,6 +451,7 @@ extension Vector: Blendable {
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: Codable {
 	public init(from decoder: Decoder) throws {
+		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
 		let values = try Array<Component>(from: decoder)
 		if values.count != Self.count {
 			throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Invalid number of values to decode"))
@@ -386,14 +467,14 @@ extension Vector: Codable {
 	public func encode(to encoder: Encoder) throws {
 		var values: [Component] = []
 		for i in 0..<Self.count {
-			values[i] = storage[i]
+			values.append(storage[i])
 		}
 		try values.encode(to: encoder)
 	}
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: CrossProduct where count == 3 {
+extension Vector: CrossProduct where numberOfComponents == 3 {
 /// Computes the cross product of this vector and the provided vector.
 ///
 /// The cross product of two vectors is another vector perpendicular to
@@ -511,8 +592,8 @@ extension Vector: ExpressibleByArrayLiteral {
 ///
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
-		for index in 0..<Swift.min(Self.count, elements.count) {
-			vector[index] = elements[index]
+		for i in 0..<Swift.min(Self.count, elements.count) {
+			vector[i] = elements[i]
 		}
 		self = vector
 	}
@@ -532,14 +613,11 @@ extension Vector: MagnitudeAdjustable {
 		}
 		set {
 			var total: Component = .zero
-			for i in 0..<Self.count {
-				total += Component.pow(storage[i], 2)
-			}
-			
-			let factor = Component(1) / total
-			for i in 0..<Self.count {
-				storage[i] *= factor * newValue
-			}
+			for i in 0..<Self.count { total += Component.pow(storage[i], 2) }
+			let length = Component.sqrt(total)
+			if length.isApproximatelyEqual(to: .zero) { return }
+			let factor = newValue / length
+			for i in 0..<Self.count { storage[i] *= factor }
 		}
 	}
 }
@@ -560,7 +638,9 @@ extension Vector: Normalizable {
 /// is undefined.
 ///
 	public var normalized: Self {
-		self / magnitude
+		let len = magnitude
+		precondition(len.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		return self / len
 	}
 	
 /// Normalizes the vector, setting its magnitude to 1.0.
@@ -572,7 +652,32 @@ extension Vector: Normalizable {
 /// is undefined.
 ///
 	public mutating func normalize() {
-		self /= magnitude
+		let len = magnitude
+		precondition(len.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		self /= len
+	}
+}
+
+@available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
+extension Vector: QuaternionRotatable where numberOfComponents == 3 {
+/// Rotates the vector by a quaternion returning a rotated vector.
+///
+/// - Parameters:
+///   - quaternion: The quaternion to rotate the vector by.
+///
+/// - Returns: A vector storing the result of the rotation.
+///
+	public func rotated(by quaternion: Quaternion<Component>) -> Self {
+		Self(quaternion.rotate(vector: self.fixed))
+	}
+
+/// Rotates the vector by a quaternion.
+///
+/// - Parameters:
+///   - quaternion: The quaternion to rotate the vector by.
+///
+	public mutating func rotate(by quaternion: Quaternion<Component>) {
+		self = Self(quaternion.rotate(vector: self.fixed))
 	}
 }
 
@@ -585,7 +690,7 @@ extension Vector: Sendable where Storage: Sendable {
 extension Vector: VectorMath {
 	public func min() -> Component {
 		var minimum: Component = storage[0]
-		for i in 1..<count {
+		for i in 1..<Self.count {
 			minimum = Swift.min(storage[i], minimum)
 		}
 		return minimum
@@ -593,19 +698,19 @@ extension Vector: VectorMath {
 	
 	public func max() -> Component {
 		var maximum: Component = storage[0]
-		for i in 1..<count {
+		for i in 1..<Self.count {
 			maximum = Swift.max(storage[i], maximum)
 		}
 		return maximum
 	}
 	
 	public func average() -> Component {
-		self.sum() / Component(count)
+		self.sum() / Component(Self.count)
 	}
 	
 	public func sum() -> Component {
 		var total: Component = .zero
-		for i in 0..<count {
+		for i in 0..<Self.count {
 			total += storage[i]
 		}
 		return total
@@ -759,15 +864,21 @@ extension Vector: VectorMath {
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: VectorProtocol {
 	public static var count: Int {
-		Storage(repeating: .zero).count
+		numberOfComponents
 	}
-	
+
 	public init() {
+		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
 		self.storage = Storage(repeating: .zero)
 	}
 	
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
-		fatalError()
+		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
+		var storage = Storage(repeating: .zero)
+		for (i, value) in collection.prefix(Self.count).enumerated() {
+			storage[i] = value
+		}
+		self.storage = storage
 	}
 	
 	public subscript(index: Int) -> Component {
@@ -789,5 +900,27 @@ extension Vector: VectorReflectable {
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
 		return self - (2 * dot(normal) * normal)
+	}
+}
+
+@available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
+extension Vector: VectorRefractable {
+	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
+		let rayDirection = self.normalized
+		let normal = normal.normalized
+
+		let cosAngleOfIncidence = -rayDirection.dot(normal)
+		let sinSquaredAngleOfRefraction = Component.pow(indexOfRefraction, 2) * (1 - Component.pow(cosAngleOfIncidence, 2))
+
+		if sinSquaredAngleOfRefraction > 1 {
+			return .zero
+		}
+
+		let cosAngleOfRefraction = Component.sqrt(1 - sinSquaredAngleOfRefraction)
+
+		let directionParallelToSurface = rayDirection * indexOfRefraction
+		let directionPerpendicularToSurface = normal * (indexOfRefraction * cosAngleOfIncidence - cosAngleOfRefraction)
+
+		return directionParallelToSurface + directionPerpendicularToSurface
 	}
 }
