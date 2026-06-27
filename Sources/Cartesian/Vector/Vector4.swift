@@ -149,7 +149,7 @@ extension Vector4: AngleMeasurable where Component: BinaryFloatingPoint {
 		let fromNormalized = (from - by).normalized
 		let toNormalized = (to - by).normalized
 		
-		let dotProduct = fromNormalized.dot(toNormalized)
+		let dotProduct = fromNormalized.dot(toNormalized).clamped(between: -1, and: 1)
 		
 		return Angle(radians: Component.acos(dotProduct))
 	}
@@ -177,7 +177,7 @@ extension Vector4: Codable {
 	public func encode(to encoder: Encoder) throws {
 		var values: [Component] = []
 		for i in 0..<Self.count {
-			values[i] = storage[i]
+			values.append(storage[i])
 		}
 		try values.encode(to: encoder)
 	}
@@ -259,8 +259,8 @@ extension Vector4: ExpressibleByArrayLiteral {
 ///
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
-		for index in 0..<Swift.min(Self.count, elements.count) {
-			vector.storage[index] = elements[index]
+		for i in 0..<Swift.min(Self.count, elements.count) {
+			vector.storage[i] = elements[i]
 		}
 		self = vector
 	}
@@ -274,11 +274,15 @@ extension Vector4: MagnitudeAdjustable {
 			Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2) + Component.pow(storage.z, 2) + Component.pow(storage.w, 2))
 		}
 		set {
-			let factor = Component(1) / Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2) + Component.pow(storage.z, 2) + Component.pow(storage.w, 2))
-			storage.x *= factor * newValue
-			storage.y *= factor * newValue
-			storage.z *= factor * newValue
-			storage.w *= factor * newValue
+			let length = Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2) + Component.pow(storage.z, 2) + Component.pow(storage.w, 2))
+			if length.isApproximatelyEqual(to: .zero) {
+				return
+			}
+			let factor = newValue / length
+			storage.x *= factor
+			storage.y *= factor
+			storage.z *= factor
+			storage.w *= factor
 		}
 	}
 }
@@ -297,9 +301,11 @@ extension Vector4: Normalizable {
 /// is undefined.
 ///
 	public var normalized: Self {
-		self / magnitude
+		let length = magnitude
+		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		return self / length
 	}
-	
+
 /// Normalizes the vector, setting its magnitude to 1.0.
 ///
 /// This modifies the vector in place, scaling its components so that the
@@ -309,7 +315,9 @@ extension Vector4: Normalizable {
 /// is undefined.
 ///
 	public mutating func normalize() {
-		self /= magnitude
+		let length = magnitude
+		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		self /= length
 	}
 }
 
@@ -384,7 +392,7 @@ extension Vector4: VectorMath {
 	}
 
 	public static func - (lhs: Component, rhs: Self) -> Self {
-		Self(lhs + rhs.storage)
+		Self(lhs - rhs.storage)
 	}
 
 	public static func -= (lhs: inout Self, rhs: Component) {
@@ -468,5 +476,26 @@ extension Vector4: VectorReflectable {
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
 		return self - (2 * dot(normal) * normal)
+	}
+}
+
+extension Vector4: VectorRefractable {
+	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
+		let rayDirection = self.normalized
+		let normal = normal.normalized
+
+		let cosAngleOfIncidence = -rayDirection.dot(normal)
+		let sinSquaredAngleOfRefraction = Component.pow(indexOfRefraction, 2) * (1 - Component.pow(cosAngleOfIncidence, 2))
+
+		if sinSquaredAngleOfRefraction > 1 {
+			return .zero
+		}
+
+		let cosAngleOfRefraction = Component.sqrt(1 - sinSquaredAngleOfRefraction)
+
+		let directionParallelToSurface = rayDirection * indexOfRefraction
+		let directionPerpendicularToSurface = normal * (indexOfRefraction * cosAngleOfIncidence - cosAngleOfRefraction)
+
+		return directionParallelToSurface + directionPerpendicularToSurface
 	}
 }

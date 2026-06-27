@@ -615,7 +615,9 @@ extension Vector: MagnitudeAdjustable {
 			var total: Component = .zero
 			for i in 0..<Self.count { total += Component.pow(storage[i], 2) }
 			let length = Component.sqrt(total)
-			if length.isApproximatelyEqual(to: .zero) { return }
+			if length.isApproximatelyEqual(to: .zero) {
+				return
+			}
 			let factor = newValue / length
 			for i in 0..<Self.count { storage[i] *= factor }
 		}
@@ -638,9 +640,9 @@ extension Vector: Normalizable {
 /// is undefined.
 ///
 	public var normalized: Self {
-		let len = magnitude
-		precondition(len.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
-		return self / len
+		let length = magnitude
+		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		return self / length
 	}
 	
 /// Normalizes the vector, setting its magnitude to 1.0.
@@ -652,9 +654,9 @@ extension Vector: Normalizable {
 /// is undefined.
 ///
 	public mutating func normalize() {
-		let len = magnitude
-		precondition(len.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
-		self /= len
+		let length = magnitude
+		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
+		self /= length
 	}
 }
 
