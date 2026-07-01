@@ -340,7 +340,7 @@ extension Matrix4x4: Invertible {
 			let column0 = Storage.Column(from: inverseRotationAndScale[0])
 			let column1 = Storage.Column(from: inverseRotationAndScale[1])
 			let column2 = Storage.Column(from: inverseRotationAndScale[2])
-			let column3 = Storage.Column(from: inverseTranslation)
+			let column3 = Storage.Column(inverseTranslation[0], inverseTranslation[1], inverseTranslation[2], 1)
 			
 			return Matrix4x4(columns: column0, column1, column2, column3)
 		}
@@ -459,7 +459,7 @@ extension Matrix4x4: MatrixAffineTransform {
 			rotation[2] = .zero
 		}
 		
-		if (orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0) {
+		if (orders[0] == 0 && orders[1] == 1) || (orders[0] == 1 && orders[1] == 2) || (orders[0] == 2 && orders[1] == 0) {
 			rotation *= -1
 		}
 		
@@ -733,9 +733,9 @@ extension Matrix4x4: SquareMatrix {
 		let row0 = [self[0][0], self[1][0], self[2][0], self[3][0]]
 		
 		let determinant0 = subMatrix(excludingColumn: 0, row: 0).determinant
-		let determinant1 = subMatrix(excludingColumn: 0, row: 1).determinant
-		let determinant2 = subMatrix(excludingColumn: 0, row: 2).determinant
-		let determinant3 = subMatrix(excludingColumn: 0, row: 3).determinant
+		let determinant1 = subMatrix(excludingColumn: 1, row: 0).determinant
+		let determinant2 = subMatrix(excludingColumn: 2, row: 0).determinant
+		let determinant3 = subMatrix(excludingColumn: 3, row: 0).determinant
 		
 		return row0[0] * determinant0 - row0[1] * determinant1 + row0[2] * determinant2 - row0[3] * determinant3
 	}

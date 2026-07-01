@@ -318,7 +318,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 			rotation[2] = .zero
 		}
 
-		if (orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0) {
+		if (orders[0] == 0 && orders[1] == 1) || (orders[0] == 1 && orders[1] == 2) || (orders[0] == 2 && orders[1] == 0) {
 			rotation *= -1
 		}
 

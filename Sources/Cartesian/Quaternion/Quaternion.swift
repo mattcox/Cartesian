@@ -183,48 +183,52 @@ extension Quaternion where Component: BinaryFloatingPoint {
 
 		switch order {
 			case .XYZ:
-				let t0 = 2 * (real * imaginary[0] - imaginary[1] * imaginary[2])
+				// q = qz*qy*qx → M = R_z*R_y*R_x
+				let t0 = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
 				let t1 = 1 - 2 * (x + y)
 				let pitch = Component.atan2(y: t0, x: t1)
 
-				let t2 = 2 * (real * imaginary[1] + imaginary[2] * imaginary[0])
+				let t2 = 2 * (real * imaginary[1] - imaginary[2] * imaginary[0])
 				let yaw = Component.asin(t2.clamped(between: -1, and: 1))
 
-				let t3 = 2 * (real * imaginary[2] - imaginary[0] * imaginary[1])
+				let t3 = 2 * (real * imaginary[2] + imaginary[0] * imaginary[1])
 				let t4 = 1 - 2 * (y + z)
 				let roll = Component.atan2(y: t3, x: t4)
 
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]
 
 			case .XZY:
-				let t0 = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
+				// q = qy*qz*qx → M = R_y*R_z*R_x
+				let t0 = 2 * (real * imaginary[0] - imaginary[1] * imaginary[2])
 				let t1 = 1 - 2 * (x + z)
 				let pitch = Component.atan2(y: t0, x: t1)
 
-				let t2 = 2 * (real * imaginary[2] - imaginary[0] * imaginary[1])
+				let t2 = 2 * (real * imaginary[2] + imaginary[0] * imaginary[1])
 				let roll = Component.asin(t2.clamped(between: -1, and: 1))
 
-				let t3 = 2 * (real * imaginary[1] + imaginary[2] * imaginary[0])
+				let t3 = 2 * (real * imaginary[1] - imaginary[0] * imaginary[2])
 				let t4 = 1 - 2 * (y + z)
 				let yaw = Component.atan2(y: t3, x: t4)
 
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]
 
 			case .YXZ:
-				let value: Component = 2 * (real * imaginary[1] - imaginary[2] * imaginary[0])
-				let pitch = Component.asin(value.clamped(between: -1, and: 1))
+				// q = qz*qx*qy → M = R_z*R_x*R_y
+				let t0 = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
+				let pitch = Component.asin(t0.clamped(between: -1, and: 1))
 
-				let t2 = 2 * (real * imaginary[2] + imaginary[0] * imaginary[1])
-				let t3 = 1 - 2 * (y + z)
-				let roll = Component.atan2(y: t2, x: t3)
+				let t1 = 2 * (real * imaginary[1] - imaginary[0] * imaginary[2])
+				let t2 = 1 - 2 * (x + y)
+				let yaw = Component.atan2(y: t1, x: t2)
 
-				let t4 = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
-				let t5 = 1 - 2 * (x + y)
-				let yaw = Component.atan2(y: t4, x: t5)
+				let t3 = 2 * (real * imaginary[2] - imaginary[0] * imaginary[1])
+				let t4 = 1 - 2 * (x + z)
+				let roll = Component.atan2(y: t3, x: t4)
 
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]
 
 			case .YZX:
+				// q = qx*qz*qy → M = R_x*R_z*R_y (correct as-is)
 				let t0 = 2 * (real * imaginary[1] + imaginary[2] * imaginary[0])
 				let t1 = 1 - 2 * (y + z)
 				let yaw = Component.atan2(y: t0, x: t1)
@@ -239,29 +243,31 @@ extension Quaternion where Component: BinaryFloatingPoint {
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]
 
 			case .ZXY:
-				let value: Component = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
-				let pitch = Component.asin(value.clamped(between: -1, and: 1))
+				// q = qy*qx*qz → M = R_y*R_x*R_z
+				let t0 = 2 * (real * imaginary[0] - imaginary[1] * imaginary[2])
+				let pitch = Component.asin(t0.clamped(between: -1, and: 1))
 
-				let t2 = 2 * (real * imaginary[1] + imaginary[2] * imaginary[0])
-				let t3 = 1 - 2 * (y + z)
-				let yaw = Component.atan2(y: t2, x: t3)
+				let t1 = 2 * (real * imaginary[1] + imaginary[0] * imaginary[2])
+				let t2 = 1 - 2 * (x + y)
+				let yaw = Component.atan2(y: t1, x: t2)
 
-				let t4 = 2 * (real * imaginary[2] - imaginary[0] * imaginary[1])
-				let t5 = 1 - 2 * (x + y)
-				let roll = Component.atan2(y: t4, x: t5)
+				let t3 = 2 * (real * imaginary[2] + imaginary[0] * imaginary[1])
+				let t4 = 1 - 2 * (x + z)
+				let roll = Component.atan2(y: t3, x: t4)
 
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]
 
 			case .ZYX:
-				let t0 = 2 * (real * imaginary[2] + imaginary[0] * imaginary[1])
-				let t1 = 1 - 2 * (z + x)
+				// q = qx*qy*qz → M = R_x*R_y*R_z
+				let t0 = 2 * (real * imaginary[2] - imaginary[0] * imaginary[1])
+				let t1 = 1 - 2 * (y + z)
 				let roll = Component.atan2(y: t0, x: t1)
 
-				let t2 = 2 * (real * imaginary[1] - imaginary[2] * imaginary[0])
+				let t2 = 2 * (real * imaginary[1] + imaginary[0] * imaginary[2])
 				let yaw = Component.asin(t2.clamped(between: -1, and: 1))
 
-				let t3 = 2 * (real * imaginary[0] + imaginary[1] * imaginary[2])
-				let t4 = 1 - 2 * (y + x)
+				let t3 = 2 * (real * imaginary[0] - imaginary[1] * imaginary[2])
+				let t4 = 1 - 2 * (x + y)
 				let pitch = Component.atan2(y: t3, x: t4)
 
 				return [Angle(radians: pitch), Angle(radians: yaw), Angle(radians: roll)]

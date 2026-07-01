@@ -10,6 +10,7 @@ import Foundation
 import Testing
 
 @testable import Cartesian
+import Units
 
 // The simd module (where available) provides additional testing, using it as
 // functional benchmark to test against - the results from Cartesian are tested
@@ -415,15 +416,15 @@ extension Matrix2x2Tests {
 			// Test the same functionality on a simd matrix and compare the
 			// result.
 			//
-			let matrixSIMD = simd_double2x2(
+			var matrixSIMD = simd_double2x2(
 				SIMD2<Double>(3.0, 1.0),
 				SIMD2<Double>(2.0, 4.0)
 			)
-			let matrixSIMDInverse = matrixSIMD.inverse
+			matrixSIMD = matrixSIMD.inverse
 			
 			for x in 0..<2 {
 				for y in 0..<2 {
-					#expect(matrixSIMDInverse[x, y] == matrix[x, y])
+					#expect(matrixSIMD[x, y] == matrix[x, y])
 				}
 			}
 		#endif
