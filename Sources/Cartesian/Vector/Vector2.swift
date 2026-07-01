@@ -495,3 +495,42 @@ extension Vector2: VectorRefractable {
 		return directionParallelToSurface + directionPerpendicularToSurface
 	}
 }
+
+extension Vector2 {
+/// Returns a vector where each component is the lesser of the corresponding
+/// components in the two vectors.
+///
+/// - Parameters:
+///   - a: The first vector.
+///   - b: The second vector.
+///
+/// - Returns: A vector containing the component-wise minimum values.
+///
+	public static func min(_ a: Self, _ b: Self) -> Self {
+		Self(x: Swift.min(a.storage.x, b.storage.x),
+			 y: Swift.min(a.storage.y, b.storage.y))
+	}
+
+/// Returns a vector where each component is the greater of the
+/// corresponding components in the two vectors.
+///
+/// - Parameters:
+///   - a: The first vector.
+///   - b: The second vector.
+///
+/// - Returns: A vector containing the component-wise maximum values.
+///
+	public static func max(_ a: Self, _ b: Self) -> Self {
+		Self(x: Swift.max(a.storage.x, b.storage.x),
+			 y: Swift.max(a.storage.y, b.storage.y))
+	}
+
+/// Returns a vector where each component is the absolute value of the
+/// corresponding component in this vector.
+///
+/// - Returns: A vector with all components made non-negative.
+///
+	public func abs() -> Self {
+		Self(x: Swift.abs(storage.x), y: Swift.abs(storage.y))
+	}
+}
