@@ -14,6 +14,13 @@ public protocol MatrixSub: MatrixProtocol {
 ///
 	associatedtype SubMatrix: MatrixProtocol where SubMatrix.Component == Self.Component
 
+/// Initialize the matrix from a smaller matrix representation.
+///
+/// - Parameters:
+///   - subMatrix: The sub-matrix used to initialize the matrix.
+///
+	init(with subMatrix: SubMatrix)
+
 /// Get the matrix as a smaller matrix representation, specifying which
 /// column and row to exclude.
 ///

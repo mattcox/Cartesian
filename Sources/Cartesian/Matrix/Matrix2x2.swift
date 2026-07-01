@@ -241,8 +241,8 @@ extension Matrix2x2: Identity {
 ///
 	public static var identity: Self {
 		var matrix = Self()
-		for index in 0..<Self.columns {
-			matrix.storage[index, index] = 1
+		for i in 0..<Self.columns {
+			matrix.storage[i, i] = 1
 		}
 		return matrix
 	}

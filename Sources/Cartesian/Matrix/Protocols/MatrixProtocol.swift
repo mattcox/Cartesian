@@ -54,12 +54,12 @@ public protocol MatrixProtocol {
 
 extension MatrixProtocol {
 	public init<T: MatrixProtocol>(from matrix: T) where T.Component == Component {
-		var matrix = Self()
+		var temporary = Self()
 		for column in 0..<(min(Self.columns, T.columns)) {
 			for row in 0..<(min(Self.rows, T.rows)) {
-				matrix[column, row] = matrix[column, row]
+				temporary[column, row] = matrix[column, row]
 			}
 		}
-		self = matrix
+		self = temporary
 	}
 }

@@ -12,8 +12,8 @@ import Units
 /// A 3×3 matrix stored in column-major order.
 ///
 /// Matrix3x3 represents a square matrix with 3 columns and 3 rows. The matrix
-/// is stored in **column-major order**, meaning it consists of two column
-/// vectors, each with two elements.
+/// is stored in **column-major order**, meaning it consists of three column
+/// vectors, each with three elements.
 ///
 /// - Note: This matrix encodes scale and rotation, and is commonly used to
 /// transform 3D vectors without translation. To include translation, use a ``Matrix4x4`` instead.
@@ -195,7 +195,7 @@ extension Matrix3x3: Codable {
 	}
 }
 
-extension Matrix3x3: CustomStringConvertible where Component: CVarArg  {
+extension Matrix3x3: CustomStringConvertible where Component: CVarArg {
 	public var description: String {
 		"""
 		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0])) |
@@ -260,8 +260,8 @@ extension Matrix3x3: Identity {
 ///
 	public static var identity: Self {
 		var matrix = Self()
-		for index in 0..<Self.columns {
-			matrix.storage[index, index] = 1
+		for i in 0..<Self.columns {
+			matrix.storage[i, i] = 1
 		}
 		return matrix
 	}
@@ -360,84 +360,62 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 			)
 		}
 		set {
-			storage.columns.0 *= newValue[0]
-			storage.columns.1 *= newValue[1]
-			storage.columns.2 *= newValue[2]
+			storage.columns.0 = storage.columns.0.normalized * newValue[0]
+			storage.columns.1 = storage.columns.1.normalized * newValue[1]
+			storage.columns.2 = storage.columns.2.normalized * newValue[2]
 		}
 	}
 	
 	public init(withRotation rotation: Rotation, order: RotationOrder) {
-		var matrix = Self()
+		var matrix = Self.identity
 		matrix.fromRotation(rotation, order: order)
 		self = matrix
 	}
 	
 	public init(withScale scale: Component) {
 		var matrix = Self()
-		for index in 0..<Self.columns {
-			matrix[index, index] = scale
+		for i in 0..<Self.columns {
+			matrix[i, i] = scale
 		}
 		self = matrix
 	}
 	
 	public init(withScale scale: Scale) {
 		var matrix = Self()
-		for index in 0..<Self.columns {
-			matrix[index, index] = scale[index]
+		for i in 0..<Self.columns {
+			matrix[i, i] = scale[i]
 		}
 		self = matrix
 	}
 	
 	public func toRotation(order: RotationOrder) -> Rotation {
-		let orders = [order[0].index, order[1].index, order[2].index]
-		let scalar = Component.sqrt(
-			Component.pow(storage[orders[0], orders[0]], 2) +
-			Component.pow(storage[orders[1], orders[0]], 2)
+		let normalized = Self(columns:
+			self[0].normalized,
+			self[1].normalized,
+			self[2].normalized
 		)
-		
-		var rotation: Rotation = {
-			var rotation = Rotation()
-			if scalar > (16 * Component.ulpOfOne) {
-				rotation[0] = Angle(Component.atan2(
-					y: storage[orders[1], orders[2]],
-					x: storage[orders[2], orders[2]]
-				))
-				
-				rotation[1] = Angle(Component.atan2(
-					y: -storage[orders[0], orders[2]],
-					x: scalar
-				))
-				
-				rotation[2] = Angle(Component.atan2(
-					y: storage[orders[0], orders[1]],
-					x: storage[orders[0], orders[0]]
-				))
-			}
-			else {
-				rotation[0] = Angle(Component.atan2(
-					y: -storage[orders[2], orders[1]],
-					x: storage[orders[1], orders[1]]
-				))
-				
-				rotation[1] = Angle(Component.atan2(
-					y: -storage[orders[0], orders[2]],
-					x: scalar
-				))
-	
-				rotation[2] = .zero
-			}
-			return rotation
-		}()
-		
-		if((orders[0] == 0 && orders[1] != 1) ||
-		   (orders[0] == 1 && orders[1] != 2) ||
-		   (orders[0] == 2 && orders[1] != 0)) {
-			for i in 0..<Rotation.count {
-				rotation[i] *= -1
-			}
+
+		let orders = [order[0].index, order[1].index, order[2].index]
+
+		var rotation = Vector3<Component>()
+
+		let scalar = Component.sqrt(Component.pow(normalized.storage[orders[0], orders[0]], 2) + Component.pow(normalized.storage[orders[1], orders[0]], 2))
+		if scalar > (16 * Component.ulpOfOne) {
+			rotation[0] = Component.atan2(y: normalized.storage[orders[2], orders[1]], x: normalized.storage[orders[2], orders[2]])
+			rotation[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
+			rotation[2] = Component.atan2(y: normalized.storage[orders[1], orders[0]], x: normalized.storage[orders[0], orders[0]])
 		}
-		
-		return rotation
+		else {
+			rotation[0] = Component.atan2(y: -normalized.storage[orders[1], orders[2]], x: normalized.storage[orders[1], orders[1]])
+			rotation[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
+			rotation[2] = .zero
+		}
+
+		if (orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0) {
+			rotation = -rotation
+		}
+
+		return [Angle(radians: rotation[0]), Angle(radians: rotation[1]), Angle(radians: rotation[2])]
 	}
 	
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
@@ -473,10 +451,11 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		]
 		
 		let matrices: [Self] = [x, y, z]
-
-		self = matrices[order.first.index] *
-			   matrices[order.second.index] *
-			   matrices[order.third.index]
+		
+		self = matrices[order.third.index] *
+		       matrices[order.second.index] *
+		       matrices[order.first.index] *
+		       Self(withScale: self.scale)
 	}
 }
 
@@ -502,7 +481,7 @@ extension Matrix3x3: MatrixMath {
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 - rhs.storage.columns.0,
 					  lhs.storage.columns.1 - rhs.storage.columns.1,
-					  lhs.storage.columns.2 + rhs.storage.columns.2)
+					  lhs.storage.columns.2 - rhs.storage.columns.2)
 	}
 
 	public static func -= (lhs: inout Self, rhs: Self) {
@@ -598,16 +577,26 @@ extension Matrix3x3: MatrixProtocol {
 }
 
 extension Matrix3x3: MatrixSub {
+	public init(with subMatrix: Matrix2x2<Component>) {
+		var matrix = Self()
+		for y in 0..<Matrix2x2<Component>.rows {
+			for x in 0..<Matrix2x2<Component>.columns {
+				matrix[y, x] = subMatrix[y, x]
+			}
+		}
+		self = matrix
+	}
+	
 	public func subMatrix(excludingColumn column: Int = 2, row: Int = 2) -> Matrix2x2<Component> {
 		var elements = [[Component]]()
 		for y in 0..<Self.rows where row != y {
 			var row = [Component]()
 			for x in 0..<Self.columns where column != x {
-				row.append(self[y, x])
+				row.append(self[x, y])
 			}
 			elements.append(row)
 		}
-		
+
 		return Matrix2x2(rows: Vector2(elements[0]), Vector2(elements[1]))
 	}
 }
@@ -619,6 +608,25 @@ extension Matrix3x3: MatrixVectorMath {
 		lhs.storage.columns.0 * rhs.x +
 		lhs.storage.columns.1 * rhs.y +
 		lhs.storage.columns.2 * rhs.z
+	}
+}
+
+extension Matrix3x3: QuaternionConvertible {
+/// Initialize the rotational elements of the matrix using the provided
+/// quaternion.
+///
+/// - Parameters:
+///   - quaternion: The quaternion that will be used to initialize the
+///   rotational elements of the matrix.
+///
+	public init(withQuaternion quaternion: Quaternion<Component>) {
+		self = quaternion.matrix
+	}
+	
+/// The rotational elements of the matrix as a quaternion.
+///
+	public var quaternion: Quaternion<Component> {
+		Quaternion(withMatrix: self)
 	}
 }
 

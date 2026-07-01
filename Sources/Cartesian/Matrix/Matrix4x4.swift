@@ -198,7 +198,7 @@ extension Matrix4x4: Codable {
 	}
 }
 
-extension Matrix4x4: CustomStringConvertible where Component: CVarArg  {
+extension Matrix4x4: CustomStringConvertible where Component: CVarArg {
 	public var description: String {
 		"""
 		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0]))  \(String(format: "%.3f", storage[3, 0])) |
@@ -233,7 +233,7 @@ extension Matrix4x4: ExpressibleByArrayLiteral {
 ///     [13.0, 14.0, 15.0, 16.0]
 /// ]
 /// ```
-/// But it is stored as three arrays representing the three column vectors:
+/// But it is stored as four arrays representing the four column vectors:
 /// ```swift
 /// [1.0, 5.0, 9.0, 13.0], [2.0, 6.0, 10.0, 14.0], [3.0, 7.0, 11.0, 15.0], [4.0, 8.0, 12.0, 16.0],
 /// ```
@@ -243,19 +243,19 @@ extension Matrix4x4: ExpressibleByArrayLiteral {
 		
 		for x in 0..<min(Self.columns, elements.count) {
 			for y in 0..<min(Self.rows, elements[x].count) {
-				matrix[x, y] = elements[x][y]
+				matrix[x, y] = elements[y][x]
 			}
 		}
 		
-		self = matrix.transposed
+		self = matrix
 	}
 }
 
 extension Matrix4x4: Identity {
 	public static var identity: Self {
 		var matrix = Self()
-		for index in 0..<Self.columns {
-			matrix.storage[index, index] = 1
+		for i in 0..<Self.columns {
+			matrix.storage[i, i] = 1
 		}
 		return matrix
 	}
@@ -321,7 +321,7 @@ extension Matrix4x4: Invertible {
 
 
 extension Matrix4x4: MatrixAffineTransform {
-	public typealias Rotation =  Vector3<Component>
+	public typealias Rotation = Vector3<Component>
 	public typealias Scale = Vector3<Component>
 	public typealias Translation = Vector3<Component>
 	
@@ -346,8 +346,8 @@ extension Matrix4x4: MatrixAffineTransform {
 			let row2 = Scale(storage.columns.0[2], storage.columns.1[2], storage.columns.2[2]).normalized * newValue[2]
 			
 			storage.columns.0 = Storage.Column(row0[0], row1[0], row2[0], storage.columns.0[3])
-			storage.columns.1 = Storage.Column(row0[1], row1[1], row2[1], storage.columns.0[2])
-			storage.columns.2 = Storage.Column(row0[2], row1[2], row2[2], storage.columns.0[1])
+			storage.columns.1 = Storage.Column(row0[1], row1[1], row2[1], storage.columns.1[3])
+			storage.columns.2 = Storage.Column(row0[2], row1[2], row2[2], storage.columns.2[3])
 		}
 	}
 	
@@ -370,16 +370,16 @@ extension Matrix4x4: MatrixAffineTransform {
 	
 	public init(withScale scale: Component) {
 		var matrix = Self.identity
-		for index in 0..<Scale.count {
-			matrix[index, index] = scale
+		for i in 0..<Scale.count {
+			matrix[i, i] = scale
 		}
 		self = matrix
 	}
 	
 	public init(withScale scale: Scale) {
 		var matrix = Self.identity
-		for index in 0..<Scale.count {
-			matrix[index, index] = scale[index]
+		for i in 0..<Scale.count {
+			matrix[i, i] = scale[i]
 		}
 		self = matrix
 	}
@@ -396,22 +396,21 @@ extension Matrix4x4: MatrixAffineTransform {
 		let orders = [order[0].index, order[1].index, order[2].index]
 
 		var rotation = Rotation()
+
 		let scalar = Component.sqrt(Component.pow(storage[orders[0], orders[0]], 2) + Component.pow(storage[orders[1], orders[0]], 2))
 		if scalar > (16 * Component.ulpOfOne) {
-			rotation[0] = Component.atan2(y: storage[orders[1], orders[2]], x: storage[orders[2], orders[2]])
-			rotation[1] = Component.atan2(y: -storage[orders[0], orders[2]], x: scalar)
-			rotation[2] = Component.atan2(y: storage[orders[0], orders[1]], x: storage[orders[0], orders[0]])
+			rotation[0] = Component.atan2(y: storage[orders[2], orders[1]], x: storage[orders[2], orders[2]])
+			rotation[1] = Component.atan2(y: -storage[orders[2], orders[0]], x: scalar)
+			rotation[2] = Component.atan2(y: storage[orders[1], orders[0]], x: storage[orders[0], orders[0]])
 		}
 		else {
-			rotation[0] = Component.atan2(y: -storage[orders[2], orders[1]], x: storage[orders[1], orders[1]])
-			rotation[1] = Component.atan2(y: -storage[orders[0], orders[2]], x: scalar)
+			rotation[0] = Component.atan2(y: -storage[orders[1], orders[2]], x: storage[orders[1], orders[1]])
+			rotation[1] = Component.atan2(y: -storage[orders[2], orders[0]], x: scalar)
 			rotation[2] = .zero
 		}
 		
-		if((orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0)) {
-			for i in 0..<Rotation.count {
-				rotation[i] *= -1
-			}
+		if (orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0) {
+			rotation *= -1
 		}
 		
 		return rotation
@@ -419,8 +418,8 @@ extension Matrix4x4: MatrixAffineTransform {
 	
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
 		var result = Self.identity
-		
-		for i in 0..<Self.columns {
+
+		for i in 0..<3 {
 			let orderAxis = order[i].index
 			if rotation[orderAxis].isApproximatelyEqual(to: .zero) {
 				continue
@@ -438,7 +437,7 @@ extension Matrix4x4: MatrixAffineTransform {
 			result *= temporary
 		}
 		
-		self = result
+		self = result * Self(withScale: self.scale)
 	}
 }
 
@@ -467,8 +466,8 @@ extension Matrix4x4: MatrixMath {
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 - rhs.storage.columns.0,
 					  lhs.storage.columns.1 - rhs.storage.columns.1,
-					  lhs.storage.columns.2 + rhs.storage.columns.2,
-					  lhs.storage.columns.3 + rhs.storage.columns.3)
+					  lhs.storage.columns.2 - rhs.storage.columns.2,
+					  lhs.storage.columns.3 - rhs.storage.columns.3)
 	}
 
 	public static func -= (lhs: inout Self, rhs: Self) {
@@ -597,16 +596,26 @@ extension Matrix4x4: MatrixProtocol {
 }
 
 extension Matrix4x4: MatrixSub {
+	public init(with subMatrix: Matrix3x3<Component>) {
+		var matrix = Self()
+		for y in 0..<Matrix3x3<Component>.rows {
+			for x in 0..<Matrix3x3<Component>.columns {
+				matrix[y, x] = subMatrix[y, x]
+			}
+		}
+		self = matrix
+	}
+	
 	public func subMatrix(excludingColumn column: Int = 3, row: Int = 3) -> Matrix3x3<Component> {
 		var elements = [[Component]]()
 		for y in 0..<Self.rows where row != y {
 			var row = [Component]()
 			for x in 0..<Self.columns where column != x {
-				row.append(self[y, x])
+				row.append(self[x, y])
 			}
 			elements.append(row)
 		}
-		
+
 		return Matrix3x3(rows: Vector3(elements[0]), Vector3(elements[1]), Vector3(elements[2]))
 	}
 }
@@ -619,6 +628,27 @@ extension Matrix4x4: MatrixVectorMath {
 		lhs.storage.columns.1 * rhs[1] +
 		lhs.storage.columns.2 * rhs[2] +
 		lhs.storage.columns.3 * rhs[3]
+	}
+}
+
+extension Matrix4x4: QuaternionConvertible {
+/// Initialize the rotational elements of the matrix using the provided
+/// quaternion.
+///
+/// - Parameters:
+///   - quaternion: The quaternion that will be used to initialize the
+///   rotational elements of the matrix.
+///
+	public init(withQuaternion quaternion: Quaternion<Component>) {
+		var matrix = Matrix4x4(with: quaternion.matrix)
+		matrix[3][3] = 1
+		self = matrix
+	}
+	
+/// The rotational elements of the matrix as a quaternion.
+///
+	public var quaternion: Quaternion<Component> {
+		Quaternion(withMatrix: self.subMatrix())
 	}
 }
 
