@@ -252,6 +252,19 @@ extension Matrix4x4: ExpressibleByArrayLiteral {
 }
 
 extension Matrix4x4: Identity {
+/// Creates an identity matrix.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0  0 |
+/// | 0  1  0  0 |
+/// | 0  0  1  0 |
+/// | 0  0  0  1 |
+/// ```
+///
 	public static var identity: Self {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -259,7 +272,20 @@ extension Matrix4x4: Identity {
 		}
 		return matrix
 	}
-	
+
+/// Returns true if the matrix is identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0  0 |
+/// | 0  1  0  0 |
+/// | 0  0  1  0 |
+/// | 0  0  0  1 |
+/// ```
+///
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -270,7 +296,20 @@ extension Matrix4x4: Identity {
 		}
 		return true
 	}
-	
+
+/// Sets the matrix to identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// ```swift
+/// | 1  0  0  0 |
+/// | 0  1  0  0 |
+/// | 0  0  1  0 |
+/// | 0  0  0  1 |
+/// ```
+///
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -283,6 +322,13 @@ extension Matrix4x4: Identity {
 }
 
 extension Matrix4x4: Invertible {
+/// Gets the inverse of this matrix if it exists.
+///
+/// When the matrix is affine (the bottom row is `[0, 0, 0, 1]`), a faster
+/// path is used that avoids the full 4×4 cofactor expansion by inverting
+/// only the upper-left 3×3 rotation-scale block and computing the inverse
+/// translation separately.
+///
 	public var inverse: Self? {
 		if isAffine {
 			guard let inverseRotationAndScale = subMatrix().inverse else {
@@ -310,6 +356,10 @@ extension Matrix4x4: Invertible {
 		}
 	}
 	
+/// Inverts this matrix if it can be inverted, mutating the matrix.
+///
+/// - Returns: A boolean indicating if the matrix could be inverted.
+///
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self.storage = inverse.storage
@@ -585,6 +635,11 @@ extension Matrix4x4: MatrixProtocol {
 		}
 	}
 
+/// Access a matrix column at a specified index.
+///
+/// - Parameters:
+///   - column: The index of the column in the matrix.
+///
 	public subscript(column: Int) -> Storage.Column {
 		get {
 			storage[column]
@@ -691,6 +746,25 @@ extension Matrix4x4: SquareMatrix {
 		}
 	}
 	
+/// A transposed version of the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1   2   3   4  |
+/// | 5   6   7   8  |
+/// | 9  10  11  12  |
+/// | 13 14  15  16  |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1   5   9  13  |
+/// | 2   6  10  14  |
+/// | 3   7  11  15  |
+/// | 4   8  12  16  |
+/// ```
+///
 	public var transposed: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -700,7 +774,26 @@ extension Matrix4x4: SquareMatrix {
 		}
 		return matrix
 	}
-	
+
+/// Transposes this matrix, mutating the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
+/// ```swift
+/// | 1   2   3   4  |
+/// | 5   6   7   8  |
+/// | 9  10  11  12  |
+/// | 13 14  15  16  |
+/// ```
+/// Becomes:
+/// ```swift
+/// | 1   5   9  13  |
+/// | 2   6  10  14  |
+/// | 3   7  11  15  |
+/// | 4   8  12  16  |
+/// ```
+///
 	public mutating func transpose() {
 		let temp = self
 		for column in 0..<Self.columns {

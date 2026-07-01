@@ -81,6 +81,10 @@ extension Vector where numberOfComponents == 2 {
 	}
 	
 /// Initialize from a SIMD representation.
+///
+/// - Parameters:
+///   - simd: The SIMD2 representation used to initialize this vector.
+///
 	public init(simd: Vector2<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1]]
 	}
@@ -198,6 +202,10 @@ extension Vector where numberOfComponents == 3 {
 	}
 	
 /// Initialize from a SIMD representation.
+///
+/// - Parameters:
+///   - simd: The SIMD3 representation used to initialize this vector.
+///
 	public init(simd: Vector3<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1], simd[2]]
 	}
@@ -317,6 +325,10 @@ extension Vector where numberOfComponents == 4 {
 	}
 
 /// Initialize from a SIMD representation.
+///
+/// - Parameters:
+///   - simd: The SIMD4 representation used to initialize this vector.
+///
 	public init(simd: Vector4<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1], simd[2], simd[3]]
 	}

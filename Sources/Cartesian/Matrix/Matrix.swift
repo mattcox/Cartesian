@@ -116,8 +116,8 @@ extension Matrix: Equatable {
 extension Matrix: ExpressibleByArrayLiteral {
 /// Initialize the matrix from an array literal.
 ///
-/// The array is initialized as four rows, and then transposed into the
-/// column-major storage used by the matrix.
+/// Each inner array represents a row, and the result is transposed into
+/// the column-major storage used by the matrix.
 ///
 /// For example, the following matrix is as it appears visually:
 /// ```swift
@@ -148,6 +148,15 @@ extension Matrix: ExpressibleByArrayLiteral {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: Identity {
+/// Creates an identity matrix.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
+/// - Note: Only square matrices have a meaningful identity. For non-square
+/// matrices, the diagonal is filled with 1 up to the shorter dimension.
+///
 	public static var identity: Self {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -155,7 +164,12 @@ extension Matrix: Identity {
 		}
 		return matrix
 	}
-	
+
+/// Returns true if the matrix is identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else.
+///
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -166,7 +180,13 @@ extension Matrix: Identity {
 		}
 		return true
 	}
-	
+
+/// Sets the matrix to identity.
+///
+/// An identity matrix is a matrix with 1 in the main diagonal, and 0
+/// everywhere else. It acts as the multiplicative identity in matrix
+/// operations, leaving other matrices unchanged when multiplied.
+///
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -180,6 +200,14 @@ extension Matrix: Identity {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: Invertible where n == m {
+/// Gets the inverse of this matrix if it exists.
+///
+/// Uses the adjugate-over-determinant method. Returns `nil` when the
+/// determinant is zero or approximately zero, indicating a singular matrix.
+///
+/// - Warning: This algorithm is O(n!) due to cofactor expansion and is only
+/// suitable for small matrices.
+///
 	public var inverse: Self? {
 		let determinant = self.determinant
 		guard (abs(determinant) < .zero) == false &&
@@ -190,6 +218,10 @@ extension Matrix: Invertible where n == m {
 		return adjugate * (1 / determinant)
 	}
 
+/// Inverts this matrix if it can be inverted, mutating the matrix.
+///
+/// - Returns: A boolean indicating if the matrix could be inverted.
+///
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self = inverse
@@ -465,10 +497,19 @@ extension Matrix: MatrixVectorMath {
 extension Matrix: QuaternionConvertible where n == m, n == 3 {
 	public typealias QuaternionComponent = Component
 
+/// Initialize the rotational elements of the matrix using the provided
+/// quaternion.
+///
+/// - Parameters:
+///   - quaternion: The quaternion that will be used to initialize the
+///   rotational elements of the matrix.
+///
 	public init(withQuaternion quaternion: Quaternion<Component>) {
 		self = Self(from: quaternion.matrix)
 	}
 
+/// The rotational elements of the matrix as a quaternion.
+///
 	public var quaternion: Quaternion<Component> {
 		Quaternion(withMatrix: Matrix3x3(from: self))
 	}
@@ -522,6 +563,11 @@ extension Matrix: SquareMatrix where n == m {
 		}
 	}
 
+/// A transposed version of the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
 	public var transposed: Self {
 		var result = Self()
 		for col in 0..<n {
@@ -532,6 +578,11 @@ extension Matrix: SquareMatrix where n == m {
 		return result
 	}
 
+/// Transposes this matrix, mutating the matrix.
+///
+/// A transposed matrix is the result of flipping the original matrix across
+/// its main diagonal, effectively swapping rows with columns.
+///
 	public mutating func transpose() {
 		let temp = self
 		for col in 0..<n {
