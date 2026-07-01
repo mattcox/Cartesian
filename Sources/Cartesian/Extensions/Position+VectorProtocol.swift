@@ -52,7 +52,7 @@ extension Position: DotProduct {
 	}
 }
 
-extension Position: EuclidianDistanceMeasurable {
+extension Position: EuclideanDistanceMeasurable {
 	public func distance(to other: Self) -> Component {
 		sqrt(squaredDistance(to: other))
 	}

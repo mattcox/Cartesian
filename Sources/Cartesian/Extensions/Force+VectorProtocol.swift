@@ -6,7 +6,6 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-import Foundation
 import RealModule
 import Units
 
@@ -61,7 +60,7 @@ extension Force: MagnitudeAdjustable {
 					$0 + $1
 				}
 				
-			return sqrt(total)
+			return total.squareRoot()
 		}
 		set {
 			let factor = Component(1.0) / self.magnitude

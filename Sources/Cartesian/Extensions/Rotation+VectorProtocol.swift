@@ -6,7 +6,6 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-import Foundation
 import RealModule
 import Units
 
@@ -15,7 +14,7 @@ extension Rotation: @retroactive ExpressibleByArrayLiteral {
 ///
 /// For example, the rotation can be initialized as follows:
 /// ```swift
-/// let rotation: Rotation<SIMD2<Double>> = [.degrees(45.0), .meters(90.0)]
+/// let rotation: Rotation<SIMD2<Double>> = [.degrees(45.0), .degrees(90.0)]
 /// ```
 ///
 	public init(arrayLiteral elements: Component...) {

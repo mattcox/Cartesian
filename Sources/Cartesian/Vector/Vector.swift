@@ -556,7 +556,7 @@ extension Vector: Equatable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: EuclidianDistanceMeasurable {
+extension Vector: EuclideanDistanceMeasurable {
 /// Computes the straight-line euclidian distance from this vector to
 /// another.
 ///

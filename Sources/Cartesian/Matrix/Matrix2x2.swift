@@ -6,7 +6,6 @@
 //  Copyright © 2025 Matt Cox. All rights reserved.
 //
 
-import Foundation
 import RealModule
 
 /// A 2×2 matrix stored in column-major order.

@@ -1,5 +1,5 @@
 //
-//  EuclidianDistanceMeasurable.swift
+//  EuclideanDistanceMeasurable.swift
 //  Cartesian
 //
 //  Created by Matt Cox on 04/04/2025.
@@ -9,7 +9,7 @@
 /// A type that can be used to measured the distance to another of this type
 /// in 3D space.
 ///
-public protocol EuclidianDistanceMeasurable {
+public protocol EuclideanDistanceMeasurable {
 /// The type of value measuring the distance.
 ///
 	associatedtype Distance
@@ -37,7 +37,7 @@ public protocol EuclidianDistanceMeasurable {
 	func squaredDistance(to other: Self) -> Distance
 }
 
-extension EuclidianDistanceMeasurable {
+extension EuclideanDistanceMeasurable {
 /// Computes the distance from one object to another.
 ///
 /// - Parameters:

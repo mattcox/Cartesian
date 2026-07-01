@@ -209,7 +209,7 @@ extension Vector3: Equatable {
 	
 }
 
-extension Vector3: EuclidianDistanceMeasurable {
+extension Vector3: EuclideanDistanceMeasurable {
 /// Computes the straight-line euclidian distance from this vector to
 /// another.
 ///

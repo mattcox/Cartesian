@@ -46,7 +46,7 @@ extension Vector3D: DotProduct {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, visionOS 1.0, macCatalyst 16, *)
-extension Vector3D: EuclidianDistanceMeasurable {
+extension Vector3D: EuclideanDistanceMeasurable {
 	public func distance(to other: Vector3D) -> Double {
 		simd_distance(other.simd, simd)
 	}
