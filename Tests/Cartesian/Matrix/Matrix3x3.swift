@@ -730,14 +730,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .XYZ)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 		
@@ -766,14 +766,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .XZY)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 		
@@ -802,14 +802,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .YXZ)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 		
@@ -839,14 +839,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .YZX)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 		
@@ -875,14 +875,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .ZXY)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 		
@@ -911,14 +911,14 @@ extension Matrix3x3Tests {
 			
 			let matrix = Matrix3x3(withRotation: rotation, order: .ZYX)
 
-			#expect(matrix[0, 0].isApproximatelyEqual(to: -1.8369701987210297e-16))
-			#expect(matrix[0, 1].isApproximatelyEqual(to: -0.9510565162951535))
-			#expect(matrix[0, 2].isApproximatelyEqual(to: -0.3090169943749474))
-			#expect(matrix[1, 0].isApproximatelyEqual(to: 1.0))
-			#expect(matrix[1, 1].isApproximatelyEqual(to: -1.7470624777336384e-16))
-			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
-			#expect(matrix[2, 0].isApproximatelyEqual(to: 0.0))
-			#expect(matrix[2, 1].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[0, 0].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[0, 1].isApproximatelyEqual(to: -1.0))
+			#expect(matrix[0, 2].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 0].isApproximatelyEqual(to: 0.9510565162951535))
+			#expect(matrix[1, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
+			#expect(matrix[1, 2].isApproximatelyEqual(to: 0.3090169943749474))
+			#expect(matrix[2, 0].isApproximatelyEqual(to: -0.3090169943749474))
+			#expect(matrix[2, 1].isApproximatelyEqual(to: 0.0, absoluteTolerance: 1e-12))
 			#expect(matrix[2, 2].isApproximatelyEqual(to: 0.9510565162951535))
 		}
 

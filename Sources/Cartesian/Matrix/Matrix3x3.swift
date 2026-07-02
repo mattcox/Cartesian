@@ -397,23 +397,32 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 
 		let orders = [order[0].index, order[1].index, order[2].index]
 
-		var rotation = Vector3<Component>()
+		// The extraction computes the angles in the order the rotations are
+		// applied (first, second, third); these are scattered back to their
+		// axis index below.
+		//
+		var sequence = Vector3<Component>()
 
 		let scalar = Component.sqrt(Component.pow(normalized.storage[orders[0], orders[0]], 2) + Component.pow(normalized.storage[orders[1], orders[0]], 2))
 		if scalar > (16 * Component.ulpOfOne) {
-			rotation[0] = Component.atan2(y: normalized.storage[orders[2], orders[1]], x: normalized.storage[orders[2], orders[2]])
-			rotation[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
-			rotation[2] = Component.atan2(y: normalized.storage[orders[1], orders[0]], x: normalized.storage[orders[0], orders[0]])
+			sequence[0] = Component.atan2(y: normalized.storage[orders[2], orders[1]], x: normalized.storage[orders[2], orders[2]])
+			sequence[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
+			sequence[2] = Component.atan2(y: normalized.storage[orders[1], orders[0]], x: normalized.storage[orders[0], orders[0]])
 		}
 		else {
-			rotation[0] = Component.atan2(y: -normalized.storage[orders[1], orders[2]], x: normalized.storage[orders[1], orders[1]])
-			rotation[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
-			rotation[2] = .zero
+			sequence[0] = Component.atan2(y: -normalized.storage[orders[1], orders[2]], x: normalized.storage[orders[1], orders[1]])
+			sequence[1] = Component.atan2(y: -normalized.storage[orders[2], orders[0]], x: scalar)
+			sequence[2] = .zero
 		}
 
-		if (orders[0] == 0 && orders[1] != 1) || (orders[0] == 1 && orders[1] != 2) || (orders[0] == 2 && orders[1] != 0) {
-			rotation = -rotation
+		if (orders[0] == 0 && orders[1] == 1) || (orders[0] == 1 && orders[1] == 2) || (orders[0] == 2 && orders[1] == 0) {
+			sequence = -sequence
 		}
+
+		var rotation = Vector3<Component>()
+		rotation[orders[0]] = sequence[0]
+		rotation[orders[1]] = sequence[1]
+		rotation[orders[2]] = sequence[2]
 
 		return [Angle(radians: rotation[0]), Angle(radians: rotation[1]), Angle(radians: rotation[2])]
 	}
@@ -452,9 +461,9 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		
 		let matrices: [Self] = [x, y, z]
 		
-		self = matrices[order.third.index] *
+		self = matrices[order.first.index] *
 		       matrices[order.second.index] *
-		       matrices[order.first.index] *
+		       matrices[order.third.index] *
 		       Self(withScale: self.scale)
 	}
 }
