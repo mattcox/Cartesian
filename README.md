@@ -9,7 +9,7 @@
 
 Welcome to **Cartesian**, a Swift package for working with vectors and matrices in a coordinate-based mathematical space.
 
-**Cartesian** offers SIMD-backed vectors and matrices, utilizing LLVM-accelerated simd operations for performance where supported.
+**Cartesian** offers SIMD-backed vectors, matrices, and quaternions, utilizing LLVM-accelerated simd operations for performance where supported.
 
 ## Installation
 
