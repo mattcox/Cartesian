@@ -545,3 +545,9 @@ extension Vector4 {
 			 w: Swift.abs(storage.w))
 	}
 }
+
+extension Vector4: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(simd)
+	}
+}

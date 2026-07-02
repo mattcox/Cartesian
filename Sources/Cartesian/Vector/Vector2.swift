@@ -338,6 +338,16 @@ extension Vector2: SIMDConvertible {
 	}
 }
 
+extension Vector2: Transformable2D {
+	public mutating func transform<T>(by transform: T) where T: Transform2Protocol, Component == T.Component {
+		self = transform.matrix.transform(point: self)
+	}
+	
+	public func transform<T>(by transform: T) -> Vector2<Component> where T: Transform2Protocol, Component == T.Component {
+		transform.matrix.transform(point: self)
+	}
+}
+
 extension Vector2: VectorMath {
 	public func min() -> Component {
 		storage.min()
@@ -532,5 +542,11 @@ extension Vector2 {
 ///
 	public func abs() -> Self {
 		Self(x: Swift.abs(storage.x), y: Swift.abs(storage.y))
+	}
+}
+
+extension Vector2: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(simd)
 	}
 }

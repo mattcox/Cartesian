@@ -516,3 +516,13 @@ extension Matrix2x2: SquareMatrix {
 extension Matrix2x2.Storage: Sendable where Column: Sendable {
 	
 }
+
+extension Matrix2x2: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		for column in 0..<Self.columns {
+			for row in 0..<Self.rows {
+				hasher.combine(self[column, row])
+			}
+		}
+	}
+}

@@ -166,6 +166,46 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	}
 }
 
+extension Matrix4x4 {
+/// Transform a point by the matrix, returning the transformed point.
+///
+/// The point is extended to homogeneous coordinates with a `w` component of
+/// `1`, so the transformation includes the translation encoded by the matrix.
+/// If the matrix encodes a projection, the result is divided through by the
+/// resulting `w` component to return to Cartesian coordinates.
+///
+/// - Parameters:
+///   - point: The point to transform.
+///
+/// - Returns: The transformed point.
+///
+	public func transform(point: Point3<Component>) -> Point3<Component> {
+		let result = self * Vector4(point[0], point[1], point[2], 1)
+		let w = result[3]
+		if w.isApproximatelyEqual(to: .zero) == false && w.isApproximatelyEqual(to: 1) == false {
+			return Vector3(result[0] / w, result[1] / w, result[2] / w)
+		}
+		return Point3(result[0], result[1], result[2])
+	}
+
+/// Transform a direction by the matrix, returning the transformed direction.
+///
+/// The direction is extended to homogeneous coordinates with a `w` component
+/// of `0`, so the transformation applies rotation, scale and shear but ignores
+/// the translation encoded by the matrix. The result is not normalized; any
+/// scale or shear encoded by the matrix affects its magnitude.
+///
+/// - Parameters:
+///   - direction: The direction to transform.
+///
+/// - Returns: The transformed direction.
+///
+	public func transform(direction: Vector3<Component>) -> Vector3<Component> {
+		let result = self * Vector4(direction[0], direction[1], direction[2], 0)
+		return Vector3(result[0], result[1], result[2])
+	}
+}
+
 extension Matrix4x4: Codable {
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
@@ -815,4 +855,14 @@ extension Matrix4x4: SquareMatrix {
 
 extension Matrix4x4.Storage: Sendable where Column: Sendable {
 	
+}
+
+extension Matrix4x4: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		for column in 0..<Self.columns {
+			for row in 0..<Self.rows {
+				hasher.combine(self[column, row])
+			}
+		}
+	}
 }

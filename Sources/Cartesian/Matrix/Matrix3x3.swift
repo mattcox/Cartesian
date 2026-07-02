@@ -729,3 +729,13 @@ extension Matrix3x3: SquareMatrix {
 extension Matrix3x3.Storage: Sendable where Column: Sendable {
 	
 }
+
+extension Matrix3x3: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		for column in 0..<Self.columns {
+			for row in 0..<Self.rows {
+				hasher.combine(self[column, row])
+			}
+		}
+	}
+}

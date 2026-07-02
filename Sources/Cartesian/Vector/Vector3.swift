@@ -355,6 +355,16 @@ extension Vector3: SIMDConvertible {
 	}
 }
 
+extension Vector3: Transformable3D {
+	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, Component == T.Component {
+		self = transform.matrix.transform(point: self)
+	}
+	
+	public func transform<T>(by transform: T) -> Vector3<Component> where T: Transform3Protocol, Component == T.Component {
+		transform.matrix.transform(point: self)
+	}
+}
+
 extension Vector3: VectorMath {
 	public func min() -> Component {
 		storage.min()
@@ -552,5 +562,11 @@ extension Vector3 {
 		Self(x: Swift.abs(storage.x),
 			 y: Swift.abs(storage.y),
 			 z: Swift.abs(storage.z))
+	}
+}
+
+extension Vector3: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(simd)
 	}
 }
