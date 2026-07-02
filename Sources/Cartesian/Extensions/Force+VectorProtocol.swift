@@ -82,7 +82,29 @@ extension Force: Normalizable {
 }
 
 extension Force: VectorMath {
-	
+	public static func min(_ a: Self, _ b: Self) -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.min(a[i], b[i])
+		}
+		return result
+	}
+
+	public static func max(_ a: Self, _ b: Self) -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.max(a[i], b[i])
+		}
+		return result
+	}
+
+	public func abs() -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.abs(self[i])
+		}
+		return result
+	}
 }
 
 extension Force: VectorProtocol {

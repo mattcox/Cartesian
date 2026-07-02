@@ -423,57 +423,6 @@ extension Vector where numberOfComponents == 4 {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector {
-/// Returns a vector where each component is the lesser of the corresponding
-/// components in the two vectors.
-///
-/// - Parameters:
-///   - a: The first vector.
-///   - b: The second vector.
-///
-/// - Returns: A vector containing the component-wise minimum values.
-///
-	public static func min(_ a: Self, _ b: Self) -> Self {
-		var result = Self()
-		for i in 0..<Self.count {
-			result[i] = Swift.min(a[i], b[i])
-		}
-		return result
-	}
-
-/// Returns a vector where each component is the greater of the
-/// corresponding components in the two vectors.
-///
-/// - Parameters:
-///   - a: The first vector.
-///   - b: The second vector.
-///
-/// - Returns: A vector containing the component-wise maximum values.
-///
-	public static func max(_ a: Self, _ b: Self) -> Self {
-		var result = Self()
-		for i in 0..<Self.count {
-			result[i] = Swift.max(a[i], b[i])
-		}
-		return result
-	}
-
-/// Returns a vector where each component is the absolute value of the
-/// corresponding component in this vector.
-///
-/// - Returns: A vector with all components made non-negative.
-///
-	public func abs() -> Self {
-		var result = Self()
-		for i in 0..<Self.count {
-			result[i] = Swift.abs(self[i])
-		}
-		return result
-	}
-}
-
-
-@available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
 /// Computes the angle between two vectors.
 ///
@@ -794,6 +743,30 @@ extension Vector: VectorMath {
 			total += storage[i]
 		}
 		return total
+	}
+
+	public static func min(_ a: Self, _ b: Self) -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.min(a[i], b[i])
+		}
+		return result
+	}
+
+	public static func max(_ a: Self, _ b: Self) -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.max(a[i], b[i])
+		}
+		return result
+	}
+
+	public func abs() -> Self {
+		var result = Self()
+		for i in 0..<Self.count {
+			result[i] = Swift.abs(self[i])
+		}
+		return result
 	}
 	
 	public static func + (lhs: Self, rhs: Self) -> Self {

@@ -33,6 +33,35 @@ public protocol VectorMath: VectorProtocol {
 ///
 	func sum() -> Component
 	
+/// Returns a vector where each component is the lesser of the corresponding
+/// components in the two vectors.
+///
+/// - Parameters:
+///   - a: The first vector.
+///   - b: The second vector.
+///
+/// - Returns: A vector containing the component-wise minimum values.
+///
+	static func min(_ a: Self, _ b: Self) -> Self
+
+/// Returns a vector where each component is the greater of the
+/// corresponding components in the two vectors.
+///
+/// - Parameters:
+///   - a: The first vector.
+///   - b: The second vector.
+///
+/// - Returns: A vector containing the component-wise maximum values.
+///
+	static func max(_ a: Self, _ b: Self) -> Self
+
+/// Returns a vector where each component is the absolute value of the
+/// corresponding component in this vector.
+///
+/// - Returns: A vector with all components made non-negative.
+///
+	func abs() -> Self
+	
 /// Adds one vector to another.
 ///
 /// - Parameters:
