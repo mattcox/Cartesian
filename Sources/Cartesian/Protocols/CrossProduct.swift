@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 04/04/2025.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 // Cross product operators.

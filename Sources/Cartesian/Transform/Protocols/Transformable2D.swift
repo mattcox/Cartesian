@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 01/07/2026.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 /// A type that can be transformed by a Transform.

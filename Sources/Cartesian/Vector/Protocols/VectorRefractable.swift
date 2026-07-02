@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 14/04/2025.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 /// A vector that can be refracted through a surface defined by another

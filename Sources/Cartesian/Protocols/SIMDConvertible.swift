@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 09/04/2025.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 /// A protocol allowing clients to convert to and from values in a SIMD

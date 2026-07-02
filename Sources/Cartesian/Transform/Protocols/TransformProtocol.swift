@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 01/07/2025.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 /// A type that represents a transformation within a Cartesian coordinate

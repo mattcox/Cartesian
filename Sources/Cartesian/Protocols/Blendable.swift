@@ -3,7 +3,7 @@
 //  Cartesian
 //
 //  Created by Matt Cox on 09/04/2025.
-//  Copyright © 2025 Matt Cox. All rights reserved.
+//  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
 /// A type that can perform a linear blend from one value to another, returning
