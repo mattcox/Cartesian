@@ -162,3 +162,37 @@ extension Plane: Equatable {
 extension Plane: Sendable where Vector3<Component>: Sendable, Component: Sendable {
 
 }
+
+extension Plane: Transformable3D {
+	public typealias Scalar = Component
+
+	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, Component == T.Component {
+		self = self.transformed(by: transform)
+	}
+
+/// Transform the plane by the provided transform, returning the transformed
+/// plane.
+///
+/// A plane is transformed using the inverse-transpose of the transform's
+/// matrix, so that the normal remains perpendicular to the plane even under
+/// non-uniform scale or shear. The resulting normal is renormalized. If the
+/// transform is singular, the plane is returned unchanged.
+///
+/// - Parameters:
+///   - transform: The transform to apply.
+///
+/// - Returns: The transformed plane.
+///
+	public func transformed<T>(by transform: T) -> Plane where T: Transform3Protocol, Component == T.Component {
+		guard let inverse = transform.matrix.inverse else {
+			return self
+		}
+		let plane = inverse.transposed * Vector4(normal.x, normal.y, normal.z, -distance)
+		let transformedNormal = Vector3(plane[0], plane[1], plane[2])
+		let length = transformedNormal.magnitude
+		guard !length.isApproximatelyEqual(to: .zero) else {
+			return self
+		}
+		return Plane(normal: transformedNormal / length, distance: -plane[3] / length)
+	}
+}

@@ -356,11 +356,13 @@ extension Vector3: SIMDConvertible {
 }
 
 extension Vector3: Transformable3D {
+	public typealias Scalar = Component
+
 	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, Component == T.Component {
 		self = transform.matrix.transform(point: self)
 	}
 	
-	public func transform<T>(by transform: T) -> Vector3<Component> where T: Transform3Protocol, Component == T.Component {
+	public func transformed<T>(by transform: T) -> Vector3<Component> where T: Transform3Protocol, Component == T.Component {
 		transform.matrix.transform(point: self)
 	}
 }

@@ -88,3 +88,59 @@ extension Ray: Equatable where Vector: Equatable {
 extension Ray: Sendable where Vector: Sendable {
 
 }
+
+extension Ray: Transformable2D where Vector: Transformable2D {
+	public typealias Scalar = Vector.Scalar
+
+	public mutating func transform<T>(by transform: T) where T: Transform2Protocol, T.Component == Vector.Scalar {
+		self = self.transformed(by: transform)
+	}
+
+/// Transform the ray, mapping its origin as a point and its direction as a
+/// direction.
+///
+/// The origin is transformed as a point and the direction as a direction, so
+/// the ray's parameterization is preserved: the transformed ray passes through
+/// the transformed image of every point on the original ray. The direction is
+/// recovered as the difference between the transformed tip and the transformed
+/// origin, which cancels the translation for any affine transform.
+///
+/// - Parameters:
+///   - transform: The transform to apply.
+///
+/// - Returns: The transformed ray.
+///
+	public func transformed<T>(by transform: T) -> Ray where T: Transform2Protocol, T.Component == Vector.Scalar {
+		let transformedOrigin = origin.transformed(by: transform)
+		let transformedDirection = (origin + direction).transformed(by: transform) - transformedOrigin
+		return Ray(origin: transformedOrigin, direction: transformedDirection)
+	}
+}
+
+extension Ray: Transformable3D where Vector: Transformable3D {
+	public typealias Scalar = Vector.Scalar
+
+	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, T.Component == Vector.Scalar {
+		self = self.transformed(by: transform)
+	}
+
+/// Transform the ray, mapping its origin as a point and its direction as a
+/// direction.
+///
+/// The origin is transformed as a point and the direction as a direction, so
+/// the ray's parameterization is preserved: the transformed ray passes through
+/// the transformed image of every point on the original ray. The direction is
+/// recovered as the difference between the transformed tip and the transformed
+/// origin, which cancels the translation for any affine transform.
+///
+/// - Parameters:
+///   - transform: The transform to apply.
+///
+/// - Returns: The transformed ray.
+///
+	public func transformed<T>(by transform: T) -> Ray where T: Transform3Protocol, T.Component == Vector.Scalar {
+		let transformedOrigin = origin.transformed(by: transform)
+		let transformedDirection = (origin + direction).transformed(by: transform) - transformedOrigin
+		return Ray(origin: transformedOrigin, direction: transformedDirection)
+	}
+}

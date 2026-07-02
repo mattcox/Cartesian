@@ -339,11 +339,13 @@ extension Vector2: SIMDConvertible {
 }
 
 extension Vector2: Transformable2D {
+	public typealias Scalar = Component
+
 	public mutating func transform<T>(by transform: T) where T: Transform2Protocol, Component == T.Component {
 		self = transform.matrix.transform(point: self)
 	}
 	
-	public func transform<T>(by transform: T) -> Vector2<Component> where T: Transform2Protocol, Component == T.Component {
+	public func transformed<T>(by transform: T) -> Vector2<Component> where T: Transform2Protocol, Component == T.Component {
 		transform.matrix.transform(point: self)
 	}
 }
