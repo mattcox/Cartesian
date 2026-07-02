@@ -350,6 +350,10 @@ extension Vector2: Transformable2D {
 	}
 }
 
+extension Vector2: Vector2Like {
+	
+}
+
 extension Vector2: VectorMath {
 	public func min() -> Component {
 		storage.min()

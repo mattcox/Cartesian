@@ -367,6 +367,10 @@ extension Vector3: Transformable3D {
 	}
 }
 
+extension Vector3: Vector3Like {
+	
+}
+
 extension Vector3: VectorMath {
 	public func min() -> Component {
 		storage.min()

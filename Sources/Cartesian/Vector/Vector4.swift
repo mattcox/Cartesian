@@ -342,6 +342,10 @@ extension Vector4: SIMDConvertible {
 	}
 }
 
+extension Vector4: Vector4Like {
+	
+}
+
 extension Vector4: VectorMath {
 	public func min() -> Component {
 		storage.min()
