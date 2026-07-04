@@ -30,6 +30,18 @@ public struct Ray<Vector: VectorMath> {
 /// represent a true distance.
 ///
 	public var direction: Vector
+
+/// Initialize a ray from an origin point and a direction vector.
+///
+/// - Parameters:
+///   - origin: The point at which the ray originates.
+///   - direction: The direction the ray travels in. This is typically a unit
+///   vector.
+///
+	public init(origin: Vector, direction: Vector) {
+		self.origin = origin
+		self.direction = direction
+	}
 }
 
 extension Ray {
