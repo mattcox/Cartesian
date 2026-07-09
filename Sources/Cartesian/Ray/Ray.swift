@@ -38,6 +38,7 @@ public struct Ray<Vector: VectorMath> {
 ///   - direction: The direction the ray travels in. This is typically a unit
 ///   vector.
 ///
+	@inlinable
 	public init(origin: Vector, direction: Vector) {
 		self.origin = origin
 		self.direction = direction
@@ -53,6 +54,7 @@ extension Ray {
 ///
 /// - Returns: The point at parameter `t` along the ray.
 ///
+	@inlinable
 	public func point(at t: Vector.Component) -> Vector {
 		origin + direction * t
 	}
@@ -64,6 +66,7 @@ extension Ray where Vector.Component: FloatingPoint {
 /// This is useful for efficient axis-aligned bounding box intersection tests
 /// using the slab method, avoiding repeated division per test.
 ///
+	@inlinable
 	public var inverseDirection: Vector {
 		var result = Vector()
 		for i in 0..<Vector.count {
@@ -74,12 +77,14 @@ extension Ray where Vector.Component: FloatingPoint {
 }
 
 extension Ray: Codable where Vector: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		var container = try decoder.unkeyedContainer()
 		self.origin = try container.decode(Vector.self)
 		self.direction = try container.decode(Vector.self)
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.unkeyedContainer()
 		try container.encode(origin)
@@ -104,6 +109,7 @@ extension Ray: Sendable where Vector: Sendable {
 extension Ray: Transformable2D where Vector: Transformable2D {
 	public typealias Scalar = Vector.Scalar
 
+	@inlinable
 	public mutating func transform<T>(by transform: T) where T: Transform2Protocol, T.Component == Vector.Scalar {
 		self = self.transformed(by: transform)
 	}
@@ -122,6 +128,7 @@ extension Ray: Transformable2D where Vector: Transformable2D {
 ///
 /// - Returns: The transformed ray.
 ///
+	@inlinable
 	public func transformed<T>(by transform: T) -> Ray where T: Transform2Protocol, T.Component == Vector.Scalar {
 		let transformedOrigin = origin.transformed(by: transform)
 		let transformedDirection = (origin + direction).transformed(by: transform) - transformedOrigin
@@ -132,6 +139,7 @@ extension Ray: Transformable2D where Vector: Transformable2D {
 extension Ray: Transformable3D where Vector: Transformable3D {
 	public typealias Scalar = Vector.Scalar
 
+	@inlinable
 	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, T.Component == Vector.Scalar {
 		self = self.transformed(by: transform)
 	}
@@ -150,6 +158,7 @@ extension Ray: Transformable3D where Vector: Transformable3D {
 ///
 /// - Returns: The transformed ray.
 ///
+	@inlinable
 	public func transformed<T>(by transform: T) -> Ray where T: Transform3Protocol, T.Component == Vector.Scalar {
 		let transformedOrigin = origin.transformed(by: transform)
 		let transformedDirection = (origin + direction).transformed(by: transform) - transformedOrigin

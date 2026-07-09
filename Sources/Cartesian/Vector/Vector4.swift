@@ -12,7 +12,8 @@ import Units
 /// A vector with four scalar components.
 ///
 public struct Vector4<Component: Real & SIMDScalar> {
-	private var storage: SIMDRepresentation
+	@usableFromInline
+	var storage: SIMDRepresentation
 }
 
 extension Vector4 {
@@ -24,6 +25,7 @@ extension Vector4 {
 ///   - z: The third component of the vector.
 ///   - w: The fourth component of the vector.
 ///
+	@inlinable
 	public init(x: Component, y: Component, z: Component, w: Component) {
 		self.storage = SIMDRepresentation(x: x, y: y, z: z, w: w)
 	}
@@ -36,12 +38,14 @@ extension Vector4 {
 ///   - third: The third component of the vector.
 ///   - fourth: The fourth component of the vector.
 ///
+	@inlinable
 	public init(_ first: Component, _ second: Component, _ third: Component, _ fourth: Component) {
 		self.storage = SIMDRepresentation(x: first, y: second, z: third, w: fourth)
 	}
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var first: Component {
 		get {
 			storage.x
@@ -53,6 +57,7 @@ extension Vector4 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var second: Component {
 		get {
 			storage.y
@@ -64,6 +69,7 @@ extension Vector4 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var third: Component {
 		get {
 			storage.z
@@ -75,6 +81,7 @@ extension Vector4 {
 	
 /// The fourth component of the vector.
 ///
+	@inlinable
 	public var fourth: Component {
 		get {
 			storage.w
@@ -86,6 +93,7 @@ extension Vector4 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var x: Component {
 		get {
 			storage.x
@@ -97,6 +105,7 @@ extension Vector4 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var y: Component {
 		get {
 			storage.y
@@ -108,6 +117,7 @@ extension Vector4 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var z: Component {
 		get {
 			storage.z
@@ -119,6 +129,7 @@ extension Vector4 {
 	
 /// The fourth component of the vector.
 ///
+	@inlinable
 	public var w: Component {
 		get {
 			storage.w
@@ -143,6 +154,7 @@ extension Vector4: AngleMeasurable where Component: BinaryFloatingPoint {
 ///
 /// - Returns: The angle formed by the vectors.
 ///
+	@inlinable
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component> {
 		let by = by ?? Self.zero
 		
@@ -156,16 +168,19 @@ extension Vector4: AngleMeasurable where Component: BinaryFloatingPoint {
 }
 
 extension Vector4: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		Self(from.storage + (to.storage - from.storage) * amount)
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		storage = storage + (other.storage - storage) * amount
 	}
 }
 
 extension Vector4: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != Self.count {
@@ -174,6 +189,7 @@ extension Vector4: Codable {
 		self.storage = SIMDRepresentation(values)
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values: [Component] = []
 		for i in 0..<Self.count {
@@ -204,6 +220,7 @@ extension Vector4: DotProduct {
 ///
 /// - Returns: A value containing the result of the dot product.
 ///
+	@inlinable
 	public func dot(_ other: Self) -> Component {
 		storage.x * other.storage.x +
 		storage.y * other.storage.y +
@@ -225,6 +242,7 @@ extension Vector4: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func distance(to other: Self) -> Component {
 		Component.sqrt(squaredDistance(to: other))
 	}
@@ -241,6 +259,7 @@ extension Vector4: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The squared euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func squaredDistance(to other: Self) -> Component {
 		Component.pow((storage.x - other.storage.x), 2) +
 		Component.pow((storage.y - other.storage.y), 2) +
@@ -257,6 +276,7 @@ extension Vector4: ExpressibleByArrayLiteral {
 /// let vector: Vector4 = [1.0, 2.0, 3.0, 4.0]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for i in 0..<Swift.min(Self.count, elements.count) {
@@ -269,6 +289,7 @@ extension Vector4: ExpressibleByArrayLiteral {
 extension Vector4: MagnitudeAdjustable {
 /// The magnitude or length of the vector.
 ///
+	@inlinable
 	public var magnitude: Component {
 		get {
 			Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2) + Component.pow(storage.z, 2) + Component.pow(storage.w, 2))
@@ -300,6 +321,7 @@ extension Vector4: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public var normalized: Self {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -314,6 +336,7 @@ extension Vector4: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public mutating func normalize() {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -328,10 +351,12 @@ extension Vector4: Sendable where SIMDRepresentation: Sendable {
 extension Vector4: SIMDConvertible {
 	public typealias SIMDRepresentation = SIMD4<Component>
 	
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = simd
 	}
 	
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage
@@ -347,22 +372,27 @@ extension Vector4: Vector4Like {
 }
 
 extension Vector4: VectorMath {
+	@inlinable
 	public func min() -> Component {
 		storage.min()
 	}
 	
+	@inlinable
 	public func max() -> Component {
 		storage.max()
 	}
 	
+	@inlinable
 	public func average() -> Component {
 		storage.sum() / Component(Self.count)
 	}
 	
+	@inlinable
 	public func sum() -> Component {
 		storage.sum()
 	}
 	
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		Self(x: Swift.min(a.storage.x, b.storage.x),
 			 y: Swift.min(a.storage.y, b.storage.y),
@@ -371,6 +401,7 @@ extension Vector4: VectorMath {
 		)
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		Self(x: Swift.max(a.storage.x, b.storage.x),
 			 y: Swift.max(a.storage.y, b.storage.y),
@@ -379,6 +410,7 @@ extension Vector4: VectorMath {
 		)
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		Self(x: Swift.abs(storage.x),
 			 y: Swift.abs(storage.y),
@@ -387,96 +419,119 @@ extension Vector4: VectorMath {
 		)
 	}
 	
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage + rhs.storage)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		lhs.storage += rhs.storage
 	}
 
+	@inlinable
 	public static func + (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage + rhs)
 	}
 
+	@inlinable
 	public static func + (lhs: Component, rhs: Self) -> Self {
 		Self(lhs + rhs.storage)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Component) {
 		lhs.storage += rhs
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage - rhs.storage)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		lhs.storage -= rhs.storage
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage - rhs)
 	}
 
+	@inlinable
 	public static func - (lhs: Component, rhs: Self) -> Self {
 		Self(lhs - rhs.storage)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Component) {
 		lhs.storage -= rhs
 	}
 
+	@inlinable
 	public static prefix func - (vector: Self) -> Self {
 		Self(-vector.storage)
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage * rhs.storage)
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs.storage *= rhs.storage
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage * rhs)
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		Self(lhs * rhs.storage)
 	}
 	
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		lhs.storage *= rhs
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage / rhs.storage)
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Self) {
 		lhs.storage /= rhs.storage
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage / rhs)
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Component) {
 		lhs.storage /= rhs
 	}
 }
 
 extension Vector4: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		SIMDRepresentation.scalarCount
 	}
 	
+	@inlinable
 	public init() {
 		self.storage = SIMDRepresentation()
 	}
 	
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		var vector = SIMDRepresentation()
 		for enumerator in collection.prefix(Self.count).enumerated() {
@@ -485,6 +540,7 @@ extension Vector4: VectorProtocol {
 		self.storage = vector
 	}
 	
+	@inlinable
 	public subscript(index: Int) -> Component {
 		get {
 			storage[index]
@@ -494,6 +550,7 @@ extension Vector4: VectorProtocol {
 		}
 	}
 	
+	@inlinable
 	public mutating func clear() {
 		storage = SIMDRepresentation()
 	}
@@ -501,6 +558,7 @@ extension Vector4: VectorProtocol {
 
 
 extension Vector4: VectorReflectable {
+	@inlinable
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
 		return self - (2 * dot(normal) * normal)
@@ -508,6 +566,7 @@ extension Vector4: VectorReflectable {
 }
 
 extension Vector4: VectorRefractable {
+	@inlinable
 	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
 		let rayDirection = self.normalized
 		let normal = normal.normalized
@@ -529,6 +588,7 @@ extension Vector4: VectorRefractable {
 }
 
 extension Vector4: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(simd)
 	}

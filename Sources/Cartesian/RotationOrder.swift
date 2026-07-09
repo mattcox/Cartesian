@@ -62,6 +62,7 @@ public enum RotationOrder: Int, CaseIterable {
 /// The first element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
+	@inlinable @usableFromInline
 	var first: Axis3 {
 		switch(self) {
 			case .XYZ, .XZY:
@@ -76,6 +77,7 @@ public enum RotationOrder: Int, CaseIterable {
 /// The second element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
+	@inlinable @usableFromInline
 	var second: Axis3 {
 		switch(self) {
 			case .YXZ, .ZXY:
@@ -90,6 +92,7 @@ public enum RotationOrder: Int, CaseIterable {
 /// The third element in the rotation order, where X is first, Y is second
 /// and Z is third.
 ///
+	@inlinable @usableFromInline
 	var third: Axis3 {
 		switch(self) {
 			case .YZX, .ZYX:
@@ -103,6 +106,7 @@ public enum RotationOrder: Int, CaseIterable {
 	
 /// Returns the element in the rotation order, specified by index.
 ///
+	@inlinable @usableFromInline
 	subscript(index: Int) -> Axis3 {
 		switch(index) {
 			case 0:

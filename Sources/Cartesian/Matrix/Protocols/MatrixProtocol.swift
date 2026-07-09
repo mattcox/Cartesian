@@ -53,6 +53,7 @@ public protocol MatrixProtocol {
 }
 
 extension MatrixProtocol {
+	@inlinable
 	public init<T: MatrixProtocol>(from matrix: T) where T.Component == Component {
 		var temporary = Self()
 		for column in 0..<(min(Self.columns, T.columns)) {

@@ -17,6 +17,7 @@ extension Rotation: @retroactive ExpressibleByArrayLiteral {
 /// let rotation: Rotation<SIMD2<Double>> = [.degrees(45.0), .degrees(90.0)]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for index in 0..<Swift.min(Self.count, elements.count) {
@@ -31,6 +32,7 @@ extension Rotation: Normalizable {
 }
 
 extension Rotation: VectorMath {
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -39,6 +41,7 @@ extension Rotation: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -47,6 +50,7 @@ extension Rotation: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -57,14 +61,17 @@ extension Rotation: VectorMath {
 }
 
 extension Rotation: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		Value.scalarCount
 	}
 	
+	@inlinable
 	public init() {
 		self = .zero
 	}
 
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		var value: Self = .zero
 		for enumerator in collection.prefix(Self.count).enumerated() {
@@ -73,6 +80,7 @@ extension Rotation: VectorProtocol {
 		self = value
 	}
 
+	@inlinable
 	public mutating func clear() {
 		self = .zero
 	}

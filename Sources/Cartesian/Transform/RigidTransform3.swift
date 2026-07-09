@@ -39,6 +39,7 @@ public struct RigidTransform3<Component: Real & SIMDScalar> {
 ///   be a unit quaternion.
 ///   - translation: The translation encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Quaternion<Component>, translation: Vector3<Component>) {
 		self.rotation = rotation
 		self.translation = translation
@@ -52,6 +53,7 @@ extension RigidTransform3 {
 ///   - rotation: The rotation encoded by the transform. This is expected to
 ///   be a unit quaternion.
 ///
+	@inlinable
 	public init(rotation: Quaternion<Component>) {
 		self.init(rotation: rotation, translation: .zero)
 	}
@@ -61,6 +63,7 @@ extension RigidTransform3 {
 /// - Parameters:
 ///   - translation: The translation encoded by the transform.
 ///
+	@inlinable
 	public init(translation: Vector3<Component>) {
 		self.init(rotation: .identity, translation: translation)
 	}
@@ -70,10 +73,12 @@ extension RigidTransform3: TransformProtocol {
 	public typealias Matrix = Matrix4x4<Component>
 	public typealias Vector = Vector3<Component>
 
+	@inlinable
 	public init() {
 		self.init(rotation: .identity, translation: .zero)
 	}
 
+	@inlinable
 	public var matrix: Matrix4x4<Component> {
 		var matrix = Matrix4x4(withQuaternion: rotation)
 		matrix.translation = translation
@@ -87,6 +92,7 @@ extension RigidTransform3: TransformProtocol {
 ///
 /// - Returns: The transformed position.
 ///
+	@inlinable
 	public func apply(to position: Vector3<Component>) -> Vector3<Component> {
 		rotation.rotate(vector: position) + translation
 	}
@@ -102,6 +108,7 @@ extension RigidTransform3: TransformProtocol {
 ///
 /// - Returns: The combined rigid transform.
 ///
+	@inlinable
 	public func concatenated(with other: RigidTransform3) -> RigidTransform3 {
 		RigidTransform3(
 			rotation: rotation * other.rotation,
@@ -125,14 +132,17 @@ extension RigidTransform3: RotatableTransform {
 extension RigidTransform3: Identity {
 /// The identity rigid transform, encoding no rotation and no translation.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(rotation: .identity, translation: .zero)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		rotation.isIdentity && translation == .zero
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		self = .identity
 	}
@@ -146,6 +156,7 @@ extension RigidTransform3: Invertible {
 /// negated. A rigid transform is always invertible, so this never returns
 /// `nil`.
 ///
+	@inlinable
 	public var inverse: Self? {
 		let inverseRotation = rotation.conjugate
 		return Self(
@@ -154,6 +165,7 @@ extension RigidTransform3: Invertible {
 		)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false
@@ -186,6 +198,7 @@ extension RigidTransform3: Hashable {
 }
 
 extension RigidTransform3: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		Self(
 			rotation: Quaternion<Component>.slerp(from: from.rotation, to: to.rotation, by: amount),
@@ -193,6 +206,7 @@ extension RigidTransform3: Blendable {
 		)
 	}
 
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}

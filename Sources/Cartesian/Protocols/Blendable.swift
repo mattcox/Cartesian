@@ -55,6 +55,7 @@ public protocol Blendable {
 }
 
 extension Blendable {
+	@inlinable
 	public func blended(to other: Self, by amount: Blend) -> Self {
 		Self.blend(from: self, to: other, by: amount)
 	}

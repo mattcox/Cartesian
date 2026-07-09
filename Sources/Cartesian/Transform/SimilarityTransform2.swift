@@ -44,6 +44,7 @@ public struct SimilarityTransform2<Component: Real & SIMDScalar & BinaryFloating
 ///   - translation: The translation encoded by the transform.
 ///   - scale: The uniform scale encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Angle<Component>, translation: Vector2<Component>, scale: Component) {
 		self.rotation = rotation
 		self.translation = translation
@@ -55,10 +56,12 @@ extension SimilarityTransform2: TransformProtocol {
 	public typealias Matrix = MatrixAffine3x3<Component>
 	public typealias Vector = Vector2<Component>
 
+	@inlinable
 	public init() {
 		self.init(rotation: Angle(radians: 0), translation: .zero, scale: 1)
 	}
 
+	@inlinable
 	public var matrix: MatrixAffine3x3<Component> {
 		var matrix = MatrixAffine3x3(rotation: rotation)
 		matrix.scale = Vector2(scale, scale)
@@ -74,6 +77,7 @@ extension SimilarityTransform2: TransformProtocol {
 ///
 /// - Returns: The transformed position.
 ///
+	@inlinable
 	public func apply(to position: Vector2<Component>) -> Vector2<Component> {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -93,6 +97,7 @@ extension SimilarityTransform2: TransformProtocol {
 ///
 /// - Returns: The combined similarity transform.
 ///
+	@inlinable
 	public func concatenated(with other: SimilarityTransform2) -> SimilarityTransform2 {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -126,14 +131,17 @@ extension SimilarityTransform2: Identity {
 /// The identity similarity transform, encoding no rotation, no translation
 /// and a unit scale.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(rotation: Angle(radians: 0), translation: .zero, scale: 1)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		rotation.radians.isApproximatelyEqual(to: .zero) && translation == .zero && scale.isApproximatelyEqual(to: 1)
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		self = .identity
 	}
@@ -142,6 +150,7 @@ extension SimilarityTransform2: Identity {
 extension SimilarityTransform2: Invertible {
 /// The inverse of the similarity transform, or `nil` if the scale is zero.
 ///
+	@inlinable
 	public var inverse: Self? {
 		guard !scale.isApproximatelyEqual(to: .zero) else {
 			return nil
@@ -158,6 +167,7 @@ extension SimilarityTransform2: Invertible {
 		)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false
@@ -172,6 +182,7 @@ extension SimilarityTransform2: Equatable {
 }
 
 extension SimilarityTransform2: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(rotation.radians)
 		hasher.combine(translation)
@@ -194,6 +205,7 @@ extension SimilarityTransform2: CustomStringConvertible where Component: CVarArg
 }
 
 extension SimilarityTransform2: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		let delta = to.rotation.radians - from.rotation.radians
 		let shortest = Component.atan2(y: Component.sin(delta), x: Component.cos(delta))
@@ -204,6 +216,7 @@ extension SimilarityTransform2: Blendable {
 		)
 	}
 
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}

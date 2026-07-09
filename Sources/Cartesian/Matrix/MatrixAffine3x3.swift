@@ -32,11 +32,13 @@ import Units
 public struct MatrixAffine3x3<Component: Real & SIMDScalar> {
 /// The underlying 3×3 storage backing the affine matrix.
 ///
-	private var storage: Matrix3x3<Component>
+	@usableFromInline
+	var storage: Matrix3x3<Component>
 
 /// Initialize the affine matrix from its backing storage.
 ///
-	private init(storage: Matrix3x3<Component>) {
+	@inlinable @usableFromInline
+	init(storage: Matrix3x3<Component>) {
 		self.storage = storage
 	}
 }
@@ -44,6 +46,7 @@ public struct MatrixAffine3x3<Component: Real & SIMDScalar> {
 extension MatrixAffine3x3 {
 /// The translation encoded by the matrix.
 ///
+	@inlinable
 	public var translation: Vector2<Component> {
 		get {
 			Vector2(x: storage[2, 0], y: storage[2, 1])
@@ -61,6 +64,7 @@ extension MatrixAffine3x3 {
 /// resizing it to the requested magnitude. Columns with a magnitude of zero
 /// remain zero.
 ///
+	@inlinable
 	public var scale: Vector2<Component> {
 		get {
 			let x = Component.sqrt(storage[0, 0] * storage[0, 0] + storage[0, 1] * storage[0, 1])
@@ -87,6 +91,7 @@ extension MatrixAffine3x3 {
 /// - Parameters:
 ///   - translation: The translation to encode.
 ///
+	@inlinable
 	public init(translation: Vector2<Component>) {
 		var storage = Matrix3x3<Component>.identity
 		storage[2, 0] = translation.x
@@ -99,6 +104,7 @@ extension MatrixAffine3x3 {
 /// - Parameters:
 ///   - scale: The scale to encode along each axis.
 ///
+	@inlinable
 	public init(scale: Vector2<Component>) {
 		var storage = Matrix3x3<Component>.identity
 		storage[0, 0] = scale.x
@@ -111,6 +117,7 @@ extension MatrixAffine3x3 {
 /// - Parameters:
 ///   - scale: The uniform scale to encode along both axes.
 ///
+	@inlinable
 	public init(scale: Component) {
 		self.init(scale: Vector2(x: scale, y: scale))
 	}
@@ -127,6 +134,7 @@ extension MatrixAffine3x3 {
 ///
 /// - Returns: The transformed point.
 ///
+	@inlinable
 	public func transform(point: Point2<Component>) -> Point2<Component> {
 		let result = self * Vector3(point[0], point[1], 1)
 		return Point2(x: result[0], y: result[1])
@@ -145,6 +153,7 @@ extension MatrixAffine3x3 {
 ///
 /// - Returns: The transformed direction.
 ///
+	@inlinable
 	public func transform(direction: Vector2<Component>) -> Vector2<Component> {
 		let result = self * Vector3(direction[0], direction[1], 0)
 		return Vector2(x: result[0], y: result[1])
@@ -157,6 +166,7 @@ extension MatrixAffine3x3 where Component: BinaryFloatingPoint {
 ///
 /// Setting the rotation preserves the scale encoded in the matrix.
 ///
+	@inlinable
 	public var rotation: Angle<Component> {
 		get {
 			Angle(radians: Component.atan2(y: storage[0, 1], x: storage[0, 0]))
@@ -177,6 +187,7 @@ extension MatrixAffine3x3 where Component: BinaryFloatingPoint {
 /// - Parameters:
 ///   - rotation: The rotation to encode.
 ///
+	@inlinable
 	public init(rotation: Angle<Component>) {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -198,6 +209,7 @@ extension MatrixAffine3x3 {
 ///
 /// - Returns: The combined affine matrix.
 ///
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		Self(storage: lhs.storage * rhs.storage)
 	}
@@ -208,16 +220,19 @@ extension MatrixAffine3x3 {
 ///   - lhs: The first affine matrix. This will be updated with the result.
 ///   - rhs: The second affine matrix.
 ///
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs.storage *= rhs.storage
 	}
 }
 
 extension MatrixAffine3x3: MatrixProtocol {
+	@inlinable
 	public static var columns: Int {
 		3
 	}
 
+	@inlinable
 	public static var rows: Int {
 		3
 	}
@@ -228,10 +243,12 @@ extension MatrixAffine3x3: MatrixProtocol {
 /// the identity rather than a matrix of zeros, as a zero matrix does not
 /// preserve the affine invariant.
 ///
+	@inlinable
 	public init() {
 		self.storage = .identity
 	}
 
+	@inlinable
 	public subscript(column: Int, row: Int) -> Component {
 		get {
 			storage[column, row]
@@ -245,14 +262,17 @@ extension MatrixAffine3x3: MatrixProtocol {
 extension MatrixAffine3x3: Identity {
 /// The identity affine matrix, encoding no transformation.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(storage: .identity)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		storage.isIdentity
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		storage = .identity
 	}
@@ -261,6 +281,7 @@ extension MatrixAffine3x3: Identity {
 extension MatrixAffine3x3: Invertible {
 /// The inverse of the affine matrix, or `nil` if the matrix is singular.
 ///
+	@inlinable
 	public var inverse: Self? {
 		guard let inverse = storage.inverse else {
 			return nil
@@ -268,6 +289,7 @@ extension MatrixAffine3x3: Invertible {
 		return Self(storage: inverse)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false
@@ -285,6 +307,7 @@ extension MatrixAffine3x3 {
 /// A determinant of zero indicates the matrix is singular and cannot be
 /// inverted.
 ///
+	@inlinable
 	public var determinant: Component {
 		storage.determinant
 	}
@@ -292,6 +315,7 @@ extension MatrixAffine3x3 {
 /// The trace of the affine matrix, equal to the sum of the elements on its
 /// main diagonal.
 ///
+	@inlinable
 	public var trace: Component {
 		storage.trace
 	}
@@ -314,6 +338,7 @@ extension MatrixAffine3x3: MatrixVectorMath {
 ///
 /// - Returns: The transformed homogeneous vector.
 ///
+	@inlinable
 	public static func * (lhs: Self, rhs: Vector) -> Vector {
 		lhs.storage * rhs
 	}
@@ -324,10 +349,12 @@ extension MatrixAffine3x3: Equatable {
 }
 
 extension MatrixAffine3x3: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		self.storage = try Matrix3x3(from: decoder)
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		try storage.encode(to: encoder)
 	}
@@ -356,6 +383,7 @@ extension MatrixAffine3x3: ExpressibleByArrayLiteral {
 /// ]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: [Component]...) {
 		var matrix = Self()
 
@@ -372,10 +400,12 @@ extension MatrixAffine3x3: ExpressibleByArrayLiteral {
 extension MatrixAffine3x3: SIMDConvertible {
 	public typealias SIMDRepresentation = Matrix3x3<Component>.SIMDRepresentation
 
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = Matrix3x3(simd)
 	}
 
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage.simd
@@ -391,6 +421,7 @@ extension MatrixAffine3x3: Sendable where SIMDRepresentation: Sendable {
 }
 
 extension MatrixAffine3x3: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {

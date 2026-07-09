@@ -119,10 +119,12 @@ extension VectorProtocol {
 		Self()
 	}
 	
+	@inlinable
 	public init(repeating component: Component) {
 		self = Self(Array(repeating: component, count: Self.count))
 	}
 	
+	@inlinable
 	public init<T: VectorProtocol>(from vector: T) where T.Component == Self.Component {
 		var values = Array(repeating: Component.zero, count: Self.count)
 		for i in 0..<min(T.count, Self.count) {
@@ -131,6 +133,7 @@ extension VectorProtocol {
 		self = Self(values)
 	}
 	
+	@inlinable
 	public init<T: VectorProtocol>(repeating vector: T) where T.Component == Self.Component {
 		guard T.count > 0 else {
 			self = Self()
@@ -145,6 +148,7 @@ extension VectorProtocol {
 		self = Self(repeating: values)
 	}
 	
+	@inlinable
 	public init<C: Collection>(repeating components: C) where C.Element == Component {
 		guard components.isEmpty == false else {
 			self = Self()

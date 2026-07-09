@@ -46,6 +46,7 @@ extension EuclideanDistanceMeasurable {
 ///
 /// - Returns: The distance between the two object.
 ///
+	@inlinable
 	public static func distance(between one: Self, and two: Self) -> Distance {
 		one.distance(to: two)
 	}
@@ -62,6 +63,7 @@ extension EuclideanDistanceMeasurable {
 ///
 /// - Returns: The quared distance between the two object.
 ///
+	@inlinable
 	public static func squaredDistance(between one: Self, and two: Self) -> Distance {
 		one.squaredDistance(to: two)
 	}

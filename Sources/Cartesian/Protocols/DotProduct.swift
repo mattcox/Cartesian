@@ -38,6 +38,7 @@ public protocol DotProduct {
 }
 
 extension DotProduct {
+	@inlinable
 	public static func ∙ (lhs: Self, rhs: Self) -> Dot {
 		lhs.dot(rhs)
 	}

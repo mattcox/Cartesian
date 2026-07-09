@@ -23,8 +23,10 @@ import Units
 ///
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 public struct Vector<let numberOfComponents: Int, Component: Real & SIMDScalar> {
-	private typealias Storage = InlineArray<numberOfComponents, Component>
-	private var storage: Storage
+	@usableFromInline
+	typealias Storage = InlineArray<numberOfComponents, Component>
+	@usableFromInline
+	var storage: Storage
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
@@ -35,6 +37,7 @@ extension Vector where numberOfComponents == 2 {
 ///   - x: The first component of the vector.
 ///   - y: The second component of the vector.
 ///
+	@inlinable
 	public init(x: Component, y: Component) {
 		self.storage = [x, y]
 	}
@@ -45,6 +48,7 @@ extension Vector where numberOfComponents == 2 {
 ///   - u: The first component of the vector.
 ///   - v: The second component of the vector.
 ///
+	@inlinable
 	public init(u: Component, v: Component) {
 		self.storage = [u, v]
 	}
@@ -55,6 +59,7 @@ extension Vector where numberOfComponents == 2 {
 ///   - first: The first component of the vector.
 ///   - second: The second component of the vector.
 ///
+	@inlinable
 	public init(_ first: Component, _ second: Component) {
 		self.storage = [first, second]
 	}
@@ -64,18 +69,21 @@ extension Vector where numberOfComponents == 2 {
 /// - Parameters:
 ///   - vector: The two component vector used to initialize this vector.
 ///
+	@inlinable
 	public init(_ vector: Vector2<Component>) {
 		self = Vector(vector[0], vector[1])
 	}
 	
 /// Get the vector as a SIMD compatible object.
 ///
+	@inlinable
 	public var simd: Vector2<Component>.SIMDRepresentation {
 		Vector2<Component>.SIMDRepresentation(self[0], self[1])
 	}
 	
 /// Get the vector as a Vector2.
 ///
+	@inlinable
 	public var fixed: Vector2<Component> {
 		Vector2(self[0], self[1])
 	}
@@ -85,12 +93,14 @@ extension Vector where numberOfComponents == 2 {
 /// - Parameters:
 ///   - simd: The SIMD2 representation used to initialize this vector.
 ///
+	@inlinable
 	public init(simd: Vector2<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1]]
 	}
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var first: Component {
 		get {
 			storage[0]
@@ -102,6 +112,7 @@ extension Vector where numberOfComponents == 2 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var second: Component {
 		get {
 			storage[1]
@@ -113,6 +124,7 @@ extension Vector where numberOfComponents == 2 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var x: Component {
 		get {
 			storage[0]
@@ -124,6 +136,7 @@ extension Vector where numberOfComponents == 2 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var y: Component {
 		get {
 			storage[1]
@@ -135,6 +148,7 @@ extension Vector where numberOfComponents == 2 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var u: Component {
 		get {
 			storage[0]
@@ -146,6 +160,7 @@ extension Vector where numberOfComponents == 2 {
 	
 /// The second component of the vector.
 ///
+	@inlinable
 	public var v: Component {
 		get {
 			storage[1]
@@ -165,6 +180,7 @@ extension Vector where numberOfComponents == 3 {
 ///   - y: The second component of the vector.
 ///   - z: The third component of the vector.
 ///
+	@inlinable
 	public init(x: Component, y: Component, z: Component) {
 		self.storage = [x, y, z]
 	}
@@ -176,6 +192,7 @@ extension Vector where numberOfComponents == 3 {
 ///   - second: The second component of the vector.
 ///   - third: The third component of the vector.
 ///
+	@inlinable
 	public init(_ first: Component, _ second: Component, _ third: Component) {
 		self.storage = [first, second, third]
 	}
@@ -185,18 +202,21 @@ extension Vector where numberOfComponents == 3 {
 /// - Parameters:
 ///   - vector: The three component vector used to initialize this vector.
 ///
+	@inlinable
 	public init(_ vector: Vector3<Component>) {
 		self = Vector(vector[0], vector[1], vector[2])
 	}
 	
 /// Get the vector as a SIMD compatible object.
 ///
+	@inlinable
 	public var simd: Vector3<Component>.SIMDRepresentation {
 		Vector3<Component>.SIMDRepresentation(self[0], self[1], self[2])
 	}
 	
 /// Get the vector as a Vector3.
 ///
+	@inlinable
 	public var fixed: Vector3<Component> {
 		Vector3(self[0], self[1], self[2])
 	}
@@ -206,12 +226,14 @@ extension Vector where numberOfComponents == 3 {
 /// - Parameters:
 ///   - simd: The SIMD3 representation used to initialize this vector.
 ///
+	@inlinable
 	public init(simd: Vector3<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1], simd[2]]
 	}
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var first: Component {
 		get {
 			storage[0]
@@ -223,6 +245,7 @@ extension Vector where numberOfComponents == 3 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var second: Component {
 		get {
 			storage[1]
@@ -234,6 +257,7 @@ extension Vector where numberOfComponents == 3 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var third: Component {
 		get {
 			storage[2]
@@ -245,6 +269,7 @@ extension Vector where numberOfComponents == 3 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var x: Component {
 		get {
 			storage[0]
@@ -256,6 +281,7 @@ extension Vector where numberOfComponents == 3 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var y: Component {
 		get {
 			storage[1]
@@ -267,6 +293,7 @@ extension Vector where numberOfComponents == 3 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var z: Component {
 		get {
 			storage[2]
@@ -287,6 +314,7 @@ extension Vector where numberOfComponents == 4 {
 ///   - z: The third component of the vector.
 ///   - w: The fourth component of the vector.
 ///
+	@inlinable
 	public init(x: Component, y: Component, z: Component, w: Component) {
 		self.storage = [x, y, z, w]
 	}
@@ -299,6 +327,7 @@ extension Vector where numberOfComponents == 4 {
 ///   - third: The third component of the vector.
 ///   - fourth: The fourth component of the vector.
 ///
+	@inlinable
 	public init(_ first: Component, _ second: Component, _ third: Component, _ fourth: Component) {
 		self.storage = [first, second, third, fourth]
 	}
@@ -308,18 +337,21 @@ extension Vector where numberOfComponents == 4 {
 /// - Parameters:
 ///   - vector: The four component vector used to initialize this vector.
 ///
+	@inlinable
 	public init(_ vector: Vector4<Component>) {
 		self = Vector(vector[0], vector[1], vector[2], vector[3])
 	}
 
 /// Get the vector as a SIMD compatible object.
 ///
+	@inlinable
 	public var simd: Vector4<Component>.SIMDRepresentation {
 		Vector4<Component>.SIMDRepresentation(self[0], self[1], self[2], self[3])
 	}
 	
 /// Get the vector as a Vector4.
 ///
+	@inlinable
 	public var fixed: Vector4<Component> {
 		Vector4(self[0], self[1], self[2], self[3])
 	}
@@ -329,12 +361,14 @@ extension Vector where numberOfComponents == 4 {
 /// - Parameters:
 ///   - simd: The SIMD4 representation used to initialize this vector.
 ///
+	@inlinable
 	public init(simd: Vector4<Component>.SIMDRepresentation) {
 		self.storage = [simd[0], simd[1], simd[2], simd[3]]
 	}
 
 /// The first component of the vector.
 ///
+	@inlinable
 	public var first: Component {
 		get {
 			storage[0]
@@ -346,6 +380,7 @@ extension Vector where numberOfComponents == 4 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var second: Component {
 		get {
 			storage[1]
@@ -357,6 +392,7 @@ extension Vector where numberOfComponents == 4 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var third: Component {
 		get {
 			storage[2]
@@ -368,6 +404,7 @@ extension Vector where numberOfComponents == 4 {
 	
 /// The fourth component of the vector.
 ///
+	@inlinable
 	public var fourth: Component {
 		get {
 			storage[3]
@@ -379,6 +416,7 @@ extension Vector where numberOfComponents == 4 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var x: Component {
 		get {
 			storage[0]
@@ -390,6 +428,7 @@ extension Vector where numberOfComponents == 4 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var y: Component {
 		get {
 			storage[1]
@@ -401,6 +440,7 @@ extension Vector where numberOfComponents == 4 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var z: Component {
 		get {
 			storage[2]
@@ -412,6 +452,7 @@ extension Vector where numberOfComponents == 4 {
 	
 /// The fourth component of the vector.
 ///
+	@inlinable
 	public var w: Component {
 		get {
 			storage[3]
@@ -437,6 +478,7 @@ extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
 ///
 /// - Returns: The angle formed by the vectors.
 ///
+	@inlinable
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component> {
 		let by = by ?? Self.zero
 		
@@ -451,10 +493,12 @@ extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		from + (to - from) * amount
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self += (other - self) * amount
 	}
@@ -462,6 +506,7 @@ extension Vector: Blendable {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
 		let values = try Array<Component>(from: decoder)
@@ -476,6 +521,7 @@ extension Vector: Codable {
 		self.storage = storage
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values: [Component] = []
 		for i in 0..<Self.count {
@@ -497,6 +543,7 @@ extension Vector: CrossProduct where numberOfComponents == 3 {
 ///
 /// - Returns: A new vector storing the calculated cross product.
 ///
+	@inlinable
 	public func cross(_ other: Self) -> Self {
 		var result = Self()
 		result[0] = storage[1] * other[2] - storage[2] * other[1]
@@ -534,6 +581,7 @@ extension Vector: DotProduct {
 ///
 /// - Returns: A value containing the result of the dot product.
 ///
+	@inlinable
 	public func dot(_ other: Self) -> Component {
 		var result: Component = .zero
 		for i in 0..<Self.count {
@@ -545,6 +593,7 @@ extension Vector: DotProduct {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: Equatable {
+	@inlinable
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		for i in 0..<lhs.storage.count {
 			if lhs.storage[i] != rhs.storage[i] {
@@ -565,6 +614,7 @@ extension Vector: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func distance(to other: Self) -> Component {
 		Component.sqrt(squaredDistance(to: other))
 	}
@@ -581,6 +631,7 @@ extension Vector: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The squared euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func squaredDistance(to other: Self) -> Component {
 		var result: Component = .zero
 		for i in 0..<Self.count {
@@ -602,6 +653,7 @@ extension Vector: ExpressibleByArrayLiteral {
 /// If a shorter array is provided than the size of the vector, any
 /// remaining space will be padded with zeros.
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for i in 0..<Swift.min(Self.count, elements.count) {
@@ -615,6 +667,7 @@ extension Vector: ExpressibleByArrayLiteral {
 extension Vector: MagnitudeAdjustable {
 /// The magnitude or length of the vector.
 ///
+	@inlinable
 	public var magnitude: Component {
 		get {
 			var total: Component = .zero
@@ -651,6 +704,7 @@ extension Vector: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public var normalized: Self {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -665,6 +719,7 @@ extension Vector: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public mutating func normalize() {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -681,6 +736,7 @@ extension Vector: QuaternionRotatable where numberOfComponents == 3 {
 ///
 /// - Returns: A vector storing the result of the rotation.
 ///
+	@inlinable
 	public func rotated(by quaternion: Quaternion<Component>) -> Self {
 		Self(quaternion.rotate(vector: self.fixed))
 	}
@@ -690,6 +746,7 @@ extension Vector: QuaternionRotatable where numberOfComponents == 3 {
 /// - Parameters:
 ///   - quaternion: The quaternion to rotate the vector by.
 ///
+	@inlinable
 	public mutating func rotate(by quaternion: Quaternion<Component>) {
 		self = Self(quaternion.rotate(vector: self.fixed))
 	}
@@ -717,6 +774,7 @@ extension Vector: Vector4Like where numberOfComponents == 4 {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: VectorMath {
+	@inlinable
 	public func min() -> Component {
 		var minimum: Component = storage[0]
 		for i in 1..<Self.count {
@@ -725,6 +783,7 @@ extension Vector: VectorMath {
 		return minimum
 	}
 	
+	@inlinable
 	public func max() -> Component {
 		var maximum: Component = storage[0]
 		for i in 1..<Self.count {
@@ -733,10 +792,12 @@ extension Vector: VectorMath {
 		return maximum
 	}
 	
+	@inlinable
 	public func average() -> Component {
 		self.sum() / Component(Self.count)
 	}
 	
+	@inlinable
 	public func sum() -> Component {
 		var total: Component = .zero
 		for i in 0..<Self.count {
@@ -745,6 +806,7 @@ extension Vector: VectorMath {
 		return total
 	}
 
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -753,6 +815,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -761,6 +824,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -769,6 +833,7 @@ extension Vector: VectorMath {
 		return result
 	}
 	
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -777,12 +842,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		for i in 0..<Self.count {
 			lhs.storage[i] += rhs.storage[i]
 		}
 	}
 
+	@inlinable
 	public static func + (lhs: Self, rhs: Component) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -791,6 +858,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func + (lhs: Component, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -799,12 +867,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Component) {
 		for i in 0..<Self.count {
 			lhs.storage[i] += rhs
 		}
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -813,12 +883,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		for i in 0..<Self.count {
 			lhs.storage[i] -= rhs.storage[i]
 		}
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Component) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -827,6 +899,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func - (lhs: Component, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -835,12 +908,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Component) {
 		for i in 0..<Self.count {
 			lhs.storage[i] -= rhs
 		}
 	}
 
+	@inlinable
 	public static prefix func - (vector: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -849,6 +924,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -857,12 +933,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		for i in 0..<Self.count {
 			lhs.storage[i] *= rhs.storage[i]
 		}
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -871,6 +949,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -879,12 +958,14 @@ extension Vector: VectorMath {
 		return result
 	}
 	
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		for i in 0..<Self.count {
 			lhs.storage[i] *= rhs
 		}
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -893,12 +974,14 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Self) {
 		for i in 0..<Self.count {
 			lhs.storage[i] /= rhs.storage[i]
 		}
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Component) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -907,6 +990,7 @@ extension Vector: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Component) {
 		for i in 0..<Self.count {
 			lhs.storage[i] /= rhs
@@ -916,15 +1000,18 @@ extension Vector: VectorMath {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		numberOfComponents
 	}
 
+	@inlinable
 	public init() {
 		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
 		self.storage = Storage(repeating: .zero)
 	}
 	
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		precondition(numberOfComponents > 0, "numberOfComponents must be greater than zero.")
 		var storage = Storage(repeating: .zero)
@@ -934,6 +1021,7 @@ extension Vector: VectorProtocol {
 		self.storage = storage
 	}
 	
+	@inlinable
 	public subscript(index: Int) -> Component {
 		get {
 			storage[index]
@@ -943,6 +1031,7 @@ extension Vector: VectorProtocol {
 		}
 	}
 	
+	@inlinable
 	public mutating func clear() {
 		self.storage = Storage(repeating: .zero)
 	}
@@ -950,6 +1039,7 @@ extension Vector: VectorProtocol {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: VectorReflectable {
+	@inlinable
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
 		return self - (2 * dot(normal) * normal)
@@ -958,6 +1048,7 @@ extension Vector: VectorReflectable {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Vector: VectorRefractable {
+	@inlinable
 	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
 		let rayDirection = self.normalized
 		let normal = normal.normalized

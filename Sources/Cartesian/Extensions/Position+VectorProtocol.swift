@@ -11,6 +11,7 @@ import RealModule
 import Units
 
 extension Position: AngleMeasurable where Component.Value: Real {
+	@inlinable
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component.Value> {
 		let by = by ?? Self.zero
 		
@@ -24,6 +25,7 @@ extension Position: AngleMeasurable where Component.Value: Real {
 }
 
 extension Position: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component.Value) -> Self {
 		var componentTotals: [Component] = []
 		for index in 0..<Self.count {
@@ -32,12 +34,14 @@ extension Position: Blendable {
 		return Self(componentTotals)
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component.Value) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}
 }
 
 extension Position: DotProduct {
+	@inlinable
 	public func dot(_ other: Self) -> Component.Value {
 		var componentProducts: [Component] = []
 		for index in 0..<Self.count {
@@ -53,10 +57,12 @@ extension Position: DotProduct {
 }
 
 extension Position: EuclideanDistanceMeasurable {
+	@inlinable
 	public func distance(to other: Self) -> Component {
 		sqrt(squaredDistance(to: other))
 	}
 
+	@inlinable
 	public func squaredDistance(to other: Self) -> Component {
 		var componentTotals: [Component] = []
 		for index in 0..<Self.count {
@@ -81,6 +87,7 @@ extension Position: @retroactive ExpressibleByArrayLiteral {
 /// let position: Position<SIMD2<Double>> = [.meters(1.0), .meters(2.0)]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for index in 0..<Swift.min(Self.count, elements.count) {
@@ -95,6 +102,7 @@ extension Position: MagnitudeMeasurable {
 }
 
 extension Position: MagnitudeAdjustable {
+	@inlinable
 	public var magnitude: Component {
 		get {
 			var components: [Component] = []
@@ -122,16 +130,19 @@ extension Position: MagnitudeAdjustable {
 }
 
 extension Position: Normalizable {
+	@inlinable
 	public var normalized: Self {
 		self / magnitude
 	}
 
+	@inlinable
 	public mutating func normalize() {
 		self /= magnitude
 	}
 }
 
 extension Position: VectorMath {
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -140,6 +151,7 @@ extension Position: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -148,6 +160,7 @@ extension Position: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -158,14 +171,17 @@ extension Position: VectorMath {
 }
 
 extension Position: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		Value.scalarCount
 	}
 	
+	@inlinable
 	public init() {
 		self = .zero
 	}
 	
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		var value: Self = .zero
 		for enumerator in collection.prefix(Self.count).enumerated() {
@@ -174,6 +190,7 @@ extension Position: VectorProtocol {
 		self = value
 	}
 	
+	@inlinable
 	public mutating func clear() {
 		self = .zero
 	}

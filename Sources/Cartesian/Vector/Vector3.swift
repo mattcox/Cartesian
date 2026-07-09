@@ -12,7 +12,8 @@ import Units
 /// A vector with three scalar components.
 ///
 public struct Vector3<Component: Real & SIMDScalar> {
-	private var storage: SIMDRepresentation
+	@usableFromInline
+	var storage: SIMDRepresentation
 }
 
 extension Vector3 {
@@ -23,6 +24,7 @@ extension Vector3 {
 ///   - y: The second component of the vector.
 ///   - z: The third component of the vector.
 ///
+	@inlinable
 	public init(x: Component, y: Component, z: Component) {
 		self.storage = SIMDRepresentation(x: x, y: y, z: z)
 	}
@@ -34,12 +36,14 @@ extension Vector3 {
 ///   - second: The second component of the vector.
 ///   - third: The third component of the vector.
 ///
+	@inlinable
 	public init(_ first: Component, _ second: Component, _ third: Component) {
 		self.storage = SIMDRepresentation(x: first, y: second, z: third)
 	}
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var first: Component {
 		get {
 			storage.x
@@ -51,6 +55,7 @@ extension Vector3 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var second: Component {
 		get {
 			storage.y
@@ -62,6 +67,7 @@ extension Vector3 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var third: Component {
 		get {
 			storage.z
@@ -73,6 +79,7 @@ extension Vector3 {
 	
 /// The first component of the vector.
 ///
+	@inlinable
 	public var x: Component {
 		get {
 			storage.x
@@ -84,6 +91,7 @@ extension Vector3 {
 
 /// The second component of the vector.
 ///
+	@inlinable
 	public var y: Component {
 		get {
 			storage.y
@@ -95,6 +103,7 @@ extension Vector3 {
 	
 /// The third component of the vector.
 ///
+	@inlinable
 	public var z: Component {
 		get {
 			storage.z
@@ -119,6 +128,7 @@ extension Vector3: AngleMeasurable where Component: BinaryFloatingPoint {
 ///
 /// - Returns: The angle formed by the vectors.
 ///
+	@inlinable
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component> {
 		let by = by ?? Self.zero
 		
@@ -132,16 +142,19 @@ extension Vector3: AngleMeasurable where Component: BinaryFloatingPoint {
 }
 
 extension Vector3: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		Self(from.storage + (to.storage - from.storage) * amount)
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		storage = storage + (other.storage - storage) * amount
 	}
 }
 
 extension Vector3: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != Self.count {
@@ -150,6 +163,7 @@ extension Vector3: Codable {
 		self.storage = SIMDRepresentation(values)
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values: [Component] = []
 		for i in 0..<Self.count {
@@ -170,6 +184,7 @@ extension Vector3: CrossProduct {
 ///
 /// - Returns: A new vector storing the calculated cross product.
 ///
+	@inlinable
 	public func cross(_ other: Self) -> Self {
 		Self(x: storage.y * other.storage.z - storage.z * other.storage.y,
 			 y: storage.z * other.storage.x - storage.x * other.storage.z,
@@ -198,6 +213,7 @@ extension Vector3: DotProduct {
 ///
 /// - Returns: A value containing the result of the dot product.
 ///
+	@inlinable
 	public func dot(_ other: Self) -> Component {
 		storage.x * other.storage.x +
 		storage.y * other.storage.y +
@@ -218,6 +234,7 @@ extension Vector3: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func distance(to other: Self) -> Component {
 		Component.sqrt(squaredDistance(to: other))
 	}
@@ -234,6 +251,7 @@ extension Vector3: EuclideanDistanceMeasurable {
 ///
 /// - Returns: The squared euclidian distance between the two vectors.
 ///
+	@inlinable
 	public func squaredDistance(to other: Self) -> Component {
 		Component.pow((storage.x - other.storage.x), 2) +
 		Component.pow((storage.y - other.storage.y), 2) +
@@ -249,6 +267,7 @@ extension Vector3: ExpressibleByArrayLiteral {
 /// let vector: Vector3 = [1.0, 2.0, 3.0]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for i in 0..<Swift.min(Self.count, elements.count) {
@@ -261,6 +280,7 @@ extension Vector3: ExpressibleByArrayLiteral {
 extension Vector3: MagnitudeAdjustable {
 /// The magnitude or length of the vector.
 ///
+	@inlinable
 	public var magnitude: Component {
 		get {
 			Component.sqrt(Component.pow(storage.x, 2) + Component.pow(storage.y, 2) + Component.pow(storage.z, 2))
@@ -291,6 +311,7 @@ extension Vector3: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public var normalized: Self {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -305,6 +326,7 @@ extension Vector3: Normalizable {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
+	@inlinable
 	public mutating func normalize() {
 		let length = magnitude
 		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
@@ -320,6 +342,7 @@ extension Vector3: QuaternionRotatable {
 ///
 /// - Returns: A vector storing the result of the rotation.
 ///
+	@inlinable
 	public func rotated(by quaternion: Quaternion<Component>) -> Self {
 		quaternion.rotate(vector: self)
 	}
@@ -329,6 +352,7 @@ extension Vector3: QuaternionRotatable {
 /// - Parameters:
 ///   - quaternion: The quaternion to rotate the vector by.
 ///
+	@inlinable
 	public mutating func rotate(by quaternion: Quaternion<Component>) {
 		self = quaternion.rotate(vector: self)
 	}
@@ -341,10 +365,12 @@ extension Vector3: Sendable where SIMDRepresentation: Sendable {
 extension Vector3: SIMDConvertible {
 	public typealias SIMDRepresentation = SIMD3<Component>
 	
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = simd
 	}
 	
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage
@@ -358,10 +384,12 @@ extension Vector3: SIMDConvertible {
 extension Vector3: Transformable3D {
 	public typealias Scalar = Component
 
+	@inlinable
 	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, Component == T.Component {
 		self = transform.matrix.transform(point: self)
 	}
 	
+	@inlinable
 	public func transformed<T>(by transform: T) -> Vector3<Component> where T: Transform3Protocol, Component == T.Component {
 		transform.matrix.transform(point: self)
 	}
@@ -372,22 +400,27 @@ extension Vector3: Vector3Like {
 }
 
 extension Vector3: VectorMath {
+	@inlinable
 	public func min() -> Component {
 		storage.min()
 	}
 	
+	@inlinable
 	public func max() -> Component {
 		storage.max()
 	}
 	
+	@inlinable
 	public func average() -> Component {
 		storage.sum() / Component(Self.count)
 	}
 	
+	@inlinable
 	public func sum() -> Component {
 		storage.sum()
 	}
 	
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		Self(x: Swift.min(a.storage.x, b.storage.x),
 			 y: Swift.min(a.storage.y, b.storage.y),
@@ -395,6 +428,7 @@ extension Vector3: VectorMath {
 		)
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		Self(x: Swift.max(a.storage.x, b.storage.x),
 			 y: Swift.max(a.storage.y, b.storage.y),
@@ -402,6 +436,7 @@ extension Vector3: VectorMath {
 		)
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		Self(x: Swift.abs(storage.x),
 			 y: Swift.abs(storage.y),
@@ -409,96 +444,119 @@ extension Vector3: VectorMath {
 		)
 	}
 	
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage + rhs.storage)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		lhs.storage += rhs.storage
 	}
 
+	@inlinable
 	public static func + (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage + rhs)
 	}
 
+	@inlinable
 	public static func + (lhs: Component, rhs: Self) -> Self {
 		Self(lhs + rhs.storage)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Component) {
 		lhs.storage += rhs
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage - rhs.storage)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		lhs.storage -= rhs.storage
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage - rhs)
 	}
 
+	@inlinable
 	public static func - (lhs: Component, rhs: Self) -> Self {
 		Self(lhs - rhs.storage)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Component) {
 		lhs.storage -= rhs
 	}
 
+	@inlinable
 	public static prefix func - (vector: Self) -> Self {
 		Self(-vector.storage)
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage * rhs.storage)
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs.storage *= rhs.storage
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage * rhs)
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		Self(lhs * rhs.storage)
 	}
 	
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		lhs.storage *= rhs
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage / rhs.storage)
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Self) {
 		lhs.storage /= rhs.storage
 	}
 
+	@inlinable
 	public static func / (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage / rhs)
 	}
 
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Component) {
 		lhs.storage /= rhs
 	}
 }
 
 extension Vector3: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		SIMDRepresentation.scalarCount
 	}
 	
+	@inlinable
 	public init() {
 		self.storage = SIMDRepresentation()
 	}
 	
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		var vector = SIMDRepresentation()
 		for enumerator in collection.prefix(Self.count).enumerated() {
@@ -507,6 +565,7 @@ extension Vector3: VectorProtocol {
 		self.storage = vector
 	}
 	
+	@inlinable
 	public subscript(index: Int) -> Component {
 		get {
 			storage[index]
@@ -516,12 +575,14 @@ extension Vector3: VectorProtocol {
 		}
 	}
 	
+	@inlinable
 	public mutating func clear() {
 		storage = SIMDRepresentation()
 	}
 }
 
 extension Vector3: VectorReflectable {
+	@inlinable
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
 		return self - (2 * dot(normal) * normal)
@@ -529,6 +590,7 @@ extension Vector3: VectorReflectable {
 }
 
 extension Vector3: VectorRefractable {
+	@inlinable
 	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
 		let rayDirection = self.normalized
 		let normal = normal.normalized
@@ -550,6 +612,7 @@ extension Vector3: VectorRefractable {
 }
 
 extension Vector3: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(simd)
 	}

@@ -39,6 +39,7 @@ public protocol CrossProduct {
 }
 
 extension CrossProduct {
+	@inlinable
 	public static func ⨯ (lhs: Self, rhs: Self) -> Cross {
 		lhs.cross(rhs)
 	}

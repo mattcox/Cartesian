@@ -10,6 +10,7 @@ import RealModule
 import Units
 
 extension Force: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component.Value) -> Self {
 		var componentTotals: [Component] = []
 		for index in 0..<Self.count {
@@ -18,6 +19,7 @@ extension Force: Blendable {
 		return Self(componentTotals)
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component.Value) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}
@@ -31,6 +33,7 @@ extension Force: @retroactive ExpressibleByArrayLiteral {
 /// let force: Force<SIMD2<Double>> = [.newtons(1.0), .newtons(2.0)]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var vector = Self()
 		for index in 0..<Swift.min(Self.count, elements.count) {
@@ -45,6 +48,7 @@ extension Force: MagnitudeMeasurable {
 }
 
 extension Force: MagnitudeAdjustable {
+	@inlinable
 	public var magnitude: Component {
 		get {
 			var components: [Component] = []
@@ -72,16 +76,19 @@ extension Force: MagnitudeAdjustable {
 }
 
 extension Force: Normalizable {
+	@inlinable
 	public var normalized: Self {
 		self / magnitude
 	}
 
+	@inlinable
 	public mutating func normalize() {
 		self /= magnitude
 	}
 }
 
 extension Force: VectorMath {
+	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -90,6 +97,7 @@ extension Force: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public static func max(_ a: Self, _ b: Self) -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -98,6 +106,7 @@ extension Force: VectorMath {
 		return result
 	}
 
+	@inlinable
 	public func abs() -> Self {
 		var result = Self()
 		for i in 0..<Self.count {
@@ -108,14 +117,17 @@ extension Force: VectorMath {
 }
 
 extension Force: VectorProtocol {
+	@inlinable
 	public static var count: Int {
 		Value.scalarCount
 	}
 	
+	@inlinable
 	public init() {
 		self = .zero
 	}
 
+	@inlinable
 	public init<C>(_ collection: C) where C : Collection, Component == C.Element {
 		var value: Self = .zero
 		for enumerator in collection.prefix(Self.count).enumerated() {
@@ -124,6 +136,7 @@ extension Force: VectorProtocol {
 		self = value
 	}
 
+	@inlinable
 	public mutating func clear() {
 		self = .zero
 	}

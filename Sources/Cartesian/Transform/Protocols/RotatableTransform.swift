@@ -48,6 +48,7 @@ extension RotatableTransform where Component: Real & SIMDScalar & BinaryFloating
 /// order in which the rotations are applied, use ``toEulerRotation(order:)``
 /// and ``fromEulerRotation(_:order:)``.
 ///
+	@inlinable
 	public var eulerRotation: Quaternion<Component>.Rotation {
 		get {
 			rotation.toRotation(order: .default)
@@ -67,6 +68,7 @@ extension RotatableTransform where Component: Real & SIMDScalar & BinaryFloating
 ///
 /// - Returns: The rotation expressed as Euler angles.
 ///
+	@inlinable
 	public func toEulerRotation(order: RotationOrder) -> Quaternion<Component>.Rotation {
 		rotation.toRotation(order: order)
 	}
@@ -80,6 +82,7 @@ extension RotatableTransform where Component: Real & SIMDScalar & BinaryFloating
 ///   - rotation: The rotation, expressed as Euler angles.
 ///   - order: The order to apply the rotations.
 ///
+	@inlinable
 	public mutating func fromEulerRotation(_ rotation: Quaternion<Component>.Rotation, order: RotationOrder) {
 		self.rotation = Quaternion(withRotation: rotation, order: order)
 	}

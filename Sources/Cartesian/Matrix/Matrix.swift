@@ -25,8 +25,10 @@ import Units
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 public struct Matrix<let n: Int, let m: Int, Component: Real & SIMDScalar> {
 	public typealias Column = InlineArray<m, Component>
-	private typealias Storage = InlineArray<n, Column>
-	private var storage: Storage
+	@usableFromInline
+	typealias Storage = InlineArray<n, Column>
+	@usableFromInline
+	var storage: Storage
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
@@ -36,6 +38,7 @@ extension Matrix {
 /// - Parameters:
 ///   - column: The index of the column in the matrix.
 ///
+	@inlinable
 	public subscript(column: Int) -> Column {
 		get {
 			storage[column]
@@ -48,6 +51,7 @@ extension Matrix {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != (Self.columns * Self.rows) {
@@ -66,6 +70,7 @@ extension Matrix: Codable {
 		self = matrix
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values = [Component]()
 		for column in 0..<Self.columns{
@@ -98,6 +103,7 @@ extension Matrix: CustomStringConvertible where Component: CVarArg {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: Equatable {
+	@inlinable
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		for x in 0..<Self.columns {
 			for y in 0..<Self.rows {
@@ -132,6 +138,7 @@ extension Matrix: ExpressibleByArrayLiteral {
 /// [1.0, 5.0, 9.0, 13.0], [2.0, 6.0, 10.0, 14.0], [3.0, 7.0, 11.0, 15.0], [4.0, 8.0, 12.0, 16.0],
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: [Component]...) {
 		var matrix = Self()
 		
@@ -156,6 +163,7 @@ extension Matrix: Identity {
 /// - Note: Only square matrices have a meaningful identity. For non-square
 /// matrices, the diagonal is filled with 1 up to the shorter dimension.
 ///
+	@inlinable
 	public static var identity: Self {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -169,6 +177,7 @@ extension Matrix: Identity {
 /// An identity matrix is a matrix with 1 in the main diagonal, and 0
 /// everywhere else.
 ///
+	@inlinable
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -186,6 +195,7 @@ extension Matrix: Identity {
 /// everywhere else. It acts as the multiplicative identity in matrix
 /// operations, leaving other matrices unchanged when multiplied.
 ///
+	@inlinable
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -207,6 +217,7 @@ extension Matrix: Invertible where n == m {
 /// - Warning: This algorithm is O(n!) due to cofactor expansion and is only
 /// suitable for small matrices.
 ///
+	@inlinable
 	public var inverse: Self? {
 		let determinant = self.determinant
 		guard (abs(determinant) < .zero) == false &&
@@ -221,6 +232,7 @@ extension Matrix: Invertible where n == m {
 ///
 /// - Returns: A boolean indicating if the matrix could be inverted.
 ///
+	@inlinable
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self = inverse
@@ -236,6 +248,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 	public typealias Scale = Vector3<Component>
 	public typealias Translation = Vector3<Component>
 
+	@inlinable
 	public var isAffine: Bool {
 		storage[0][3].isApproximatelyEqual(to: .zero) &&
 		storage[1][3].isApproximatelyEqual(to: .zero) &&
@@ -243,6 +256,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		storage[3][3].isApproximatelyEqual(to: 1)
 	}
 
+	@inlinable
 	public var scale: Scale {
 		get {
 			let row0 = Scale(storage[0][0], storage[1][0], storage[2][0])
@@ -260,6 +274,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		}
 	}
 
+	@inlinable
 	public var translation: Translation {
 		get {
 			Translation(storage[3][0], storage[3][1], storage[3][2])
@@ -271,12 +286,14 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		}
 	}
 
+	@inlinable
 	public init(withRotation rotation: Rotation, order: RotationOrder) {
 		var matrix = Self.identity
 		matrix.fromRotation(rotation, order: order)
 		self = matrix
 	}
 
+	@inlinable
 	public init(withScale scale: Component) {
 		var matrix = Self.identity
 		for i in 0..<3 {
@@ -285,6 +302,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		self = matrix
 	}
 
+	@inlinable
 	public init(withScale scale: Scale) {
 		var matrix = Self.identity
 		for i in 0..<3 {
@@ -293,6 +311,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		self = matrix
 	}
 
+	@inlinable
 	public init(withTranslation translation: Translation) {
 		var matrix = Self.identity
 		matrix.storage[3][0] = translation[0]
@@ -301,6 +320,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		self = matrix
 	}
 
+	@inlinable
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let orders = [order[0].index, order[1].index, order[2].index]
 
@@ -334,6 +354,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 		return rotation
 	}
 
+	@inlinable
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
 		var result = Self.identity
 
@@ -365,6 +386,7 @@ extension Matrix: MatrixLinearTransform where n == m, n == 4, Component: BinaryF
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: MatrixMath {
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for column in 0..<n {
@@ -375,6 +397,7 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		for column in 0..<n {
 			for row in 0..<m {
@@ -383,6 +406,7 @@ extension Matrix: MatrixMath {
 		}
 	}
 
+	@inlinable
 	public static prefix func - (rhs: Self) -> Self {
 		var result = Self()
 		for column in 0..<n {
@@ -393,6 +417,7 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		var result = Self()
 		for column in 0..<n {
@@ -403,6 +428,7 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		for column in 0..<n {
 			for row in 0..<m {
@@ -411,6 +437,7 @@ extension Matrix: MatrixMath {
 		}
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		precondition(n == m, "Matrix multiplication requires a square matrix")
 		var result = Self()
@@ -426,10 +453,12 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs = lhs * rhs
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		var result = Self()
 		for column in 0..<n {
@@ -440,6 +469,7 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		var result = Self()
 		for column in 0..<n {
@@ -450,6 +480,7 @@ extension Matrix: MatrixMath {
 		return result
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		for column in 0..<n {
 			for row in 0..<m {
@@ -461,18 +492,22 @@ extension Matrix: MatrixMath {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: MatrixProtocol {
+	@inlinable
 	public static var columns: Int {
 		n
 	}
 	
+	@inlinable
 	public static var rows: Int {
 		m
 	}
 	
+	@inlinable
 	public init() {
 		storage = Storage(repeating: Column(repeating: .zero))
 	}
 	
+	@inlinable
 	public subscript(column: Int, row: Int) -> Component {
 		get {
 			storage[column][row]
@@ -487,6 +522,7 @@ extension Matrix: MatrixProtocol {
 extension Matrix: MatrixVectorMath {
 	public typealias Vector = Cartesian.Vector<m, Component>
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Vector) -> Vector {
 		precondition(n == m, "Matrix-vector multiplication requires a square matrix")
 		var result = Vector()
@@ -512,12 +548,14 @@ extension Matrix: QuaternionConvertible where n == m, n == 3 {
 ///   - quaternion: The quaternion that will be used to initialize the
 ///   rotational elements of the matrix.
 ///
+	@inlinable
 	public init(withQuaternion quaternion: Quaternion<Component>) {
 		self = Self(from: quaternion.matrix)
 	}
 
 /// The rotational elements of the matrix as a quaternion.
 ///
+	@inlinable
 	public var quaternion: Quaternion<Component> {
 		Quaternion(withMatrix: Matrix3x3(from: self))
 	}
@@ -530,10 +568,12 @@ extension Matrix: Sendable where Storage: Sendable {
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
 extension Matrix: SquareMatrix where n == m {
+	@inlinable
 	public var adjugate: Self {
 		cofactor.transposed
 	}
 
+	@inlinable
 	public var cofactor: Self {
 		var result = Self()
 		for col in 0..<n {
@@ -553,6 +593,7 @@ extension Matrix: SquareMatrix where n == m {
 		return result
 	}
 
+	@inlinable
 	public var determinant: Component {
 		var columns = [[Component]]()
 		for col in 0..<n {
@@ -565,6 +606,7 @@ extension Matrix: SquareMatrix where n == m {
 		return Self.determinantOfColumns(columns)
 	}
 
+	@inlinable
 	public var trace: Component {
 		(0..<n).reduce(into: Component.zero) {
 			$0 += storage[$1][$1]
@@ -576,6 +618,7 @@ extension Matrix: SquareMatrix where n == m {
 /// A transposed matrix is the result of flipping the original matrix across
 /// its main diagonal, effectively swapping rows with columns.
 ///
+	@inlinable
 	public var transposed: Self {
 		var result = Self()
 		for col in 0..<n {
@@ -591,6 +634,7 @@ extension Matrix: SquareMatrix where n == m {
 /// A transposed matrix is the result of flipping the original matrix across
 /// its main diagonal, effectively swapping rows with columns.
 ///
+	@inlinable
 	public mutating func transpose() {
 		let temp = self
 		for col in 0..<n {
@@ -611,7 +655,8 @@ extension Matrix: SquareMatrix where n == m {
 ///
 /// - Returns: The determinant of the matrix.
 ///
-	private static func determinantOfColumns(_ columns: [[Component]]) -> Component {
+	@inlinable @usableFromInline
+	static func determinantOfColumns(_ columns: [[Component]]) -> Component {
 		let size = columns.count
 		if size == 0 { return 1 }
 		if size == 1 { return columns[0][0] }

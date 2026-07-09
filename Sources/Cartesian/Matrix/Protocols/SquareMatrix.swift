@@ -58,12 +58,14 @@ public protocol SquareMatrix: MatrixProtocol {
 }
 
 extension SquareMatrix where Self: MatrixSub {
+	@inlinable
 	public var adjugate: Self {
 		cofactor.transposed
 	}
 }
 
 extension SquareMatrix where Self: MatrixSub, SubMatrix: SquareMatrix {
+	@inlinable
 	public var cofactor: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {

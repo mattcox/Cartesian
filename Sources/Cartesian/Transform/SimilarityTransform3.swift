@@ -45,6 +45,7 @@ public struct SimilarityTransform3<Component: Real & SIMDScalar> {
 ///   - translation: The translation encoded by the transform.
 ///   - scale: The uniform scale encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Quaternion<Component>, translation: Vector3<Component>, scale: Component) {
 		self.rotation = rotation
 		self.translation = translation
@@ -56,10 +57,12 @@ extension SimilarityTransform3: TransformProtocol {
 	public typealias Matrix = Matrix4x4<Component>
 	public typealias Vector = Vector3<Component>
 
+	@inlinable
 	public init() {
 		self.init(rotation: .identity, translation: .zero, scale: 1)
 	}
 
+	@inlinable
 	public var matrix: Matrix4x4<Component> {
 		var matrix = Matrix4x4(withQuaternion: rotation)
 		matrix.scale = Vector3(scale, scale, scale)
@@ -75,6 +78,7 @@ extension SimilarityTransform3: TransformProtocol {
 ///
 /// - Returns: The transformed position.
 ///
+	@inlinable
 	public func apply(to position: Vector3<Component>) -> Vector3<Component> {
 		(rotation.rotate(vector: position) * scale) + translation
 	}
@@ -90,6 +94,7 @@ extension SimilarityTransform3: TransformProtocol {
 ///
 /// - Returns: The combined similarity transform.
 ///
+	@inlinable
 	public func concatenated(with other: SimilarityTransform3) -> SimilarityTransform3 {
 		SimilarityTransform3(
 			rotation: rotation * other.rotation,
@@ -119,14 +124,17 @@ extension SimilarityTransform3: Identity {
 /// The identity similarity transform, encoding no rotation, no translation
 /// and a unit scale.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(rotation: .identity, translation: .zero, scale: 1)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		rotation.isIdentity && translation == .zero && scale.isApproximatelyEqual(to: 1)
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		self = .identity
 	}
@@ -135,6 +143,7 @@ extension SimilarityTransform3: Identity {
 extension SimilarityTransform3: Invertible {
 /// The inverse of the similarity transform, or `nil` if the scale is zero.
 ///
+	@inlinable
 	public var inverse: Self? {
 		guard !scale.isApproximatelyEqual(to: .zero) else {
 			return nil
@@ -148,6 +157,7 @@ extension SimilarityTransform3: Invertible {
 		)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false
@@ -180,6 +190,7 @@ extension SimilarityTransform3: CustomStringConvertible where Component: CVarArg
 }
 
 extension SimilarityTransform3: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		Self(
 			rotation: Quaternion<Component>.slerp(from: from.rotation, to: to.rotation, by: amount),
@@ -188,6 +199,7 @@ extension SimilarityTransform3: Blendable {
 		)
 	}
 
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}

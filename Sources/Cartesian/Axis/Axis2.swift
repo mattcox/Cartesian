@@ -25,18 +25,21 @@ public enum Axis2 {
 	
 /// The U axis.
 ///
+	@inlinable @usableFromInline
 	static var U: Self {
 		.u(negative: false)
 	}
 
 /// The V axis.
 ///
+	@inlinable @usableFromInline
 	static var V: Self {
 		.v(negative: false)
 	}
 	
 /// Returns the Axis as an index, where y is 0 and v is 1.
 ///
+	@inlinable @usableFromInline
 	var index: Int {
 		switch self {
 			case .u:
@@ -52,6 +55,7 @@ public enum Axis2 {
 ///   - index: The index used to initialize the Axis, in the range 0...1.
 ///   - negative: Specifies whether the axis is negative, for example -U.
 ///
+	@inlinable @usableFromInline
 	init(_ index: Int, negative: Bool = false) {
 		if index == 0 {
 			self = .u(negative: negative)
@@ -65,6 +69,7 @@ public enum Axis2 {
 extension Axis2 {
 /// The inverse of this axis.
 ///
+	@inlinable
 	public var inverse: Self {
 		switch self {
 			case .u(let negative):
@@ -77,6 +82,7 @@ extension Axis2 {
 	
 /// Invert the axis.
 ///
+	@inlinable
 	public mutating func invert() {
 		switch self {
 			case .u(let negative):

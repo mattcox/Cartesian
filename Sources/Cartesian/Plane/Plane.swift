@@ -31,6 +31,19 @@ public struct Plane<Component: Real & SIMDScalar> {
 /// Points on the plane satisfy `normal · p = distance`.
 ///
 	public var distance: Component
+
+/// Initialize the plane from a normal and a signed distance from the origin.
+///
+/// - Parameters:
+///   - normal: The surface normal of the plane.
+///   - distance: The signed distance from the origin, measured along the
+///     normal.
+///
+	@inlinable
+	public init(normal: Vector3<Component>, distance: Component) {
+		self.normal = normal
+		self.distance = distance
+	}
 }
 
 extension Plane {
@@ -41,6 +54,7 @@ extension Plane {
 ///   - normal: The surface normal of the plane.
 ///   - point: A point on the plane.
 ///
+	@inlinable
 	public init(normal: Vector3<Component>, point: Vector3<Component>) {
 		self.normal = normal
 		self.distance = normal.dot(point)
@@ -59,6 +73,7 @@ extension Plane {
 ///
 /// - Returns: The signed distance from the plane to the point.
 ///
+	@inlinable
 	public func signedDistance(to point: Vector3<Component>) -> Component {
 		normal.dot(point) - distance
 	}
@@ -71,6 +86,7 @@ extension Plane {
 ///
 /// - Returns: The distance from the plane to the point.
 ///
+	@inlinable
 	public func distance(to point: Vector3<Component>) -> Component {
 		Swift.abs(signedDistance(to: point))
 	}
@@ -83,6 +99,7 @@ extension Plane {
 /// - Returns: True if the point lies on the plane within the default
 /// tolerance.
 ///
+	@inlinable
 	public func contains(_ point: Vector3<Component>) -> Bool {
 		signedDistance(to: point).isApproximatelyEqual(to: .zero)
 	}
@@ -94,6 +111,7 @@ extension Plane {
 ///
 /// - Returns: The side of the plane the point is on.
 ///
+	@inlinable
 	public func side(of point: Vector3<Component>) -> Side {
 		let d = signedDistance(to: point)
 		if d.isApproximatelyEqual(to: .zero) {
@@ -134,6 +152,7 @@ extension Plane.Side: Sendable {
 }
 
 extension Plane: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != 4 {
@@ -143,6 +162,7 @@ extension Plane: Codable {
 		self.distance = values[3]
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		let values: [Component] = [normal.x, normal.y, normal.z, distance]
 		try values.encode(to: encoder)
@@ -166,6 +186,7 @@ extension Plane: Sendable where Vector3<Component>: Sendable, Component: Sendabl
 extension Plane: Transformable3D {
 	public typealias Scalar = Component
 
+	@inlinable
 	public mutating func transform<T>(by transform: T) where T: Transform3Protocol, Component == T.Component {
 		self = self.transformed(by: transform)
 	}
@@ -183,6 +204,7 @@ extension Plane: Transformable3D {
 ///
 /// - Returns: The transformed plane.
 ///
+	@inlinable
 	public func transformed<T>(by transform: T) -> Plane where T: Transform3Protocol, Component == T.Component {
 		guard let inverse = transform.matrix.inverse else {
 			return self

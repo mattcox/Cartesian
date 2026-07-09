@@ -36,7 +36,8 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 		
 	/// Initialize an empty matrix.
 	///
-		internal init() {
+		@inlinable @usableFromInline
+		init() {
 			self.columns = (Column(), Column(), Column())
 		}
 
@@ -47,7 +48,8 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///   - second: The values to place in the second column.
 	///   - third: The values to place in the third column.
 	///
-		internal init(_ first: Column, _ second: Column, _ third: Column) {
+		@inlinable @usableFromInline
+		init(_ first: Column, _ second: Column, _ third: Column) {
 			self.columns = (first, second, third)
 		}
 		
@@ -60,7 +62,8 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The value at the specified column and row index.
 	///
-		internal subscript(column: Int, row: Int) -> Component {
+		@inlinable @usableFromInline
+		subscript(column: Int, row: Int) -> Component {
 			get {
 				switch column {
 					case 0:
@@ -94,7 +97,8 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The column at the specified index.
 	///
-		internal subscript(column: Int) -> Column {
+		@inlinable @usableFromInline
+		subscript(column: Int) -> Column {
 			get {
 				switch column {
 					case 0:
@@ -122,7 +126,8 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 		}
 	}
 
-	private var storage: SIMDRepresentation
+	@usableFromInline
+	var storage: SIMDRepresentation
 	
 /// Initialize the matrix from three columns.
 ///
@@ -131,6 +136,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 ///   - second: The second column of values.
 ///   - third: The third column of values.
 ///
+	@inlinable
 	public init(columns first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column) {
 		self.storage = SIMDRepresentation(first, second, third)
 	}
@@ -142,6 +148,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 ///   - second: The second row of values.
 ///   - third: The third row of values.
 ///
+	@inlinable
 	public init(rows first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column) {
 		self = Self(SIMDRepresentation(first, second, third)).transposed
 	}
@@ -153,6 +160,7 @@ extension Matrix3x3 {
 /// - Parameters:
 ///   - column: The index of the column in the matrix.
 ///
+	@inlinable
 	public subscript(column: Int) -> Storage.Column {
 		get {
 			storage[column]
@@ -164,6 +172,7 @@ extension Matrix3x3 {
 }
 
 extension Matrix3x3: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != (Self.columns * Self.rows) {
@@ -182,6 +191,7 @@ extension Matrix3x3: Codable {
 		self.storage = storage
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values = [Component]()
 		for column in 0..<Self.columns{
@@ -206,6 +216,7 @@ extension Matrix3x3: CustomStringConvertible where Component: CVarArg {
 }
 
 extension Matrix3x3: Equatable {
+	@inlinable
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		lhs.storage.columns.0 == rhs.storage.columns.0 &&
 		lhs.storage.columns.1 == rhs.storage.columns.1 &&
@@ -232,6 +243,7 @@ extension Matrix3x3: ExpressibleByArrayLiteral {
 /// [1.0, 4.0, 7.0], [2.0, 5.0, 8.0], [3.0, 6.0, 9.0]
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: [Component]...) {
 		var matrix = Self()
 		
@@ -258,6 +270,7 @@ extension Matrix3x3: Identity {
 /// | 0  0  1 |
 /// ```
 ///
+	@inlinable
 	public static var identity: Self {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -278,6 +291,7 @@ extension Matrix3x3: Identity {
 /// | 0  0  1 |
 /// ```
 ///
+	@inlinable
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -301,6 +315,7 @@ extension Matrix3x3: Identity {
 /// | 0  0  1 |
 /// ```
 ///
+	@inlinable
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -315,6 +330,7 @@ extension Matrix3x3: Identity {
 extension Matrix3x3: Invertible {
 /// Gets the inverse of this matrix if it exists.
 ///
+	@inlinable
 	public var inverse: Self? {
 		let determinant = self.determinant
 		guard (abs(determinant) < .zero) == false &&
@@ -338,6 +354,7 @@ extension Matrix3x3: Invertible {
 ///
 /// - Returns: A boolean indicating if the matrix could be inverted.
 ///
+	@inlinable
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self.storage = inverse.storage
@@ -351,6 +368,7 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 	public typealias Rotation = Units.Rotation<SIMD3<Component>>
 	public typealias Scale = Vector3<Component>
 	
+	@inlinable
 	public var scale: Scale {
 		get {
 			Scale(
@@ -366,12 +384,14 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		}
 	}
 	
+	@inlinable
 	public init(withRotation rotation: Rotation, order: RotationOrder) {
 		var matrix = Self.identity
 		matrix.fromRotation(rotation, order: order)
 		self = matrix
 	}
 	
+	@inlinable
 	public init(withScale scale: Component) {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -380,6 +400,7 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		self = matrix
 	}
 	
+	@inlinable
 	public init(withScale scale: Scale) {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -388,6 +409,7 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		self = matrix
 	}
 	
+	@inlinable
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let normalized = Self(columns:
 			self[0].normalized,
@@ -427,6 +449,7 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 		return [Angle(radians: rotation[0]), Angle(radians: rotation[1]), Angle(radians: rotation[2])]
 	}
 	
+	@inlinable
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
 		let normalizedRotation = rotation.normalized
 		let cos = Vector3(
@@ -469,36 +492,42 @@ extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint 
 }
 
 extension Matrix3x3: MatrixMath {
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 + rhs.storage.columns.0,
 					  lhs.storage.columns.1 + rhs.storage.columns.1,
 					  lhs.storage.columns.2 + rhs.storage.columns.2)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		lhs.storage.columns.0 += rhs.storage.columns.0
 		lhs.storage.columns.1 += rhs.storage.columns.1
 		lhs.storage.columns.2 += rhs.storage.columns.2
 	}
 
+	@inlinable
 	public static prefix func - (rhs: Self) -> Self {
 		Self(columns: -rhs.storage.columns.0,
 					  -rhs.storage.columns.1,
 					  -rhs.storage.columns.2)
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 - rhs.storage.columns.0,
 					  lhs.storage.columns.1 - rhs.storage.columns.1,
 					  lhs.storage.columns.2 - rhs.storage.columns.2)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		lhs.storage.columns.0 -= rhs.storage.columns.0
 		lhs.storage.columns.1 -= rhs.storage.columns.1
 		lhs.storage.columns.2 -= rhs.storage.columns.2
 	}
 	
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		let lhsRow0 = Storage.Column(
 			lhs.storage.columns.0[0],
@@ -539,22 +568,26 @@ extension Matrix3x3: MatrixMath {
 		return Self(columns: column0, column1, column2)
 	}
 	
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs.storage = (lhs * rhs).storage
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		Self(columns: lhs * rhs.storage.columns.0,
 					  lhs * rhs.storage.columns.1,
 					  lhs * rhs.storage.columns.2)
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		Self(columns: lhs.storage.columns.0 * rhs,
 					  lhs.storage.columns.1 * rhs,
 					  lhs.storage.columns.2 * rhs)
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		lhs.storage.columns.0 *= rhs
 		lhs.storage.columns.1 *= rhs
@@ -563,18 +596,22 @@ extension Matrix3x3: MatrixMath {
 }
 
 extension Matrix3x3: MatrixProtocol {
+	@inlinable
 	public static var columns: Int {
 		3
 	}
 	
+	@inlinable
 	public static var rows: Int {
 		3
 	}
 	
+	@inlinable
 	public init() {
 		self.storage = SIMDRepresentation()
 	}
 	
+	@inlinable
 	public subscript(column: Int, row: Int) -> Component {
 		get {
 			storage[column, row]
@@ -586,6 +623,7 @@ extension Matrix3x3: MatrixProtocol {
 }
 
 extension Matrix3x3: MatrixSub {
+	@inlinable
 	public init(with subMatrix: Matrix2x2<Component>) {
 		var matrix = Self()
 		for y in 0..<Matrix2x2<Component>.rows {
@@ -596,6 +634,7 @@ extension Matrix3x3: MatrixSub {
 		self = matrix
 	}
 	
+	@inlinable
 	public func subMatrix(excludingColumn column: Int = 2, row: Int = 2) -> Matrix2x2<Component> {
 		var elements = [[Component]]()
 		for y in 0..<Self.rows where row != y {
@@ -613,6 +652,7 @@ extension Matrix3x3: MatrixSub {
 extension Matrix3x3: MatrixVectorMath {
 	public typealias Vector = Storage.Column
 	
+	@inlinable
 	public static func * (lhs: Self, rhs: Vector) -> Vector {
 		lhs.storage.columns.0 * rhs.x +
 		lhs.storage.columns.1 * rhs.y +
@@ -628,12 +668,14 @@ extension Matrix3x3: QuaternionConvertible {
 ///   - quaternion: The quaternion that will be used to initialize the
 ///   rotational elements of the matrix.
 ///
+	@inlinable
 	public init(withQuaternion quaternion: Quaternion<Component>) {
 		self = quaternion.matrix
 	}
 	
 /// The rotational elements of the matrix as a quaternion.
 ///
+	@inlinable
 	public var quaternion: Quaternion<Component> {
 		Quaternion(withMatrix: self)
 	}
@@ -646,10 +688,12 @@ extension Matrix3x3: Sendable where SIMDRepresentation: Sendable {
 extension Matrix3x3: SIMDConvertible {
 	public typealias SIMDRepresentation = Storage
 	
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = simd
 	}
 	
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage
@@ -661,11 +705,13 @@ extension Matrix3x3: SIMDConvertible {
 }
 
 extension Matrix3x3: SquareMatrix {
+	@inlinable
 	public var determinant: Component {
 		let columns = self.storage.columns
 		return columns.0.dot(columns.1.cross(columns.2))
 	}
 	
+	@inlinable
 	public var trace: Component {
 		(0..<Self.columns).reduce(into: Component.zero) {
 			$0 += self[$1, $1]
@@ -689,6 +735,7 @@ extension Matrix3x3: SquareMatrix {
 /// | 3  6  9 |
 /// ```
 ///
+	@inlinable
 	public var transposed: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -716,6 +763,7 @@ extension Matrix3x3: SquareMatrix {
 /// | 3  6  9 |
 /// ```
 ///
+	@inlinable
 	public mutating func transpose() {
 		let temp = self
 		for column in 0..<Self.columns {
@@ -731,6 +779,7 @@ extension Matrix3x3.Storage: Sendable where Column: Sendable {
 }
 
 extension Matrix3x3: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {

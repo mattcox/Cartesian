@@ -44,7 +44,8 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 		
 	/// Initialize an empty matrix.
 	///
-		internal init() {
+		@inlinable @usableFromInline
+		init() {
 			self.columns = (Column(), Column(), Column(), Column())
 		}
 		
@@ -56,7 +57,8 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///   - third: The values to place in the third column.
 	///   - fourth: The values to place in the fourth column.
 	///
-		internal init(_ first: Column, _ second: Column, _ third: Column, _ fourth: Column) {
+		@inlinable @usableFromInline
+		init(_ first: Column, _ second: Column, _ third: Column, _ fourth: Column) {
 			self.columns = (first, second, third, fourth)
 		}
 
@@ -69,7 +71,8 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The value at the specified column and row index.
 	///
-		internal subscript(column: Int, row: Int) -> Component {
+		@inlinable @usableFromInline
+		subscript(column: Int, row: Int) -> Component {
 			get {
 				switch column {
 					case 0:
@@ -107,7 +110,8 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The column at the specified index.
 	///
-		internal subscript(column: Int) -> Column {
+		@inlinable @usableFromInline
+		subscript(column: Int) -> Column {
 			get {
 				switch column {
 					case 0:
@@ -139,7 +143,8 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 		}
 	}
 	
-	private var storage: SIMDRepresentation
+	@usableFromInline
+	var storage: SIMDRepresentation
 	
 /// Initialize the matrix from four columns.
 ///
@@ -149,6 +154,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 ///   - third: The third column of values.
 ///   - fourth: The fourth column of values.
 ///
+	@inlinable
 	public init(columns first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ fourth: SIMDRepresentation.Column) {
 		self.storage = SIMDRepresentation(first, second, third, fourth)
 	}
@@ -161,6 +167,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 ///   - third: The third row of values.
 ///   - fourth: The fourth column of values.
 ///
+	@inlinable
 	public init(rows first: SIMDRepresentation.Column, _ second: SIMDRepresentation.Column, _ third: SIMDRepresentation.Column, _ fourth: SIMDRepresentation.Column) {
 		self = Self(SIMDRepresentation(first, second, third, fourth)).transposed
 	}
@@ -179,6 +186,7 @@ extension Matrix4x4 {
 ///
 /// - Returns: The transformed point.
 ///
+	@inlinable
 	public func transform(point: Point3<Component>) -> Point3<Component> {
 		let result = self * Vector4(point[0], point[1], point[2], 1)
 		let w = result[3]
@@ -200,6 +208,7 @@ extension Matrix4x4 {
 ///
 /// - Returns: The transformed direction.
 ///
+	@inlinable
 	public func transform(direction: Vector3<Component>) -> Vector3<Component> {
 		let result = self * Vector4(direction[0], direction[1], direction[2], 0)
 		return Vector3(result[0], result[1], result[2])
@@ -207,6 +216,7 @@ extension Matrix4x4 {
 }
 
 extension Matrix4x4: Codable {
+	@inlinable
 	public init(from decoder: Decoder) throws {
 		let values = try Array<Component>(from: decoder)
 		if values.count != (Self.columns * Self.rows) {
@@ -225,6 +235,7 @@ extension Matrix4x4: Codable {
 		self.storage = storage
 	}
 
+	@inlinable
 	public func encode(to encoder: Encoder) throws {
 		var values = [Component]()
 		for column in 0..<Self.columns{
@@ -250,6 +261,7 @@ extension Matrix4x4: CustomStringConvertible where Component: CVarArg {
 }
 
 extension Matrix4x4: Equatable {
+	@inlinable
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		lhs.storage.columns.0 == rhs.storage.columns.0 &&
 		lhs.storage.columns.1 == rhs.storage.columns.1 &&
@@ -278,6 +290,7 @@ extension Matrix4x4: ExpressibleByArrayLiteral {
 /// [1.0, 5.0, 9.0, 13.0], [2.0, 6.0, 10.0, 14.0], [3.0, 7.0, 11.0, 15.0], [4.0, 8.0, 12.0, 16.0],
 /// ```
 ///
+	@inlinable
 	public init(arrayLiteral elements: [Component]...) {
 		var matrix = Self()
 		
@@ -305,6 +318,7 @@ extension Matrix4x4: Identity {
 /// | 0  0  0  1 |
 /// ```
 ///
+	@inlinable
 	public static var identity: Self {
 		var matrix = Self()
 		for i in 0..<Self.columns {
@@ -326,6 +340,7 @@ extension Matrix4x4: Identity {
 /// | 0  0  0  1 |
 /// ```
 ///
+	@inlinable
 	public var isIdentity: Bool {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {
@@ -350,6 +365,7 @@ extension Matrix4x4: Identity {
 /// | 0  0  0  1 |
 /// ```
 ///
+	@inlinable
 	public mutating func toIdentity() {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -369,6 +385,7 @@ extension Matrix4x4: Invertible {
 /// only the upper-left 3×3 rotation-scale block and computing the inverse
 /// translation separately.
 ///
+	@inlinable
 	public var inverse: Self? {
 		if isAffine {
 			guard let inverseRotationAndScale = subMatrix().inverse else {
@@ -400,6 +417,7 @@ extension Matrix4x4: Invertible {
 ///
 /// - Returns: A boolean indicating if the matrix could be inverted.
 ///
+	@inlinable
 	public mutating func invert() -> Bool {
 		if let inverse = self.inverse {
 			self.storage = inverse.storage
@@ -415,6 +433,7 @@ extension Matrix4x4: MatrixAffineTransform {
 	public typealias Scale = Vector3<Component>
 	public typealias Translation = Vector3<Component>
 	
+	@inlinable
 	public var isAffine: Bool {
 		storage.columns.0[3].isApproximatelyEqual(to: .zero) &&
 		storage.columns.1[3].isApproximatelyEqual(to: .zero) &&
@@ -422,6 +441,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		storage.columns.3[3].isApproximatelyEqual(to: 1)
 	}
 	
+	@inlinable
 	public var scale: Scale {
 		get {
 			let row0 = Scale(storage.columns.0[0], storage.columns.1[0], storage.columns.2[0])
@@ -441,6 +461,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		}
 	}
 	
+	@inlinable
 	public var translation: Vector3<Component> {
 		get {
 			Vector3(storage.columns.3[0], storage.columns.3[1], storage.columns.3[2])
@@ -452,12 +473,14 @@ extension Matrix4x4: MatrixAffineTransform {
 		}
 	}
 	
+	@inlinable
 	public init(withRotation rotation: Rotation, order: RotationOrder) {
 		var matrix = Self.identity
 		matrix.fromRotation(rotation, order: order)
 		self = matrix
 	}
 	
+	@inlinable
 	public init(withScale scale: Component) {
 		var matrix = Self.identity
 		for i in 0..<Scale.count {
@@ -466,6 +489,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		self = matrix
 	}
 	
+	@inlinable
 	public init(withScale scale: Scale) {
 		var matrix = Self.identity
 		for i in 0..<Scale.count {
@@ -474,6 +498,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		self = matrix
 	}
 	
+	@inlinable
 	public init(withTranslation translation: Translation) {
 		var matrix = Self.identity
 		matrix.storage.columns.3[0] = translation[0]
@@ -482,6 +507,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		self = matrix
 	}
 	
+	@inlinable
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let orders = [order[0].index, order[1].index, order[2].index]
 
@@ -515,6 +541,7 @@ extension Matrix4x4: MatrixAffineTransform {
 		return rotation
 	}
 	
+	@inlinable
 	public mutating func fromRotation(_ rotation: Rotation, order: RotationOrder) {
 		var result = Self.identity
 
@@ -541,6 +568,7 @@ extension Matrix4x4: MatrixAffineTransform {
 }
 
 extension Matrix4x4: MatrixMath {
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 + rhs.storage.columns.0,
 					  lhs.storage.columns.1 + rhs.storage.columns.1,
@@ -548,6 +576,7 @@ extension Matrix4x4: MatrixMath {
 					  lhs.storage.columns.3 + rhs.storage.columns.3)
 	}
 
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		lhs.storage.columns.0 += rhs.storage.columns.0
 		lhs.storage.columns.1 += rhs.storage.columns.1
@@ -555,6 +584,7 @@ extension Matrix4x4: MatrixMath {
 		lhs.storage.columns.3 += rhs.storage.columns.3
 	}
 
+	@inlinable
 	public static prefix func - (rhs: Self) -> Self {
 		Self(columns: -rhs.storage.columns.0,
 					  -rhs.storage.columns.1,
@@ -562,6 +592,7 @@ extension Matrix4x4: MatrixMath {
 					  -rhs.storage.columns.3)
 	}
 
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(columns: lhs.storage.columns.0 - rhs.storage.columns.0,
 					  lhs.storage.columns.1 - rhs.storage.columns.1,
@@ -569,6 +600,7 @@ extension Matrix4x4: MatrixMath {
 					  lhs.storage.columns.3 - rhs.storage.columns.3)
 	}
 
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		lhs.storage.columns.0 -= rhs.storage.columns.0
 		lhs.storage.columns.1 -= rhs.storage.columns.1
@@ -576,6 +608,7 @@ extension Matrix4x4: MatrixMath {
 		lhs.storage.columns.3 -= rhs.storage.columns.3
 	}
 	
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		let lhsRow0 = Storage.Column(
 			lhs.storage.columns.0[0],
@@ -636,10 +669,12 @@ extension Matrix4x4: MatrixMath {
 		return Self(columns: column0, column1, column2, column3)
 	}
 	
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs.storage = (lhs * rhs).storage
 	}
 
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		Self(columns: lhs * rhs.storage.columns.0,
 					  lhs * rhs.storage.columns.1,
@@ -647,6 +682,7 @@ extension Matrix4x4: MatrixMath {
 					  lhs * rhs.storage.columns.3)
 	}
 
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		Self(columns: lhs.storage.columns.0 * rhs,
 					  lhs.storage.columns.1 * rhs,
@@ -654,6 +690,7 @@ extension Matrix4x4: MatrixMath {
 					  lhs.storage.columns.3 * rhs)
 	}
 
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		lhs.storage.columns.0 *= rhs
 		lhs.storage.columns.1 *= rhs
@@ -663,18 +700,22 @@ extension Matrix4x4: MatrixMath {
 }
 
 extension Matrix4x4: MatrixProtocol {
+	@inlinable
 	public static var columns: Int {
 		4
 	}
 	
+	@inlinable
 	public static var rows: Int {
 		4
 	}
 	
+	@inlinable
 	public init() {
 		self.storage = SIMDRepresentation()
 	}
 	
+	@inlinable
 	public subscript(column: Int, row: Int) -> Component {
 		get {
 			storage[column, row]
@@ -689,6 +730,7 @@ extension Matrix4x4: MatrixProtocol {
 /// - Parameters:
 ///   - column: The index of the column in the matrix.
 ///
+	@inlinable
 	public subscript(column: Int) -> Storage.Column {
 		get {
 			storage[column]
@@ -700,6 +742,7 @@ extension Matrix4x4: MatrixProtocol {
 }
 
 extension Matrix4x4: MatrixSub {
+	@inlinable
 	public init(with subMatrix: Matrix3x3<Component>) {
 		var matrix = Self()
 		for y in 0..<Matrix3x3<Component>.rows {
@@ -710,6 +753,7 @@ extension Matrix4x4: MatrixSub {
 		self = matrix
 	}
 	
+	@inlinable
 	public func subMatrix(excludingColumn column: Int = 3, row: Int = 3) -> Matrix3x3<Component> {
 		var elements = [[Component]]()
 		for y in 0..<Self.rows where row != y {
@@ -727,6 +771,7 @@ extension Matrix4x4: MatrixSub {
 extension Matrix4x4: MatrixVectorMath {
 	public typealias Vector = Storage.Column
 	
+	@inlinable
 	public static func * (lhs: Self, rhs: Vector) -> Vector {
 		lhs.storage.columns.0 * rhs[0] +
 		lhs.storage.columns.1 * rhs[1] +
@@ -743,6 +788,7 @@ extension Matrix4x4: QuaternionConvertible {
 ///   - quaternion: The quaternion that will be used to initialize the
 ///   rotational elements of the matrix.
 ///
+	@inlinable
 	public init(withQuaternion quaternion: Quaternion<Component>) {
 		var matrix = Matrix4x4(with: quaternion.matrix)
 		matrix[3][3] = 1
@@ -751,6 +797,7 @@ extension Matrix4x4: QuaternionConvertible {
 	
 /// The rotational elements of the matrix as a quaternion.
 ///
+	@inlinable
 	public var quaternion: Quaternion<Component> {
 		Quaternion(withMatrix: self.subMatrix())
 	}
@@ -759,10 +806,12 @@ extension Matrix4x4: QuaternionConvertible {
 extension Matrix4x4: SIMDConvertible {
 	public typealias SIMDRepresentation = Storage
 	
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = simd
 	}
 	
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage
@@ -778,6 +827,7 @@ extension Matrix4x4: Sendable where SIMDRepresentation: Sendable {
 }
 
 extension Matrix4x4: SquareMatrix {
+	@inlinable
 	public var determinant: Component {
 		let row0 = [self[0][0], self[1][0], self[2][0], self[3][0]]
 		
@@ -789,6 +839,7 @@ extension Matrix4x4: SquareMatrix {
 		return row0[0] * determinant0 - row0[1] * determinant1 + row0[2] * determinant2 - row0[3] * determinant3
 	}
 	
+	@inlinable
 	public var trace: Component {
 		(0..<Self.columns).reduce(into: Component.zero) {
 			$0 += self[$1, $1]
@@ -814,6 +865,7 @@ extension Matrix4x4: SquareMatrix {
 /// | 4   8  12  16  |
 /// ```
 ///
+	@inlinable
 	public var transposed: Self {
 		var matrix = Self()
 		for column in 0..<Self.columns {
@@ -843,6 +895,7 @@ extension Matrix4x4: SquareMatrix {
 /// | 4   8  12  16  |
 /// ```
 ///
+	@inlinable
 	public mutating func transpose() {
 		let temp = self
 		for column in 0..<Self.columns {
@@ -858,6 +911,7 @@ extension Matrix4x4.Storage: Sendable where Column: Sendable {
 }
 
 extension Matrix4x4: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		for column in 0..<Self.columns {
 			for row in 0..<Self.rows {

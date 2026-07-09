@@ -26,13 +26,14 @@ import Units
 public struct AffineTransform2<Component: Real & SIMDScalar & BinaryFloatingPoint> {
 /// The affine matrix representation of the transform.
 ///
-	public private(set) var matrix: MatrixAffine3x3<Component>
+	public var matrix: MatrixAffine3x3<Component>
 
 /// Initialize an affine transform from an affine matrix.
 ///
 /// - Parameters:
 ///   - matrix: The affine matrix encoding the transform.
 ///
+	@inlinable
 	public init(matrix: MatrixAffine3x3<Component>) {
 		self.matrix = matrix
 	}
@@ -44,6 +45,7 @@ extension AffineTransform2 {
 /// - Parameters:
 ///   - translation: The translation encoded by the transform.
 ///
+	@inlinable
 	public init(translation: Vector2<Component>) {
 		self.init(matrix: MatrixAffine3x3(translation: translation))
 	}
@@ -53,6 +55,7 @@ extension AffineTransform2 {
 /// - Parameters:
 ///   - rotation: The rotation encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Angle<Component>) {
 		self.init(matrix: MatrixAffine3x3(rotation: rotation))
 	}
@@ -62,6 +65,7 @@ extension AffineTransform2 {
 /// - Parameters:
 ///   - scale: The scale encoded by the transform along each axis.
 ///
+	@inlinable
 	public init(scale: Vector2<Component>) {
 		self.init(matrix: MatrixAffine3x3(scale: scale))
 	}
@@ -71,6 +75,7 @@ extension AffineTransform2: TransformProtocol {
 	public typealias Matrix = MatrixAffine3x3<Component>
 	public typealias Vector = Vector2<Component>
 
+	@inlinable
 	public init() {
 		self.init(matrix: .identity)
 	}
@@ -82,6 +87,7 @@ extension AffineTransform2: TransformProtocol {
 ///
 /// - Returns: The transformed position.
 ///
+	@inlinable
 	public func apply(to position: Vector2<Component>) -> Vector2<Component> {
 		matrix.transform(point: position)
 	}
@@ -97,6 +103,7 @@ extension AffineTransform2: TransformProtocol {
 ///
 /// - Returns: The combined affine transform.
 ///
+	@inlinable
 	public func concatenated(with other: AffineTransform2) -> AffineTransform2 {
 		AffineTransform2(matrix: matrix * other.matrix)
 	}
@@ -107,6 +114,7 @@ extension AffineTransform2: Transform2Protocol {
 }
 
 extension AffineTransform2: TranslatableTransform {
+	@inlinable
 	public var translation: Vector2<Component> {
 		get {
 			matrix.translation
@@ -118,6 +126,7 @@ extension AffineTransform2: TranslatableTransform {
 }
 
 extension AffineTransform2: ScalableTransform {
+	@inlinable
 	public var scale: Vector2<Component> {
 		get {
 			matrix.scale
@@ -129,6 +138,7 @@ extension AffineTransform2: ScalableTransform {
 }
 
 extension AffineTransform2: RotatableTransform {
+	@inlinable
 	public var rotation: Angle<Component> {
 		get {
 			matrix.rotation
@@ -142,14 +152,17 @@ extension AffineTransform2: RotatableTransform {
 extension AffineTransform2: Identity {
 /// The identity affine transform, encoding no transformation.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(matrix: .identity)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		matrix.isIdentity
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		matrix = .identity
 	}
@@ -159,6 +172,7 @@ extension AffineTransform2: Invertible {
 /// The inverse of the affine transform, or `nil` if the transform is
 /// singular.
 ///
+	@inlinable
 	public var inverse: Self? {
 		guard let inverse = matrix.inverse else {
 			return nil
@@ -166,6 +180,7 @@ extension AffineTransform2: Invertible {
 		return Self(matrix: inverse)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false

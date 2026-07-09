@@ -38,6 +38,7 @@ public struct RigidTransform2<Component: Real & SIMDScalar & BinaryFloatingPoint
 ///   - rotation: The rotation encoded by the transform.
 ///   - translation: The translation encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Angle<Component>, translation: Vector2<Component>) {
 		self.rotation = rotation
 		self.translation = translation
@@ -50,6 +51,7 @@ extension RigidTransform2 {
 /// - Parameters:
 ///   - rotation: The rotation encoded by the transform.
 ///
+	@inlinable
 	public init(rotation: Angle<Component>) {
 		self.init(rotation: rotation, translation: .zero)
 	}
@@ -59,6 +61,7 @@ extension RigidTransform2 {
 /// - Parameters:
 ///   - translation: The translation encoded by the transform.
 ///
+	@inlinable
 	public init(translation: Vector2<Component>) {
 		self.init(rotation: Angle(radians: 0), translation: translation)
 	}
@@ -68,10 +71,12 @@ extension RigidTransform2: TransformProtocol {
 	public typealias Matrix = MatrixAffine3x3<Component>
 	public typealias Vector = Vector2<Component>
 
+	@inlinable
 	public init() {
 		self.init(rotation: Angle(radians: 0), translation: .zero)
 	}
 
+	@inlinable
 	public var matrix: MatrixAffine3x3<Component> {
 		var matrix = MatrixAffine3x3(rotation: rotation)
 		matrix.translation = translation
@@ -85,6 +90,7 @@ extension RigidTransform2: TransformProtocol {
 ///
 /// - Returns: The transformed position.
 ///
+	@inlinable
 	public func apply(to position: Vector2<Component>) -> Vector2<Component> {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -104,6 +110,7 @@ extension RigidTransform2: TransformProtocol {
 ///
 /// - Returns: The combined rigid transform.
 ///
+	@inlinable
 	public func concatenated(with other: RigidTransform2) -> RigidTransform2 {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -131,14 +138,17 @@ extension RigidTransform2: RotatableTransform {
 extension RigidTransform2: Identity {
 /// The identity rigid transform, encoding no rotation and no translation.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(rotation: Angle(radians: 0), translation: .zero)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		rotation.radians.isApproximatelyEqual(to: .zero) && translation == .zero
 	}
 
+	@inlinable
 	public mutating func toIdentity() {
 		self = .identity
 	}
@@ -152,6 +162,7 @@ extension RigidTransform2: Invertible {
 /// and negated. A rigid transform is always invertible, so this never returns
 /// `nil`.
 ///
+	@inlinable
 	public var inverse: Self? {
 		let cos = Component.cos(rotation.radians)
 		let sin = Component.sin(rotation.radians)
@@ -163,6 +174,7 @@ extension RigidTransform2: Invertible {
 		)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inverse else {
 			return false
@@ -177,6 +189,7 @@ extension RigidTransform2: Equatable {
 }
 
 extension RigidTransform2: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(rotation.radians)
 		hasher.combine(translation)
@@ -198,6 +211,7 @@ extension RigidTransform2: CustomStringConvertible where Component: CVarArg {
 }
 
 extension RigidTransform2: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		let delta = to.rotation.radians - from.rotation.radians
 		let shortest = Component.atan2(y: Component.sin(delta), x: Component.cos(delta))
@@ -207,6 +221,7 @@ extension RigidTransform2: Blendable {
 		)
 	}
 
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self = Self.blend(from: self, to: other, by: amount)
 	}

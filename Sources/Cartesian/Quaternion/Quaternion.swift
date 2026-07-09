@@ -20,8 +20,10 @@ import Units
 /// describe different combined rotations.
 ///
 public struct Quaternion<Component: Real & SIMDScalar> {
-	private typealias Storage = Vector4<Component>
-	private var storage: Storage
+	@usableFromInline
+	typealias Storage = Vector4<Component>
+	@usableFromInline
+	var storage: Storage
 }
 
 extension Quaternion {
@@ -31,6 +33,7 @@ extension Quaternion {
 /// The imaginary (vector) part of the quaternion, storing the X, Y and Z
 /// components.
 ///
+	@inlinable
 	public var imaginary: Imaginary {
 		get {
 			Vector3(storage[0], storage[1], storage[2])
@@ -44,6 +47,7 @@ extension Quaternion {
 
 /// The real (scalar) part of the quaternion, stored as the W component.
 ///
+	@inlinable
 	public var real: Real {
 		get {
 			storage[3]
@@ -53,6 +57,7 @@ extension Quaternion {
 		}
 	}
 
+	@inlinable
 	public init() {
 		storage = Vector4()
 	}
@@ -63,6 +68,7 @@ extension Quaternion {
 ///   - imaginary: The imaginary (vector) part of the quaternion.
 ///   - real: The real (scalar) part of the quaternion.
 ///
+	@inlinable
 	public init(imaginary: Imaginary, real: Real) {
 		storage = Vector4(imaginary[0], imaginary[1], imaginary[2], real)
 	}
@@ -75,6 +81,7 @@ extension Quaternion {
 /// - Parameters:
 ///   - vector: A four-component vector whose components are used directly.
 ///
+	@inlinable
 	public init(_ vector: Vector4<Component>) {
 		storage = vector
 	}
@@ -90,6 +97,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///   - axis: The axis of rotation. Must be non-zero.
 ///   - angle: The rotation angle.
 ///
+	@inlinable
 	public init(withAxis axis: Vector3<Component>, angle: Angle<Component>) {
 		let halfAngle = angle.radians * 0.5
 		let sinHalf = Component.sin(halfAngle)
@@ -102,6 +110,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 /// - Note: The quaternion must be normalized. Results are undefined for
 ///   non-unit quaternions.
 ///
+	@inlinable
 	public var axis: Vector3<Component> {
 		get {
 			let real = real.clamped(between: -1, and: 1)
@@ -122,6 +131,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 /// - Note: The quaternion must be normalized. Results are undefined for
 ///   non-unit quaternions.
 ///
+	@inlinable
 	public var angle: Angle<Component> {
 		get {
 			Angle(radians: 2 * Component.acos(real.clamped(between: -1, and: 1)))
@@ -145,6 +155,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///   - rotation: The Euler angles to encode.
 ///   - order: The order in which the individual axis rotations are applied.
 ///
+	@inlinable
 	public init(withRotation rotation: Rotation, order: RotationOrder) {
 		let x = Quaternion(withAxis: Vector3<Component>(1, 0, 0), angle: rotation[0])
 		let y = Quaternion(withAxis: Vector3<Component>(0, 1, 0), angle: rotation[1])
@@ -173,6 +184,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 /// - Note: The quaternion must be normalized. Results are undefined for
 ///   non-unit quaternions.
 ///
+	@inlinable
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let imaginary = self.imaginary
 		let real = self.real
@@ -283,6 +295,7 @@ extension Quaternion {
 /// For a unit quaternion the conjugate is equal to the inverse, making it a
 /// cheap way to compute the opposite rotation.
 ///
+	@inlinable
 	public var conjugate: Self {
 		Self(imaginary: -self.imaginary, real: self.real)
 	}
@@ -300,6 +313,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///
 /// - Returns: The angular difference between the two quaternions.
 ///
+	@inlinable
 	public static func angle(from: Quaternion, to: Quaternion) -> Angle<Component> {
 		let dot = abs(from.dot(to)).clamped(between: -1, and: 1)
 		return Angle(2 * Component.acos(dot), unit: .radians)
@@ -313,6 +327,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///
 /// - Returns: The angular difference between the two quaternions.
 ///
+	@inlinable
 	public func angle(to: Quaternion) -> Angle<Component> {
 		Self.angle(from: self, to: to)
 	}
@@ -327,6 +342,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion containing the result of the addition.
 ///
+	@inlinable
 	public static func + (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage + rhs.storage)
 	}
@@ -337,6 +353,7 @@ extension Quaternion {
 ///   - lhs: The first quaternion. This will be updated with the result.
 ///   - rhs: The second quaternion.
 ///
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Self) {
 		lhs.storage += rhs.storage
 	}
@@ -349,6 +366,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion containing the result of the addition.
 ///
+	@inlinable
 	public static func + (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage + rhs)
 	}
@@ -360,6 +378,7 @@ extension Quaternion {
 ///   - lhs: The quaternion. This will be updated with the result.
 ///   - rhs: The scalar to add to every component.
 ///
+	@inlinable
 	public static func += (lhs: inout Self, rhs: Component) {
 		lhs.storage += rhs
 	}
@@ -372,6 +391,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion containing the result of the subtraction.
 ///
+	@inlinable
 	public static func - (lhs: Self, rhs: Self) -> Self {
 		Self(lhs.storage - rhs.storage)
 	}
@@ -384,6 +404,7 @@ extension Quaternion {
 ///   result.
 ///   - rhs: The quaternion to subtract.
 ///
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Self) {
 		lhs.storage -= rhs.storage
 	}
@@ -396,6 +417,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion containing the result of the subtraction.
 ///
+	@inlinable
 	public static func - (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage - rhs)
 	}
@@ -407,6 +429,7 @@ extension Quaternion {
 ///   - lhs: The quaternion. This will be updated with the result.
 ///   - rhs: The scalar to subtract from every component.
 ///
+	@inlinable
 	public static func -= (lhs: inout Self, rhs: Component) {
 		lhs.storage -= rhs
 	}
@@ -423,6 +446,7 @@ extension Quaternion {
 ///
 /// - Returns: The negated quaternion.
 ///
+	@inlinable
 	public static prefix func - (vector: Self) -> Self {
 		Self(-vector.storage)
 	}
@@ -439,6 +463,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion encoding the combined rotation.
 ///
+	@inlinable
 	public static func * (lhs: Self, rhs: Self) -> Self {
 		let cross = lhs.imaginary.cross(rhs.imaginary)
 		let imaginary = cross + (lhs.imaginary * rhs.real) + (rhs.imaginary * lhs.real)
@@ -453,6 +478,7 @@ extension Quaternion {
 ///   rotation.
 ///   - rhs: The second quaternion.
 ///
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Self) {
 		lhs = (lhs * rhs)
 	}
@@ -465,6 +491,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion with all components scaled.
 ///
+	@inlinable
 	public static func * (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage * rhs)
 	}
@@ -477,6 +504,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion with all components scaled.
 ///
+	@inlinable
 	public static func * (lhs: Component, rhs: Self) -> Self {
 		Self(lhs * rhs.storage)
 	}
@@ -488,6 +516,7 @@ extension Quaternion {
 ///   - lhs: The quaternion to scale. This will be updated with the result.
 ///   - rhs: The scalar value to multiply by.
 ///
+	@inlinable
 	public static func *= (lhs: inout Self, rhs: Component) {
 		lhs.storage *= rhs
 	}
@@ -500,6 +529,7 @@ extension Quaternion {
 ///
 /// - Returns: A quaternion with all components divided.
 ///
+	@inlinable
 	public static func / (lhs: Self, rhs: Component) -> Self {
 		Self(lhs.storage / rhs)
 	}
@@ -511,6 +541,7 @@ extension Quaternion {
 ///   - lhs: The quaternion to divide. This will be updated with the result.
 ///   - rhs: The scalar value to divide by.
 ///
+	@inlinable
 	public static func /= (lhs: inout Self, rhs: Component) {
 		lhs.storage /= rhs
 	}
@@ -525,6 +556,7 @@ extension Quaternion {
 /// - Parameters:
 ///   - matrix: A 3×3 rotation matrix.
 ///
+	@inlinable
 	public init(withMatrix matrix: Matrix3x3<Component>) {
 		let trace = matrix.trace
 		if trace > .zero {
@@ -575,6 +607,7 @@ extension Quaternion {
 /// - Note: The quaternion is normalized internally before conversion, so
 ///   non-unit quaternions are accepted but the scale information is discarded.
 ///
+	@inlinable
 	public var matrix: Matrix3x3<Component> {
 		get {
 			let quaternion = self.normalized
@@ -615,6 +648,7 @@ extension Quaternion {
 ///   - up: A hint for the world-space up direction. Must be non-zero and
 ///     not parallel to `forward`.
 ///
+	@inlinable
 	public static func lookRotation(forward: Vector3<Component>, up: Vector3<Component>) -> Self? {
 		let f = forward.normalized
 		let right = up.cross(f)
@@ -632,6 +666,7 @@ extension Quaternion {
 /// - Parameters:
 ///   - forward: The world-space direction to face. Must be non-zero.
 ///
+	@inlinable
 	public static func lookRotation(forward: Vector3<Component>) -> Self? {
 		lookRotation(forward: forward, up: Vector3(0, 1, 0))
 	}
@@ -648,6 +683,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///   - from: The source direction. Must be non-zero.
 ///   - to: The target direction. Must be non-zero.
 ///
+	@inlinable
 	public static func fromToRotation(from: Vector3<Component>, to: Vector3<Component>) -> Self {
 		let a = from.normalized
 		let b = to.normalized
@@ -679,6 +715,7 @@ extension Quaternion {
 /// - Note: The quaternion must be normalized. Non-unit quaternions will
 ///   scale the result in addition to rotating it.
 ///
+	@inlinable
 	public func rotate(vector: Vector3<Component>) -> Vector3<Component> {
 		let imaginary = self.imaginary
 		let real = self.real
@@ -689,10 +726,12 @@ extension Quaternion {
 }
 
 extension Quaternion: Blendable {
+	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		Self.lerp(from: from, to: to, by: amount)
 	}
 	
+	@inlinable
 	public mutating func blend(to other: Self, by amount: Component) {
 		self.lerp(to: other, by: amount)
 	}
@@ -704,6 +743,7 @@ extension Quaternion: Blendable {
 ///
 /// - Note: Both quaternions must be normalized.
 ///
+	@inlinable
 	public static func lerp(from: Self, to: Self, by amount: Component) -> Self {
 		if from.dot(to) < .zero {
 			return Self(Storage.blend(from: from.storage, to: (-to).storage, by: amount).normalized)
@@ -720,6 +760,7 @@ extension Quaternion: Blendable {
 ///   - other: The quaternion to interpolate toward.
 ///   - amount: The blend amount in the range 0...1.
 ///
+	@inlinable
 	public mutating func lerp(to other: Self, by amount: Component) {
 		self = Self.lerp(from: self, to: other, by: amount)
 	}
@@ -731,6 +772,7 @@ extension Quaternion: Blendable {
 ///
 /// - Note: Both quaternions must be normalized.
 ///
+	@inlinable
 	public static func slerp(from: Self, to: Self, by amount: Component) -> Self {
 		var to = to
 		var cosTheta = from.dot(to)
@@ -773,6 +815,7 @@ extension Quaternion: Blendable {
 ///   - other: The quaternion to interpolate toward.
 ///   - amount: The blend amount in the range 0...1.
 ///
+	@inlinable
 	public mutating func slerp(to other: Self, by amount: Component) {
 		self = Self.slerp(from: self, to: other, by: amount)
 	}
@@ -799,6 +842,7 @@ extension Quaternion: Codable {
 }
 
 extension Quaternion: DotProduct {
+	@inlinable
 	public func dot(_ other: Self) -> Component {
 		storage.dot(other.storage)
 	}
@@ -815,6 +859,7 @@ extension Quaternion: Equatable {
 }
 
 extension Quaternion: Hashable {
+	@inlinable
 	public func hash(into hasher: inout Hasher) {
 		hasher.combine(simd)
 	}
@@ -826,14 +871,17 @@ extension Quaternion: Identity {
 /// The identity quaternion has a zero imaginary part and a real part of 1,
 /// corresponding to a zero-degree rotation around any axis.
 ///
+	@inlinable
 	public static var identity: Self {
 		Self(imaginary: .zero, real: 1)
 	}
 
+	@inlinable
 	public var isIdentity: Bool {
 		self == Self.identity
 	}
 	
+	@inlinable
 	public mutating func toIdentity() {
 		self = Self(imaginary: .zero, real: 1)
 	}
@@ -847,12 +895,14 @@ extension Quaternion: Invertible {
 /// quaternion this is equivalent to the conjugate, which is cheaper to
 /// compute directly.
 ///
+	@inlinable
 	public var inverse: Self? {
 		let magSquared = dot(self)
 		guard !magSquared.isApproximatelyEqual(to: .zero) else { return nil }
 		return conjugate * (1 / magSquared)
 	}
 
+	@inlinable
 	public mutating func invert() -> Bool {
 		guard let inv = inverse else { return false }
 		self = inv
@@ -861,6 +911,7 @@ extension Quaternion: Invertible {
 }
 
 extension Quaternion: MagnitudeAdjustable {
+	@inlinable
 	public var magnitude: Component {
 		get {
 			storage.magnitude
@@ -876,10 +927,12 @@ extension Quaternion: MagnitudeMeasurable {
 }
 
 extension Quaternion: Normalizable {
+	@inlinable
 	public var normalized: Self {
 		Self(storage.normalized)
 	}
 	
+	@inlinable
 	public mutating func normalize() {
 		storage.normalize()
 	}
@@ -892,6 +945,7 @@ extension Quaternion: ExpressibleByArrayLiteral {
 /// identity quaternion is written as `[0, 0, 0, 1]`. Extra elements are
 /// ignored; missing elements default to zero.
 ///
+	@inlinable
 	public init(arrayLiteral elements: Component...) {
 		var quaternion = Self()
 		for i in 0..<Swift.min(4, elements.count) {
@@ -908,10 +962,12 @@ extension Quaternion: Sendable where SIMDRepresentation: Sendable {
 extension Quaternion: SIMDConvertible {
 	public typealias SIMDRepresentation = Vector4<Component>.SIMDRepresentation
 	
+	@inlinable
 	public init(_ simd: SIMDRepresentation) {
 		self.storage = Vector4(simd)
 	}
 	
+	@inlinable
 	public var simd: SIMDRepresentation {
 		get {
 			storage.simd
