@@ -17,7 +17,7 @@ extension Real {
 ///
 /// - Returns: The clamped value.
 ///
-	@inlinable @usableFromInline @inline(__always)
+	@inlinable @inline(__always)
 	internal func clamped(between minimum: Self, and maximum: Self) -> Self {
 		min(max(self, minimum), maximum)
 	}
@@ -29,7 +29,7 @@ extension Real {
 ///   - minimum: The minimum value permitted.
 ///   - maximum: The maximum value permitted.
 ///
-	@inlinable @usableFromInline @inline(__always)
+	@inlinable @inline(__always)
 	internal mutating func clamp(between minimum: Self, and maximum: Self) {
 		self = min(max(self, minimum), maximum)
 	}
@@ -41,7 +41,7 @@ extension Real {
 ///
 /// - Returns: The clamped value.
 ///
-	@inlinable @usableFromInline @inline(__always)
+	@inlinable @inline(__always)
 	internal func clamped(in range: ClosedRange<Self>) -> Self {
 		min(max(self, range.lowerBound), range.upperBound)
 	}
@@ -52,7 +52,7 @@ extension Real {
 /// - Parameters:
 ///   - range: The range of permitted values.
 ///
-	@inlinable @usableFromInline @inline(__always)
+	@inlinable @inline(__always)
 	internal mutating func clamp(in range: ClosedRange<Self>) {
 		self = min(max(self, range.lowerBound), range.upperBound)
 	}

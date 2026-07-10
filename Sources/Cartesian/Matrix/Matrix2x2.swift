@@ -31,7 +31,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 		
 	/// Initialize an empty matrix.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init() {
 			self.columns = (Column(), Column())
 		}
@@ -42,7 +42,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 	///   - first: The values to place in the first column.
 	///   - second: The values to place in the second column.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init(_ first: Column, _ second: Column) {
 			self.columns = (first, second)
 		}
@@ -56,7 +56,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The value at the specified column and row index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int, row: Int) -> Component {
 			get {
 				switch column {
@@ -87,7 +87,7 @@ public struct Matrix2x2<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The column at the specified index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int) -> Column {
 			get {
 				switch column {

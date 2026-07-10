@@ -655,7 +655,7 @@ extension Matrix: SquareMatrix where n == m {
 ///
 /// - Returns: The determinant of the matrix.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	static func determinantOfColumns(_ columns: [[Component]]) -> Component {
 		let size = columns.count
 		if size == 0 { return 1 }

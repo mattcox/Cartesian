@@ -25,21 +25,21 @@ public enum Axis2 {
 	
 /// The U axis.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	static var U: Self {
 		.u(negative: false)
 	}
 
 /// The V axis.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	static var V: Self {
 		.v(negative: false)
 	}
 	
 /// Returns the Axis as an index, where y is 0 and v is 1.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	var index: Int {
 		switch self {
 			case .u:
@@ -55,7 +55,7 @@ public enum Axis2 {
 ///   - index: The index used to initialize the Axis, in the range 0...1.
 ///   - negative: Specifies whether the axis is negative, for example -U.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	init(_ index: Int, negative: Bool = false) {
 		if index == 0 {
 			self = .u(negative: negative)

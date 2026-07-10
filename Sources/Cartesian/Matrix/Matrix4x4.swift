@@ -44,7 +44,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 		
 	/// Initialize an empty matrix.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init() {
 			self.columns = (Column(), Column(), Column(), Column())
 		}
@@ -57,7 +57,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///   - third: The values to place in the third column.
 	///   - fourth: The values to place in the fourth column.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init(_ first: Column, _ second: Column, _ third: Column, _ fourth: Column) {
 			self.columns = (first, second, third, fourth)
 		}
@@ -71,7 +71,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The value at the specified column and row index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int, row: Int) -> Component {
 			get {
 				switch column {
@@ -110,7 +110,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The column at the specified index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int) -> Column {
 			get {
 				switch column {

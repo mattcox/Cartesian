@@ -37,7 +37,7 @@ public struct MatrixAffine3x3<Component: Real & SIMDScalar> {
 
 /// Initialize the affine matrix from its backing storage.
 ///
-	@inlinable @usableFromInline
+	@inlinable
 	init(storage: Matrix3x3<Component>) {
 		self.storage = storage
 	}

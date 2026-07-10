@@ -36,7 +36,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 		
 	/// Initialize an empty matrix.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init() {
 			self.columns = (Column(), Column(), Column())
 		}
@@ -48,7 +48,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///   - second: The values to place in the second column.
 	///   - third: The values to place in the third column.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		init(_ first: Column, _ second: Column, _ third: Column) {
 			self.columns = (first, second, third)
 		}
@@ -62,7 +62,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The value at the specified column and row index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int, row: Int) -> Component {
 			get {
 				switch column {
@@ -97,7 +97,7 @@ public struct Matrix3x3<Component: Real & SIMDScalar> {
 	///
 	/// - Returns: The column at the specified index.
 	///
-		@inlinable @usableFromInline
+		@inlinable
 		subscript(column: Int) -> Column {
 			get {
 				switch column {
