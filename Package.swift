@@ -13,7 +13,7 @@ let package = Package(
 		),
 	],
 	dependencies: [
-		.package(url: "https://github.com/mattcox/Units.git", branch: "main"),
+		.package(url: "https://github.com/mattcox/Units.git", from: Version(1, 0, 0)),
 		.package(url: "https://github.com/apple/swift-numerics", from: Version(1, 0, 0))
 	],
 	targets: [
