@@ -7,6 +7,7 @@
 //
 
 import RealModule
+import Units
 
 /// A 4×4 matrix stored in column-major order.
 ///
@@ -212,6 +213,154 @@ extension Matrix4x4 {
 	public func transform(direction: Vector3<Component>) -> Vector3<Component> {
 		let result = self * Vector4(direction[0], direction[1], direction[2], 0)
 		return Vector3(result[0], result[1], result[2])
+	}
+}
+
+extension Matrix4x4 where Component: BinaryFloatingPoint {
+/// Creates a perspective projection matrix.
+///
+/// The matrix maps a view space frustum into clip space using the
+/// column-vector convention (`clip = matrix * view`), so that after the
+/// perspective divide the x and y coordinates lie in `[-1, 1]` and the
+/// depth lies in the requested ``DepthRange``. Points in front of the
+/// camera lie along the negative z axis for ``Handedness/rightHanded`` and
+/// the positive z axis for ``Handedness/leftHanded``.
+///
+/// - Parameters:
+///   - fieldOfView: The vertical field of view.
+///   - aspectRatio: The ratio of the projection plane's width to its height.
+///   - near: The distance to the near clipping plane. Must be positive.
+///   - far: The distance to the far clipping plane. Must be greater than
+///     `near`.
+///   - handedness: The handedness of the coordinate system the camera is
+///     defined in.
+///   - depthRange: The normalized device coordinate depth range the near
+///     and far planes are mapped into.
+///
+/// - Returns: A perspective projection matrix.
+///
+	@inlinable
+	public static func perspective(fieldOfView: Angle<Component>, aspectRatio: Component, near: Component, far: Component, handedness: Handedness, depthRange: DepthRange) -> Self {
+		let y = 1 / Component.tan(fieldOfView.radians / 2)
+		let x = y / aspectRatio
+		let zSign: Component = handedness == .rightHanded ? -1 : 1
+
+		let z: Component
+		let w: Component
+		switch depthRange {
+			case .zeroToOne:
+				z = zSign * far / (far - near)
+				w = (far * near) / (near - far)
+			case .negativeOneToOne:
+				z = zSign * (far + near) / (far - near)
+				w = (-2 * far * near) / (far - near)
+		}
+
+		return Matrix4x4(columns:
+			Vector4(x, 0, 0, 0),
+			Vector4(0, y, 0, 0),
+			Vector4(0, 0, z, zSign),
+			Vector4(0, 0, w, 0)
+		)
+	}
+}
+
+extension Matrix4x4 {
+/// Creates an orthographic projection matrix.
+///
+/// The matrix maps the axis-aligned view space box bounded by the given
+/// planes into clip space using the column-vector convention
+/// (`clip = matrix * view`), so that the box's x and y extents map to
+/// `[-1, 1]` and its depth maps to the requested ``DepthRange``. Points in
+/// front of the camera lie along the negative z axis for
+/// ``Handedness/rightHanded`` and the positive z axis for
+/// ``Handedness/leftHanded``.
+///
+/// - Parameters:
+///   - left: The view space coordinate of the left clipping plane.
+///   - right: The view space coordinate of the right clipping plane.
+///   - bottom: The view space coordinate of the bottom clipping plane.
+///   - top: The view space coordinate of the top clipping plane.
+///   - near: The distance to the near clipping plane.
+///   - far: The distance to the far clipping plane. Must be greater than
+///     `near`.
+///   - handedness: The handedness of the coordinate system the camera is
+///     defined in.
+///   - depthRange: The normalized device coordinate depth range the near
+///     and far planes are mapped into.
+///
+/// - Returns: An orthographic projection matrix.
+///
+	@inlinable
+	public static func orthographic(left: Component, right: Component, bottom: Component, top: Component, near: Component, far: Component, handedness: Handedness, depthRange: DepthRange) -> Self {
+		let x = 2 / (right - left)
+		let y = 2 / (top - bottom)
+		let tx = -(right + left) / (right - left)
+		let ty = -(top + bottom) / (top - bottom)
+		let zSign: Component = handedness == .rightHanded ? -1 : 1
+
+		let z: Component
+		let tz: Component
+		switch depthRange {
+			case .zeroToOne:
+				z = zSign / (far - near)
+				tz = -near / (far - near)
+			case .negativeOneToOne:
+				z = zSign * 2 / (far - near)
+				tz = -(far + near) / (far - near)
+		}
+
+		return Matrix4x4(columns:
+			Vector4(x, 0, 0, 0),
+			Vector4(0, y, 0, 0),
+			Vector4(0, 0, z, 0),
+			Vector4(tx, ty, tz, 1)
+		)
+	}
+
+/// Creates a view matrix that positions a camera at `eye`, looking toward
+/// `center`.
+///
+/// The matrix transforms world space into view space using column-vector
+/// convention (`view = matrix * world`). The camera looks toward `center`
+/// along its local negative z axis for ``Handedness/rightHanded`` and its
+/// local positive z axis for ``Handedness/leftHanded``.
+///
+/// - Parameters:
+///   - eye: The world space position of the camera.
+///   - center: The world space position the camera looks toward.
+///   - up: The world space up direction used to orient the camera. It need
+///     not be perpendicular to the view direction, but must not be parallel
+///     to it.
+///   - handedness: The handedness of the coordinate system the camera is
+///     defined in.
+///
+/// - Returns: A view matrix.
+///
+	@inlinable
+	public static func lookAt(eye: Point3<Component>, center: Point3<Component>, up: Vector3<Component>, handedness: Handedness) -> Self {
+		let forward = (center - eye).normalized
+
+		let right: Vector3<Component>
+		let trueUp: Vector3<Component>
+		let zAxis: Vector3<Component>
+		switch handedness {
+			case .rightHanded:
+				right = forward.cross(up).normalized
+				trueUp = right.cross(forward)
+				zAxis = -forward
+			case .leftHanded:
+				right = up.cross(forward).normalized
+				trueUp = forward.cross(right)
+				zAxis = forward
+		}
+
+		return Matrix4x4(rows:
+			Vector4(right.x, right.y, right.z, -right.dot(eye)),
+			Vector4(trueUp.x, trueUp.y, trueUp.z, -trueUp.dot(eye)),
+			Vector4(zAxis.x, zAxis.y, zAxis.z, -zAxis.dot(eye)),
+			Vector4(0, 0, 0, 1)
+		)
 	}
 }
 
