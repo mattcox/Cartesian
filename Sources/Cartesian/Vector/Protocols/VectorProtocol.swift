@@ -174,3 +174,34 @@ extension VectorProtocol {
 		self = Self(values)
 	}
 }
+
+extension VectorProtocol where Component: BinaryFloatingPoint {
+/// Initialize the vector with the values in another vector, converting each
+/// component to this vector's component type.
+///
+/// Unlike ``init(from:)``, the two vectors may store components of
+/// different precision. The number of components may also differ; any
+/// component this vector has that the source does not is left as zero.
+///
+/// For example, converting a three component vector of `Double` into a four
+/// component vector of `Float` would produce the layout:
+/// ```
+/// [Float(source[0]), Float(source[1]), Float(source[2]), zero]
+/// ```
+///
+/// Converting to a narrower type rounds each component to the nearest
+/// representable value, and a component whose magnitude exceeds the range
+/// of the destination type becomes infinite.
+///
+/// - Parameters:
+///   - vector: The other vector used to initialize this object.
+///
+	@inlinable
+	public init<T: VectorProtocol>(converting vector: T) where T.Component: BinaryFloatingPoint {
+		var values = Array(repeating: Component.zero, count: Self.count)
+		for i in 0..<min(T.count, Self.count) {
+			values[i] = Component(vector[i])
+		}
+		self = Self(values)
+	}
+}

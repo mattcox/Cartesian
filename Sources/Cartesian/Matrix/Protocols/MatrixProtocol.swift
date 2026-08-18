@@ -64,3 +64,30 @@ extension MatrixProtocol {
 		self = temporary
 	}
 }
+
+extension MatrixProtocol where Component: BinaryFloatingPoint {
+/// Initialize the matrix with the values in another matrix, converting each
+/// element to this matrix's component type.
+///
+/// Unlike ``init(from:)``, the two matrices may store components of
+/// different precision. The number of columns and rows may also differ; any
+/// element this matrix has that the source does not is left as zero.
+///
+/// Converting to a narrower type rounds each element to the nearest
+/// representable value, and an element whose magnitude exceeds the range of
+/// the destination type becomes infinite.
+///
+/// - Parameters:
+///   - matrix: The other matrix used to initialize this object.
+///
+	@inlinable
+	public init<T: MatrixProtocol>(converting matrix: T) where T.Component: BinaryFloatingPoint {
+		var temporary = Self()
+		for column in 0..<(min(Self.columns, T.columns)) {
+			for row in 0..<(min(Self.rows, T.rows)) {
+				temporary[column, row] = Component(matrix[column, row])
+			}
+		}
+		self = temporary
+	}
+}
