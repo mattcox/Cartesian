@@ -23,7 +23,7 @@ import RealModule
 /// Euler angles, are derived on demand and are independent of this internal
 /// representation.
 ///
-public struct RigidTransform3<Component: Real & SIMDScalar> {
+public struct RigidTransform3<Component: Real & VectorComponent> {
 /// The rotation encoded by the transform, expressed as a unit quaternion.
 ///
 	public var rotation: Quaternion<Component>

@@ -14,7 +14,13 @@ import RealModule
 /// is stored in **column-major order**, meaning it consists of two column
 /// vectors, each with two elements.
 ///
-public struct Matrix2x2<Component: Real & SIMDScalar> {
+/// The component can be any ``VectorComponent``, including integer and
+/// floating-point types. Construction, element access, addition, scalar and
+/// matrix multiplication, and ``transposed`` are available for any component;
+/// operations that require real-valued math — such as ``inverse``, rotation and
+/// projection — require a floating-point `Real` component.
+///
+public struct Matrix2x2<Component: VectorComponent> {
 /// The underlying storage type for the matrix.
 ///
 /// This essentially provides a wrapper around the `Vector2` type, using a
@@ -189,11 +195,11 @@ extension Matrix2x2: Codable {
 	}
 }
 
-extension Matrix2x2: CustomStringConvertible where Component: CVarArg {
+extension Matrix2x2: CustomStringConvertible {
 	public var description: String {
 		"""
-		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0])) |
-		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1])) |
+		| \(storage[0, 0].vectorDescription)  \(storage[1, 0].vectorDescription) |
+		| \(storage[0, 1].vectorDescription)  \(storage[1, 1].vectorDescription) |
 		"""
 	}
 }
@@ -305,7 +311,7 @@ extension Matrix2x2: Identity {
 	}
 }
 
-extension Matrix2x2: Invertible {
+extension Matrix2x2: Invertible where Component: Real {
 /// Gets the inverse of this matrix if it exists.
 ///
 	@inlinable

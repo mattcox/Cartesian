@@ -18,7 +18,13 @@ import Units
 /// - Note: This matrix encodes scale and rotation, and is commonly used to
 /// transform 3D vectors without translation. To include translation, use a ``Matrix4x4`` instead.
 ///
-public struct Matrix3x3<Component: Real & SIMDScalar> {
+/// The component can be any ``VectorComponent``, including integer and
+/// floating-point types. Construction, element access, addition, scalar and
+/// matrix multiplication, and ``transposed`` are available for any component;
+/// operations that require real-valued math — such as ``inverse``, rotation and
+/// projection — require a floating-point `Real` component.
+///
+public struct Matrix3x3<Component: VectorComponent> {
 /// The underlying storage type for the matrix.
 ///
 /// This essentially provides a wrapper around the `Vector3` type, using a
@@ -205,12 +211,12 @@ extension Matrix3x3: Codable {
 	}
 }
 
-extension Matrix3x3: CustomStringConvertible where Component: CVarArg {
+extension Matrix3x3: CustomStringConvertible {
 	public var description: String {
 		"""
-		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0])) |
-		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1]))  \(String(format: "%.3f", storage[2, 1])) |
-		| \(String(format: "%.3f", storage[0, 2]))  \(String(format: "%.3f", storage[1, 2]))  \(String(format: "%.3f", storage[2, 2])) |
+		| \(storage[0, 0].vectorDescription)  \(storage[1, 0].vectorDescription)  \(storage[2, 0].vectorDescription) |
+		| \(storage[0, 1].vectorDescription)  \(storage[1, 1].vectorDescription)  \(storage[2, 1].vectorDescription) |
+		| \(storage[0, 2].vectorDescription)  \(storage[1, 2].vectorDescription)  \(storage[2, 2].vectorDescription) |
 		"""
 	}
 }
@@ -327,7 +333,7 @@ extension Matrix3x3: Identity {
 	}
 }
 
-extension Matrix3x3: Invertible {
+extension Matrix3x3: Invertible where Component: Real {
 /// Gets the inverse of this matrix if it exists.
 ///
 	@inlinable
@@ -364,7 +370,7 @@ extension Matrix3x3: Invertible {
 	}
 }
 
-extension Matrix3x3: MatrixLinearTransform where Component: BinaryFloatingPoint {
+extension Matrix3x3: MatrixLinearTransform where Component: Real & BinaryFloatingPoint {
 	public typealias Rotation = Units.Rotation<SIMD3<Component>>
 	public typealias Scale = Vector3<Component>
 	
@@ -660,7 +666,7 @@ extension Matrix3x3: MatrixVectorMath {
 	}
 }
 
-extension Matrix3x3: QuaternionConvertible {
+extension Matrix3x3: QuaternionConvertible where Component: Real {
 /// Initialize the rotational elements of the matrix using the provided
 /// quaternion.
 ///

@@ -23,7 +23,7 @@ import Units
 /// a uniform scale factor. The equivalent affine ``matrix`` is derived on
 /// demand and is independent of this internal representation.
 ///
-public struct SimilarityTransform2<Component: Real & SIMDScalar & BinaryFloatingPoint> {
+public struct SimilarityTransform2<Component: Real & VectorComponent & BinaryFloatingPoint> {
 /// The rotation encoded by the transform.
 ///
 	public var rotation: Angle<Component>

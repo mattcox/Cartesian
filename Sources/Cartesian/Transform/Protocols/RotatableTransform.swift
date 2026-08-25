@@ -39,7 +39,7 @@ public protocol RotatableTransform: TransformProtocol {
 	var rotation: Rotation { get set }
 }
 
-extension RotatableTransform where Component: Real & SIMDScalar & BinaryFloatingPoint, Rotation == Quaternion<Component> {
+extension RotatableTransform where Component: Real & VectorComponent & BinaryFloatingPoint, Rotation == Quaternion<Component> {
 /// The rotation encoded by the transform, expressed as Euler angles using
 /// the default rotation order.
 ///

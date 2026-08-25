@@ -22,8 +22,14 @@ import Units
 /// should only be used for non-standard matrix sizes or cases where SIMD
 /// acceleration is not required.
 ///
+/// The component can be any ``VectorComponent``, including integer and
+/// floating-point types. Construction, element access, addition, scalar and
+/// matrix multiplication, and ``transposed`` are available for any component;
+/// operations that require real-valued math — such as ``inverse``, rotation and
+/// projection — require a floating-point `Real` component.
+///
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-public struct Matrix<let n: Int, let m: Int, Component: Real & SIMDScalar> {
+public struct Matrix<let n: Int, let m: Int, Component: VectorComponent> {
 	public typealias Column = InlineArray<m, Component>
 	@usableFromInline
 	typealias Storage = InlineArray<n, Column>
@@ -85,13 +91,13 @@ extension Matrix: Codable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Matrix: CustomStringConvertible where Component: CVarArg {
+extension Matrix: CustomStringConvertible {
 	public var description: String {
 		(0..<Self.rows)
 			.map { y in
 				let columns = (0..<Self.columns)
 					.map { x in
-						String(format: "%.3f", storage[x][y])
+						storage[x][y].vectorDescription
 					}
 					.joined(separator: "  ")
 					
@@ -208,7 +214,7 @@ extension Matrix: Identity {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Matrix: Invertible where n == m {
+extension Matrix: Invertible where n == m, Component: Real {
 /// Gets the inverse of this matrix if it exists.
 ///
 /// Uses the adjugate-over-determinant method. Returns `nil` when the
@@ -243,7 +249,7 @@ extension Matrix: Invertible where n == m {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryFloatingPoint {
+extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: Real {
 	public typealias Rotation = Vector3<Component>
 	public typealias Scale = Vector3<Component>
 	public typealias Translation = Vector3<Component>
@@ -380,7 +386,7 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: BinaryF
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Matrix: MatrixLinearTransform where n == m, n == 4, Component: BinaryFloatingPoint {
+extension Matrix: MatrixLinearTransform where n == m, n == 4, Component: Real {
 
 }
 
@@ -538,7 +544,7 @@ extension Matrix: MatrixVectorMath {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Matrix: QuaternionConvertible where n == m, n == 3 {
+extension Matrix: QuaternionConvertible where n == m, n == 3, Component: Real {
 	public typealias QuaternionComponent = Component
 
 /// Initialize the rotational elements of the matrix using the provided
