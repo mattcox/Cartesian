@@ -23,7 +23,7 @@ import Units
 /// The translation, rotation and scale are read and written directly on the
 /// underlying matrix.
 ///
-public struct AffineTransform2<Component: Real & SIMDScalar & BinaryFloatingPoint> {
+public struct AffineTransform2<Component: Real & VectorComponent & BinaryFloatingPoint> {
 /// The affine matrix representation of the transform.
 ///
 	public var matrix: MatrixAffine3x3<Component>

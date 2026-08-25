@@ -19,7 +19,7 @@ import Units
 /// Quaternion multiplication is **non-commutative**: `a * b` and `b * a`
 /// describe different combined rotations.
 ///
-public struct Quaternion<Component: Real & SIMDScalar> {
+public struct Quaternion<Component: Real & VectorComponent> {
 	@usableFromInline
 	typealias Storage = Vector4<Component>
 	@usableFromInline

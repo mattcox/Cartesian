@@ -6,12 +6,16 @@
 //  Copyright © 2026 Matt Cox. All rights reserved.
 //
 
-import RealModule
-
 /// A Point representing a position in 2D space.
 ///
-public typealias Point2<Component: Real & SIMDScalar> = Vector2<Component>
+/// The component can be any ``VectorComponent``, including integer types such as
+/// `Int` and floating-point types such as `Double` or `Float`.
+///
+public typealias Point2<Component: VectorComponent> = Vector2<Component>
 
 /// A Point representing a position in 3D space.
 ///
-public typealias Point3<Component: Real & SIMDScalar> = Vector3<Component>
+/// The component can be any ``VectorComponent``, including integer types such as
+/// `Int` and floating-point types such as `Double` or `Float`.
+///
+public typealias Point3<Component: VectorComponent> = Vector3<Component>

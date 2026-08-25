@@ -23,6 +23,6 @@ import RealModule
 /// func place(_ transform: some Transform2Protocol) { ... }
 /// ```
 ///
-public protocol Transform2Protocol: TransformProtocol where Component: Real & SIMDScalar, Vector == Vector2<Component>, Matrix == MatrixAffine3x3<Component> {
+public protocol Transform2Protocol: TransformProtocol where Component: Real & VectorComponent, Vector == Vector2<Component>, Matrix == MatrixAffine3x3<Component> {
 
 }

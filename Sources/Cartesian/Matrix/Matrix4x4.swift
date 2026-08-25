@@ -27,7 +27,13 @@ import Units
 /// This matrix encodes scale, rotation and translation, and is commonly used to
 /// transform 3D vectors.
 ///
-public struct Matrix4x4<Component: Real & SIMDScalar> {
+/// The component can be any ``VectorComponent``, including integer and
+/// floating-point types. Construction, element access, addition, scalar and
+/// matrix multiplication, and ``transposed`` are available for any component;
+/// operations that require real-valued math — such as ``inverse``, rotation and
+/// projection — require a floating-point `Real` component.
+///
+public struct Matrix4x4<Component: VectorComponent> {
 /// The underlying storage type for the matrix.
 ///
 /// This essentially provides a wrapper around the `Vector4` type, using a
@@ -174,7 +180,7 @@ public struct Matrix4x4<Component: Real & SIMDScalar> {
 	}
 }
 
-extension Matrix4x4 {
+extension Matrix4x4 where Component: Real {
 /// Transform a point by the matrix, returning the transformed point.
 ///
 /// The point is extended to homogeneous coordinates with a `w` component of
@@ -196,7 +202,9 @@ extension Matrix4x4 {
 		}
 		return Point3(result[0], result[1], result[2])
 	}
+}
 
+extension Matrix4x4 {
 /// Transform a direction by the matrix, returning the transformed direction.
 ///
 /// The direction is extended to homogeneous coordinates with a `w` component
@@ -216,7 +224,7 @@ extension Matrix4x4 {
 	}
 }
 
-extension Matrix4x4 where Component: BinaryFloatingPoint {
+extension Matrix4x4 where Component: Real & BinaryFloatingPoint {
 /// Creates a perspective projection matrix.
 ///
 /// The matrix maps a view space frustum into clip space using the
@@ -265,7 +273,7 @@ extension Matrix4x4 where Component: BinaryFloatingPoint {
 	}
 }
 
-extension Matrix4x4 {
+extension Matrix4x4 where Component: Real {
 /// Creates an orthographic projection matrix.
 ///
 /// The matrix maps the axis-aligned view space box bounded by the given
@@ -398,13 +406,13 @@ extension Matrix4x4: Codable {
 	}
 }
 
-extension Matrix4x4: CustomStringConvertible where Component: CVarArg {
+extension Matrix4x4: CustomStringConvertible {
 	public var description: String {
 		"""
-		| \(String(format: "%.3f", storage[0, 0]))  \(String(format: "%.3f", storage[1, 0]))  \(String(format: "%.3f", storage[2, 0]))  \(String(format: "%.3f", storage[3, 0])) |
-		| \(String(format: "%.3f", storage[0, 1]))  \(String(format: "%.3f", storage[1, 1]))  \(String(format: "%.3f", storage[2, 1]))  \(String(format: "%.3f", storage[3, 1])) |
-		| \(String(format: "%.3f", storage[0, 2]))  \(String(format: "%.3f", storage[1, 2]))  \(String(format: "%.3f", storage[2, 2]))  \(String(format: "%.3f", storage[3, 2])) |
-		| \(String(format: "%.3f", storage[0, 3]))  \(String(format: "%.3f", storage[1, 3]))  \(String(format: "%.3f", storage[2, 3]))  \(String(format: "%.3f", storage[3, 3])) |
+		| \(storage[0, 0].vectorDescription)  \(storage[1, 0].vectorDescription)  \(storage[2, 0].vectorDescription)  \(storage[3, 0].vectorDescription) |
+		| \(storage[0, 1].vectorDescription)  \(storage[1, 1].vectorDescription)  \(storage[2, 1].vectorDescription)  \(storage[3, 1].vectorDescription) |
+		| \(storage[0, 2].vectorDescription)  \(storage[1, 2].vectorDescription)  \(storage[2, 2].vectorDescription)  \(storage[3, 2].vectorDescription) |
+		| \(storage[0, 3].vectorDescription)  \(storage[1, 3].vectorDescription)  \(storage[2, 3].vectorDescription)  \(storage[3, 3].vectorDescription) |
 		"""
 	}
 }
@@ -526,7 +534,7 @@ extension Matrix4x4: Identity {
 	}
 }
 
-extension Matrix4x4: Invertible {
+extension Matrix4x4: Invertible where Component: Real {
 /// Gets the inverse of this matrix if it exists.
 ///
 /// When the matrix is affine (the bottom row is `[0, 0, 0, 1]`), a faster
@@ -577,7 +585,9 @@ extension Matrix4x4: Invertible {
 }
 
 
-extension Matrix4x4: MatrixAffineTransform {
+extension Matrix4x4: MatrixLinearTransform where Component: Real {}
+
+extension Matrix4x4: MatrixAffineTransform where Component: Real {
 	public typealias Rotation = Vector3<Component>
 	public typealias Scale = Vector3<Component>
 	public typealias Translation = Vector3<Component>
@@ -929,7 +939,7 @@ extension Matrix4x4: MatrixVectorMath {
 	}
 }
 
-extension Matrix4x4: QuaternionConvertible {
+extension Matrix4x4: QuaternionConvertible where Component: Real {
 /// Initialize the rotational elements of the matrix using the provided
 /// quaternion.
 ///

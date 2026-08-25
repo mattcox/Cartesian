@@ -16,7 +16,7 @@ import RealModule
 /// unit vector; operations that measure distance will be scaled by the magnitude
 /// of the normal if it is not normalized.
 ///
-public struct Plane<Component: Real & SIMDScalar> {
+public struct Plane<Component: Real & VectorComponent> {
 /// The surface normal of the plane.
 ///
 /// - Note: The normal is typically a unit vector. Signed distance

@@ -29,7 +29,13 @@ import Units
 /// *affine* transform of the two-dimensional plane, exposing translation,
 /// rotation and scale in two dimensions.
 ///
-public struct MatrixAffine3x3<Component: Real & SIMDScalar> {
+/// The component can be any ``VectorComponent``, including integer and
+/// floating-point types. Construction, element access, addition, scalar and
+/// matrix multiplication, and ``transposed`` are available for any component;
+/// operations that require real-valued math — such as ``inverse``, rotation and
+/// projection — require a floating-point `Real` component.
+///
+public struct MatrixAffine3x3<Component: VectorComponent> {
 /// The underlying 3×3 storage backing the affine matrix.
 ///
 	@usableFromInline
@@ -54,35 +60,6 @@ extension MatrixAffine3x3 {
 		set {
 			storage[2, 0] = newValue.x
 			storage[2, 1] = newValue.y
-		}
-	}
-
-/// The scale encoded by the matrix, derived from the magnitude of the linear
-/// columns.
-///
-/// Setting the scale preserves the direction of each linear column while
-/// resizing it to the requested magnitude. Columns with a magnitude of zero
-/// remain zero.
-///
-	@inlinable
-	public var scale: Vector2<Component> {
-		get {
-			let x = Component.sqrt(storage[0, 0] * storage[0, 0] + storage[0, 1] * storage[0, 1])
-			let y = Component.sqrt(storage[1, 0] * storage[1, 0] + storage[1, 1] * storage[1, 1])
-			return Vector2(x: x, y: y)
-		}
-		set {
-			let current = scale
-			if !current.x.isApproximatelyEqual(to: .zero) {
-				let ratio = newValue.x / current.x
-				storage[0, 0] *= ratio
-				storage[0, 1] *= ratio
-			}
-			if !current.y.isApproximatelyEqual(to: .zero) {
-				let ratio = newValue.y / current.y
-				storage[1, 0] *= ratio
-				storage[1, 1] *= ratio
-			}
 		}
 	}
 
@@ -123,6 +100,37 @@ extension MatrixAffine3x3 {
 	}
 }
 
+extension MatrixAffine3x3 where Component: Real {
+/// The scale encoded by the matrix, derived from the magnitude of the linear
+/// columns.
+///
+/// Setting the scale preserves the direction of each linear column while
+/// resizing it to the requested magnitude. Columns with a magnitude of zero
+/// remain zero.
+///
+	@inlinable
+	public var scale: Vector2<Component> {
+		get {
+			let x = Component.sqrt(storage[0, 0] * storage[0, 0] + storage[0, 1] * storage[0, 1])
+			let y = Component.sqrt(storage[1, 0] * storage[1, 0] + storage[1, 1] * storage[1, 1])
+			return Vector2(x: x, y: y)
+		}
+		set {
+			let current = scale
+			if !current.x.isApproximatelyEqual(to: .zero) {
+				let ratio = newValue.x / current.x
+				storage[0, 0] *= ratio
+				storage[0, 1] *= ratio
+			}
+			if !current.y.isApproximatelyEqual(to: .zero) {
+				let ratio = newValue.y / current.y
+				storage[1, 0] *= ratio
+				storage[1, 1] *= ratio
+			}
+		}
+	}
+}
+
 extension MatrixAffine3x3 {
 /// Transform a point by the affine matrix, returning the transformed point.
 ///
@@ -160,7 +168,7 @@ extension MatrixAffine3x3 {
 	}
 }
 
-extension MatrixAffine3x3 where Component: BinaryFloatingPoint {
+extension MatrixAffine3x3 where Component: Real & BinaryFloatingPoint {
 /// The rotation encoded by the matrix, derived from the orientation of the
 /// first linear column.
 ///
@@ -278,7 +286,7 @@ extension MatrixAffine3x3: Identity {
 	}
 }
 
-extension MatrixAffine3x3: Invertible {
+extension MatrixAffine3x3: Invertible where Component: Real {
 /// The inverse of the affine matrix, or `nil` if the matrix is singular.
 ///
 	@inlinable
@@ -360,7 +368,7 @@ extension MatrixAffine3x3: Codable {
 	}
 }
 
-extension MatrixAffine3x3: CustomStringConvertible where Component: CVarArg {
+extension MatrixAffine3x3: CustomStringConvertible {
 	public var description: String {
 		storage.description
 	}
