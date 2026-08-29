@@ -21,8 +21,14 @@ import Units
 ///
 /// - Precondition: `numberOfComponents` must be greater than zero.
 ///
+/// The component can be any ``VectorComponent``, including integer types such as
+/// `Int` and floating-point types such as `Double` or `Float`. Operations that
+/// require real-valued math — such as ``magnitude``, ``normalized`` and
+/// ``distance(to:)`` — are available only when the component is a floating-point
+/// `Real` type.
+///
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-public struct Vector<let numberOfComponents: Int, Component: Real & SIMDScalar> {
+public struct Vector<let numberOfComponents: Int, Component: VectorComponent> {
 	@usableFromInline
 	typealias Storage = InlineArray<numberOfComponents, Component>
 	@usableFromInline
@@ -464,7 +470,7 @@ extension Vector where numberOfComponents == 4 {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
+extension Vector: AngleMeasurable where Component: Real & BinaryFloatingPoint {
 /// Computes the angle between two vectors.
 ///
 /// An optional third vector can be provided describing the pivot the angle
@@ -492,7 +498,7 @@ extension Vector: AngleMeasurable where Component: BinaryFloatingPoint {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: Blendable {
+extension Vector: Blendable where Component: Real {
 	@inlinable
 	public static func blend(from: Self, to: Self, by amount: Component) -> Self {
 		from + (to - from) * amount
@@ -554,11 +560,11 @@ extension Vector: CrossProduct where numberOfComponents == 3 {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: CustomStringConvertible where Component: CVarArg {
+extension Vector: CustomStringConvertible {
 	public var description: String {
 		var values: [String] = []
 		for i in 0..<Self.count {
-			values.append(String(format: "%.3f", storage[i]))
+			values.append(storage[i].vectorDescription)
 		}
 		
 		return """
@@ -605,7 +611,7 @@ extension Vector: Equatable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: EuclideanDistanceMeasurable {
+extension Vector: EuclideanDistanceMeasurable where Component: Real {
 /// Computes the straight-line euclidian distance from this vector to
 /// another.
 ///
@@ -664,7 +670,7 @@ extension Vector: ExpressibleByArrayLiteral {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: MagnitudeAdjustable {
+extension Vector: MagnitudeAdjustable where Component: Real {
 /// The magnitude or length of the vector.
 ///
 	@inlinable
@@ -690,12 +696,12 @@ extension Vector: MagnitudeAdjustable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: MagnitudeMeasurable {
+extension Vector: MagnitudeMeasurable where Component: Real {
 	
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: Normalizable {
+extension Vector: Normalizable where Component: Real {
 /// Normalizes the vector, setting its magnitude to 1.0.
 ///
 /// Returns a unit vector that maintains the same direction as the original 
@@ -728,7 +734,7 @@ extension Vector: Normalizable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: QuaternionRotatable where numberOfComponents == 3 {
+extension Vector: QuaternionRotatable where numberOfComponents == 3, Component: Real {
 /// Rotates the vector by a quaternion returning a rotated vector.
 ///
 /// - Parameters:
@@ -794,7 +800,7 @@ extension Vector: VectorMath {
 	
 	@inlinable
 	public func average() -> Component {
-		self.sum() / Component(Self.count)
+		self.sum() / Component(vectorCount: Self.count)
 	}
 	
 	@inlinable
@@ -1038,7 +1044,7 @@ extension Vector: VectorProtocol {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: VectorReflectable {
+extension Vector: VectorReflectable where Component: Real {
 	@inlinable
 	public func reflection(withNormal normal: Self) -> Self {
 		let normal = normal.normalized
@@ -1047,7 +1053,7 @@ extension Vector: VectorReflectable {
 }
 
 @available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *)
-extension Vector: VectorRefractable {
+extension Vector: VectorRefractable where Component: Real {
 	@inlinable
 	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
 		let rayDirection = self.normalized

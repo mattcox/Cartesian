@@ -11,7 +11,7 @@ import RealModule
 /// A type that can be rotated by a quaternion.
 ///
 public protocol QuaternionRotatable {
-	associatedtype QuaternionComponent: Real & SIMDScalar
+	associatedtype QuaternionComponent: Real & VectorComponent
 
 /// Rotate this object by a quaternion, returning the rotated object.
 ///

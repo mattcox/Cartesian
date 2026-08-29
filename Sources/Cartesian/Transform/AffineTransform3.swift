@@ -24,7 +24,7 @@ import RealModule
 /// setting it rebuilds the matrix from the translation, rotation and scale;
 /// any shear present in the matrix is not preserved when the rotation is set.
 ///
-public struct AffineTransform3<Component: Real & SIMDScalar> {
+public struct AffineTransform3<Component: Real & VectorComponent> {
 /// The affine matrix representation of the transform.
 ///
 	public var matrix: Matrix4x4<Component>
