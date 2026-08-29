@@ -358,6 +358,73 @@ extension Vector3: QuaternionRotatable {
 	}
 }
 
+extension Vector3 {
+/// Re-orient the vector from one up-axis convention to another.
+///
+/// The vector is treated as though its vertical points along `from`, and is
+/// re-oriented so that its vertical instead points along `to`. For example,
+/// converting a vector authored in `+Y`-up into a `+Z`-up coordinate space:
+///
+/// ```swift
+/// let converted = vector.rotated(from: .y(), to: .z())
+/// ```
+///
+/// - Parameters:
+///   - from: The up axis the vector is currently authored in.
+///   - to: The up axis to re-orient the vector into.
+///
+/// - Returns: The re-oriented vector, with its vertical pointing along `to`.
+///
+	@inlinable
+	public func rotated(from: Axis3, to: Axis3) -> Self {
+		reoriented(from: from).reoriented(into: to)
+	}
+
+/// Re-orient the vector from one up-axis convention to another, in place.
+///
+/// The vector is treated as though its vertical points along `from`, and is
+/// re-oriented so that its vertical instead points along `to`.
+///
+/// - Parameters:
+///   - from: The up axis the vector is currently authored in.
+///   - to: The up axis to re-orient the vector into.
+///
+	@inlinable
+	public mutating func rotate(from: Axis3, to: Axis3) {
+		self = rotated(from: from, to: to)
+	}
+
+/// Re-orient a vector whose vertical points along `axis` back into canonical
+/// `+Y`-up space. This is the inverse of ``reoriented(into:)``.
+///
+	@usableFromInline
+	func reoriented(from axis: Axis3) -> Self {
+		switch axis {
+			case .x(let negative):
+				return negative ? Self(y, -x, z) : Self(-y, x, z)
+			case .y(let negative):
+				return negative ? Self(x, -y, -z) : self
+			case .z(let negative):
+				return negative ? Self(x, -z, y) : Self(x, z, -y)
+		}
+	}
+
+/// Re-orient a vector authored in canonical `+Y`-up space so that its
+/// vertical (`+Y`) points along `axis`.
+///
+	@usableFromInline
+	func reoriented(into axis: Axis3) -> Self {
+		switch axis {
+			case .x(let negative):
+				return negative ? Self(-y, x, z) : Self(y, -x, z)
+			case .y(let negative):
+				return negative ? Self(x, -y, -z) : self
+			case .z(let negative):
+				return negative ? Self(x, z, -y) : Self(x, -z, y)
+		}
+	}
+}
+
 extension Vector3: Sendable where SIMDRepresentation: Sendable {
 	
 }
