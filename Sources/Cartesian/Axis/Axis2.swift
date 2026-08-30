@@ -23,24 +23,42 @@ public enum Axis2 {
 ///
 	case v(negative: Bool = false)
 	
-/// The U axis.
+/// The positive U axis.
 ///
 	@inlinable
-	static var U: Self {
+	public static var U: Self {
 		.u(negative: false)
 	}
 
-/// The V axis.
+/// The positive V axis.
 ///
 	@inlinable
-	static var V: Self {
+	public static var V: Self {
+		.v(negative: false)
+	}
+	
+/// The positive X axis.
+///
+/// Equivalent to U.
+///
+	@inlinable
+	public static var X: Self {
+		.u(negative: false)
+	}
+
+/// The positive Y axis.
+///
+/// Equivalent to V.
+///
+	@inlinable
+	public static var Y: Self {
 		.v(negative: false)
 	}
 	
 /// Returns the Axis as an index, where y is 0 and v is 1.
 ///
 	@inlinable
-	var index: Int {
+	public var index: Int {
 		switch self {
 			case .u:
 				return 0
@@ -56,7 +74,7 @@ public enum Axis2 {
 ///   - negative: Specifies whether the axis is negative, for example -U.
 ///
 	@inlinable
-	init(_ index: Int, negative: Bool = false) {
+	public init(_ index: Int, negative: Bool = false) {
 		if index == 0 {
 			self = .u(negative: negative)
 		}

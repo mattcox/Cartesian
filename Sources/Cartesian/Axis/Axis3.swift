@@ -30,31 +30,31 @@ public enum Axis3 {
 ///
 	case z(negative: Bool = false)
 	
-/// The X axis.
+/// The positive X axis.
 ///
 	@inlinable
-	static var X: Self {
+	public static var X: Self {
 		.x(negative: false)
 	}
 
-/// The Y axis.
+/// The positive Y axis.
 ///
 	@inlinable
-	static var Y: Self {
+	public static var Y: Self {
 		.y(negative: false)
 	}
 
-/// The Z axis.
+/// The positive Z axis.
 ///
 	@inlinable
-	static var Z: Self {
+	public static var Z: Self {
 		.z(negative: false)
 	}
 	
 /// Returns the Axis as an index, where x is 0, y is 1, and z is 2.
 ///
 	@inlinable
-	var index: Int {
+	public var index: Int {
 		switch self {
 			case .x:
 				return 0
@@ -72,7 +72,7 @@ public enum Axis3 {
 ///   - negative: Specifies whether the axis is negative, for example -X.
 ///
 	@inlinable
-	init(_ index: Int, negative: Bool = false) {
+	public init(_ index: Int, negative: Bool = false) {
 		switch index {
 			case 0:
 				self = .x(negative: negative)
