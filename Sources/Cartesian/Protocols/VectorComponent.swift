@@ -28,7 +28,7 @@ import Foundation
 /// conformance; default implementations are provided for any type that is also
 /// `FloatingPoint` or `FixedWidthInteger`.
 ///
-public protocol VectorComponent: SIMDScalar, SignedNumeric, Comparable {
+public protocol VectorComponent: Codable, Comparable, Hashable, SIMDScalar, SignedNumeric {
 /// Adds two SIMD vectors of this component together.
 ///
 /// - Parameters:
