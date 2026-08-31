@@ -14,14 +14,35 @@
 /// ensures that depth testing and clipping behave as intended. This is purely a
 /// numeric convention; Cartesian expresses no preference for one over another.
 ///
-public enum DepthRange: Sendable, Hashable, CaseIterable {
-/// Depth is mapped into the range `[0, 1]`, where the near plane maps to `0`
-/// and the far plane maps to `1`.
+public enum DepthRange: CaseIterable {
+/// Depth is mapped into the range `[0, 1]`, where the near plane maps to
+/// `0` and the far plane maps to `1`.
 ///
 	case zeroToOne
 
-/// Depth is mapped into the range `[-1, 1]`, where the near plane maps to `-1`
-/// and the far plane maps to `1`.
+/// Depth is mapped into the range `[-1, 1]`, where the near plane maps to
+/// `-1` and the far plane maps to `1`.
 ///
 	case negativeOneToOne
+}
+
+extension DepthRange {
+/// The range of the depth range.
+///
+	public var range: ClosedRange<Int> {
+		switch self {
+			case .zeroToOne:
+				0...1
+			case .negativeOneToOne:
+				-1...1
+		}
+	}
+}
+
+extension DepthRange: Hashable {
+	
+}
+
+extension DepthRange: Sendable {
+	
 }

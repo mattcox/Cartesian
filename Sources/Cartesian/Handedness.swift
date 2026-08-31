@@ -16,17 +16,26 @@
 /// In a right handed system, curling the right hand's fingers from the positive
 /// x axis toward the positive y axis leaves the thumb pointing along the
 /// positive z axis, and a camera conventionally looks down the negative z axis.
+/// 
 /// In a left handed system the positive z axis is reversed, and a camera looks
 /// down the positive z axis.
 ///
-public enum Handedness: Sendable, Hashable, CaseIterable {
+public enum Handedness: CaseIterable {
 /// A right handed coordinate system, in which a camera looks down the
-/// negative z axis.
+/// negative Z axis.
 ///
 	case rightHanded
 
-/// A left handed coordinate system, in which a camera looks down the positive
-/// z axis.
+/// A left handed coordinate system, in which a camera looks down the
+/// positive Z axis.
 ///
 	case leftHanded
+}
+
+extension Handedness: Hashable {
+	
+}
+
+extension Handedness: Sendable {
+	
 }
