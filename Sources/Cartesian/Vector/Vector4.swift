@@ -322,10 +322,7 @@ extension Vector4: Normalizable where Component: Real {
 /// Normalizes the vector, setting its magnitude to 1.0.
 ///
 /// Returns a unit vector that maintains the same direction as the original 
-/// but has a length of 1.0.
-///
-/// - Warning: If the vector has zero length, the behavior of this function
-/// is undefined.
+/// but has a length of 1.0, or nil in the event of failure
 ///
 	@inlinable
 	public var normalized: Self? {
@@ -341,8 +338,7 @@ extension Vector4: Normalizable where Component: Real {
 /// This modifies the vector in place, scaling its components so that the
 /// resulting vector has unit length and retains the original direction.
 ///
-/// - Warning: If the vector has zero length, the behavior of this function
-/// is undefined.
+/// - Returns: A boolean indicating if the vector could be normalized.
 ///
 	@inlinable @discardableResult
 	public mutating func normalize() -> Bool {
