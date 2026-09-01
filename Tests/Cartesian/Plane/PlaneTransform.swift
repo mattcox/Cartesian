@@ -23,12 +23,12 @@ struct PlaneTransformTests {
 	/// which exercises the inverse-transpose used for the normal.
 	@Test("points on a plane stay on the transformed plane")
 	func onPlaneInvariant() async throws {
-		let normal = Vector3<Double>(1, 2, 3).normalized
+		let normal = Vector3<Double>(1, 2, 3).normalizedOrZero
 		let onPlane = Vector3<Double>(4, -1, 2)
 		let plane = Plane(normal: normal, point: onPlane)
 
 		// A second point on the plane, offset along a tangent direction.
-		let tangent = normal.cross(Vector3(0, 0, 1)).normalized
+		let tangent = normal.cross(Vector3(0, 0, 1)).normalizedOrZero
 		let onPlane2 = onPlane + tangent * 3.0
 
 		func check<T: Transform3Protocol>(_ transform: T) where T.Component == Double {

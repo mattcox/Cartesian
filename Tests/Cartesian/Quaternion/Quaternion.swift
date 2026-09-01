@@ -232,7 +232,7 @@ extension QuaternionTests {
 		@Test("normalized")
 		func normalized() async throws {
 			let q = Quaternion<Double>(imaginary: Vector3(3.0, 1.0, 4.0), real: 1.0)
-			let n = q.normalized
+			let n = q.normalized ?? .identity
 			// A normalized quaternion must have magnitude ≈ 1.
 			let mag = Double.sqrt(
 				n.imaginary[0] * n.imaginary[0] +
@@ -251,7 +251,7 @@ extension QuaternionTests {
 			let q = Quaternion<Double>(imaginary: Vector3(3.0, 1.0, 4.0), real: 1.0)
 			var mutable = q
 			mutable.normalize()
-			let expected = q.normalized
+			let expected = q.normalized ?? .identity
 			#expect(mutable.imaginary[0].isApproximatelyEqual(to: expected.imaginary[0]))
 			#expect(mutable.imaginary[1].isApproximatelyEqual(to: expected.imaginary[1]))
 			#expect(mutable.imaginary[2].isApproximatelyEqual(to: expected.imaginary[2]))
@@ -1169,7 +1169,7 @@ extension QuaternionTests {
 			)
 			// Note: lerp normalizes, so compare against normalized q1.
 			let result = Quaternion<Double>.lerp(from: q1, to: q2, by: 0.0)
-			let expected = q1.normalized
+			let expected = q1.normalized ?? .identity
 			#expect(result.imaginary[0].isApproximatelyEqual(to: expected.imaginary[0]))
 			#expect(result.imaginary[1].isApproximatelyEqual(to: expected.imaginary[1]))
 			#expect(result.imaginary[2].isApproximatelyEqual(to: expected.imaginary[2]))
@@ -1186,7 +1186,7 @@ extension QuaternionTests {
 				angle: Angle(radians: Double.pi / 2.0)
 			)
 			let result = Quaternion<Double>.lerp(from: q1, to: q2, by: 1.0)
-			let expected = q2.normalized
+			let expected = q2.normalized ?? .identity
 			#expect(result.imaginary[0].isApproximatelyEqual(to: expected.imaginary[0]))
 			#expect(result.imaginary[1].isApproximatelyEqual(to: expected.imaginary[1]))
 			#expect(result.imaginary[2].isApproximatelyEqual(to: expected.imaginary[2]))

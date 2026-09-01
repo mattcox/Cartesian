@@ -507,7 +507,7 @@ extension Vector3Tests {
 		@Test("Magnitude is 1.0")
 		func magnitudeIsOne() async throws {
 			let v = Vector3<Double>(x: 1.0, y: 2.0, z: 3.0)
-			let n = v.normalized
+			let n = v.normalizedOrZero
 			#expect(n.magnitude.isApproximatelyEqual(to: 1.0))
 		}
 
@@ -516,7 +516,7 @@ extension Vector3Tests {
 		@Test("Axis-aligned normalization")
 		func axisAligned() async throws {
 			let v = Vector3<Double>(x: 5.0, y: 0.0, z: 0.0)
-			let n = v.normalized
+			let n = v.normalizedOrZero
 			#expect(n.x.isApproximatelyEqual(to: 1.0))
 			#expect(n.y.isApproximatelyEqual(to: 0.0))
 			#expect(n.z.isApproximatelyEqual(to: 0.0))
@@ -527,7 +527,7 @@ extension Vector3Tests {
 		@Test("Mutating normalize()")
 		func mutatingNormalize() async throws {
 			var v = Vector3<Double>(x: 1.0, y: 2.0, z: 3.0)
-			let expected = v.normalized
+			let expected = v.normalizedOrZero
 			v.normalize()
 			#expect(v.x.isApproximatelyEqual(to: expected.x))
 			#expect(v.y.isApproximatelyEqual(to: expected.y))

@@ -16,8 +16,8 @@ extension Vector3D: AngleMeasurable {
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Double> {
 		let by = by ?? Self.zero
 		
-		let fromNormalized = (from - by).normalized
-		let toNormalized = (to - by).normalized
+		let fromNormalized = (from - by).normalizedOrZero
+		let toNormalized = (to - by).normalizedOrZero
 		
 		let dotProduct = fromNormalized.dot(toNormalized)
 		
@@ -83,7 +83,24 @@ extension Vector3D: MagnitudeAdjustable {
 
 @available(iOS 16, macOS 13, tvOS 16, visionOS 1.0, macCatalyst 16, *)
 extension Vector3D: Normalizable {
+	public var normalized: Vector3D? {
+		guard self.magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return nil
+		}
+		
+		var copy = self
+		let _: Void = copy.normalize()
+		return copy
+	}
 	
+	public mutating func normalize() -> Bool {
+		guard self.magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return false
+		}
+		
+		let _: Void = self.normalize()
+		return true
+	}
 }
 
 @available(iOS 16, macOS 13, tvOS 16, visionOS 1.0, macCatalyst 16, *)

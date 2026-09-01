@@ -347,18 +347,18 @@ extension Matrix4x4 where Component: Real {
 ///
 	@inlinable
 	public static func lookAt(eye: Point3<Component>, center: Point3<Component>, up: Vector3<Component>, handedness: Handedness) -> Self {
-		let forward = (center - eye).normalized
+		let forward = (center - eye).normalizedOrZero
 
 		let right: Vector3<Component>
 		let trueUp: Vector3<Component>
 		let zAxis: Vector3<Component>
 		switch handedness {
 			case .rightHanded:
-				right = forward.cross(up).normalized
+				right = forward.cross(up).normalizedOrZero
 				trueUp = right.cross(forward)
 				zAxis = -forward
 			case .leftHanded:
-				right = up.cross(forward).normalized
+				right = up.cross(forward).normalizedOrZero
 				trueUp = forward.cross(right)
 				zAxis = forward
 		}
@@ -610,9 +610,9 @@ extension Matrix4x4: MatrixAffineTransform where Component: Real {
 			return Scale(row0.magnitude, row1.magnitude, row2.magnitude)
 		}
 		set {
-			let row0 = Scale(storage.columns.0[0], storage.columns.1[0], storage.columns.2[0]).normalized * newValue[0]
-			let row1 = Scale(storage.columns.0[1], storage.columns.1[1], storage.columns.2[1]).normalized * newValue[1]
-			let row2 = Scale(storage.columns.0[2], storage.columns.1[2], storage.columns.2[2]).normalized * newValue[2]
+			let row0 = Scale(storage.columns.0[0], storage.columns.1[0], storage.columns.2[0]).normalizedOrZero * newValue[0]
+			let row1 = Scale(storage.columns.0[1], storage.columns.1[1], storage.columns.2[1]).normalizedOrZero * newValue[1]
+			let row2 = Scale(storage.columns.0[2], storage.columns.1[2], storage.columns.2[2]).normalizedOrZero * newValue[2]
 			
 			storage.columns.0 = Storage.Column(row0[0], row1[0], row2[0], storage.columns.0[3])
 			storage.columns.1 = Storage.Column(row0[1], row1[1], row2[1], storage.columns.1[3])

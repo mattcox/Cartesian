@@ -13,22 +13,24 @@ import RealModule
 public protocol Normalizable {
 /// Normalizes the type.
 ///
-	var normalized: Self { get }
+/// If the type cannot be normalized, returns nil.
+///
+	var normalized: Self? { get }
 
 /// Normalizes the type.
 ///
-	mutating func normalize()
+/// - Returns: A boolean indicating if the normalization was successful.
+///
+	@discardableResult
+	mutating func normalize() -> Bool
 }
 
-extension Normalizable where Self: VectorMath & MagnitudeMeasurable, Self.Component: Real, Self.Magnitude == Self.Component {
+extension Normalizable where Self: VectorProtocol {
 /// Normalizes the vector, but in case the magnitude of the vector is zero,
 /// returns zero.
 ///
+	@inlinable
 	public var normalizedOrZero: Self {
-		let length = self.magnitude
-		guard length.isApproximatelyEqual(to: .zero) else {
-			return .zero
-		}
-		return self / length
+		normalized ?? .zero
 	}
 }

@@ -271,9 +271,9 @@ extension Matrix: MatrixAffineTransform where n == m, n == 4, Component: Real {
 			return Scale(row0.magnitude, row1.magnitude, row2.magnitude)
 		}
 		set {
-			let row0 = Scale(storage[0][0], storage[1][0], storage[2][0]).normalized * newValue[0]
-			let row1 = Scale(storage[0][1], storage[1][1], storage[2][1]).normalized * newValue[1]
-			let row2 = Scale(storage[0][2], storage[1][2], storage[2][2]).normalized * newValue[2]
+			let row0 = Scale(storage[0][0], storage[1][0], storage[2][0]).normalizedOrZero * newValue[0]
+			let row1 = Scale(storage[0][1], storage[1][1], storage[2][1]).normalizedOrZero * newValue[1]
+			let row2 = Scale(storage[0][2], storage[1][2], storage[2][2]).normalizedOrZero * newValue[2]
 			storage[0][0] = row0[0]; storage[0][1] = row1[0]; storage[0][2] = row2[0]
 			storage[1][0] = row0[1]; storage[1][1] = row1[1]; storage[1][2] = row2[1]
 			storage[2][0] = row0[2]; storage[2][1] = row1[2]; storage[2][2] = row2[2]

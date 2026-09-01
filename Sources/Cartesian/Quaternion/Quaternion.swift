@@ -102,7 +102,7 @@ extension Quaternion where Component: BinaryFloatingPoint {
 		let halfAngle = angle.radians * 0.5
 		let sinHalf = Component.sin(halfAngle)
 		let cosHalf = Component.cos(halfAngle)
-		self.init(imaginary: axis.normalized * sinHalf, real: cosHalf)
+		self.init(imaginary: axis.normalizedOrZero * sinHalf, real: cosHalf)
 	}
 	
 /// The axis of rotation represented by this quaternion.
@@ -610,7 +610,7 @@ extension Quaternion {
 	@inlinable
 	public var matrix: Matrix3x3<Component> {
 		get {
-			let quaternion = self.normalized
+			let quaternion = self.normalized ?? .identity
 			let imaginary = quaternion.imaginary
 			let real = quaternion.real
 			
@@ -650,10 +650,10 @@ extension Quaternion {
 ///
 	@inlinable
 	public static func lookRotation(forward: Vector3<Component>, up: Vector3<Component>) -> Self? {
-		let f = forward.normalized
+		let f = forward.normalizedOrZero
 		let right = up.cross(f)
 		guard !right.magnitude.isApproximatelyEqual(to: .zero) else { return nil }
-		let r = right.normalized
+		let r = right.normalizedOrZero
 		let u = f.cross(r)
 		return Self(withMatrix: Matrix3x3(columns: r, u, f))
 	}
@@ -685,8 +685,8 @@ extension Quaternion where Component: BinaryFloatingPoint {
 ///
 	@inlinable
 	public static func fromToRotation(from: Vector3<Component>, to: Vector3<Component>) -> Self {
-		let a = from.normalized
-		let b = to.normalized
+		let a = from.normalizedOrZero
+		let b = to.normalizedOrZero
 		let d = a.dot(b)
 
 		if d >= 1 - Component.ulpOfOne {
@@ -698,11 +698,11 @@ extension Quaternion where Component: BinaryFloatingPoint {
 			if axis.magnitude.isApproximatelyEqual(to: .zero) {
 				axis = Vector3<Component>(0, 1, 0).cross(a)
 			}
-			return Self(withAxis: axis.normalized, angle: Angle(radians: Component.pi))
+			return Self(withAxis: axis.normalizedOrZero, angle: Angle(radians: Component.pi))
 		}
 
 		let s = Component.sqrt((1 + d) * 2)
-		return Self(imaginary: a.cross(b) / s, real: s / 2).normalized
+		return Self(imaginary: a.cross(b) / s, real: s / 2).normalized ?? .identity
 	}
 }
 
@@ -746,10 +746,10 @@ extension Quaternion: Blendable {
 	@inlinable
 	public static func lerp(from: Self, to: Self, by amount: Component) -> Self {
 		if from.dot(to) < .zero {
-			return Self(Storage.blend(from: from.storage, to: (-to).storage, by: amount).normalized)
+			return Self(Storage.blend(from: from.storage, to: (-to).storage, by: amount).normalizedOrZero)
 		}
 		else {
-			return Self(Storage.blend(from: from.storage, to: to.storage, by: amount).normalized)
+			return Self(Storage.blend(from: from.storage, to: to.storage, by: amount).normalizedOrZero)
 		}
 	}
 	
@@ -928,12 +928,12 @@ extension Quaternion: MagnitudeMeasurable {
 
 extension Quaternion: Normalizable {
 	@inlinable
-	public var normalized: Self {
-		Self(storage.normalized)
+	public var normalized: Self? {
+		Self(storage.normalizedOrZero)
 	}
 	
-	@inlinable
-	public mutating func normalize() {
+	@inlinable @discardableResult
+	public mutating func normalize() -> Bool {
 		storage.normalize()
 	}
 }

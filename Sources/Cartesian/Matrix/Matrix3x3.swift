@@ -384,9 +384,9 @@ extension Matrix3x3: MatrixLinearTransform where Component: Real & BinaryFloatin
 			)
 		}
 		set {
-			storage.columns.0 = storage.columns.0.normalized * newValue[0]
-			storage.columns.1 = storage.columns.1.normalized * newValue[1]
-			storage.columns.2 = storage.columns.2.normalized * newValue[2]
+			storage.columns.0 = storage.columns.0.normalizedOrZero * newValue[0]
+			storage.columns.1 = storage.columns.1.normalizedOrZero * newValue[1]
+			storage.columns.2 = storage.columns.2.normalizedOrZero * newValue[2]
 		}
 	}
 	
@@ -418,9 +418,9 @@ extension Matrix3x3: MatrixLinearTransform where Component: Real & BinaryFloatin
 	@inlinable
 	public func toRotation(order: RotationOrder) -> Rotation {
 		let normalized = Self(columns:
-			self[0].normalized,
-			self[1].normalized,
-			self[2].normalized
+			self[0].normalizedOrZero,
+			self[1].normalizedOrZero,
+			self[2].normalizedOrZero
 		)
 
 		let orders = [order[0].index, order[1].index, order[2].index]

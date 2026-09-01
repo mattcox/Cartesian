@@ -77,13 +77,22 @@ extension Force: MagnitudeAdjustable {
 
 extension Force: Normalizable {
 	@inlinable
-	public var normalized: Self {
-		self / magnitude
+	public var normalized: Self? {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return nil
+		}
+		
+		return self / magnitude
 	}
-
-	@inlinable
-	public mutating func normalize() {
+	
+	@inlinable @discardableResult
+	public mutating func normalize() -> Bool {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return false
+		}
+		
 		self /= magnitude
+		return true
 	}
 }
 

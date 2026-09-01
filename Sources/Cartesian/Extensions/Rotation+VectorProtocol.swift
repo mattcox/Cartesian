@@ -27,10 +27,6 @@ extension Rotation: @retroactive ExpressibleByArrayLiteral {
 	}
 }
 
-extension Rotation: Normalizable {
-	
-}
-
 extension Rotation: VectorMath {
 	@inlinable
 	public static func min(_ a: Self, _ b: Self) -> Self {

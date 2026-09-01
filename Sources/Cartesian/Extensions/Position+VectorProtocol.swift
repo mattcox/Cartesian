@@ -15,8 +15,8 @@ extension Position: AngleMeasurable where Component.Value: Real {
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component.Value> {
 		let by = by ?? Self.zero
 		
-		let fromNormalized = (from - by).normalized
-		let toNormalized = (to - by).normalized
+		let fromNormalized = (from - by).normalizedOrZero
+		let toNormalized = (to - by).normalizedOrZero
 		
 		let dotProduct = fromNormalized.dot(toNormalized)
 		
@@ -131,13 +131,22 @@ extension Position: MagnitudeAdjustable {
 
 extension Position: Normalizable {
 	@inlinable
-	public var normalized: Self {
-		self / magnitude
+	public var normalized: Self? {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return nil
+		}
+		
+		return self / magnitude
 	}
 
-	@inlinable
-	public mutating func normalize() {
+	@inlinable @discardableResult
+	public mutating func normalize() -> Bool {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return false
+		}
+
 		self /= magnitude
+		return true
 	}
 }
 

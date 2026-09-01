@@ -464,7 +464,7 @@ extension Vector2Tests {
 		@Test("Magnitude is 1.0")
 		func magnitudeIsOne() async throws {
 			let v = Vector2<Double>(x: 3.0, y: 4.0)
-			let n = v.normalized
+			let n = v.normalizedOrZero
 			#expect(n.magnitude.isApproximatelyEqual(to: 1.0))
 		}
 
@@ -473,7 +473,7 @@ extension Vector2Tests {
 		@Test("Direction preserved")
 		func directionPreserved() async throws {
 			let v = Vector2<Double>(x: 3.0, y: 4.0)
-			let n = v.normalized
+			let n = v.normalizedOrZero
 			// Components should scale to 3/5 and 4/5 respectively.
 			#expect(n.x.isApproximatelyEqual(to: 0.6))
 			#expect(n.y.isApproximatelyEqual(to: 0.8))
@@ -484,7 +484,7 @@ extension Vector2Tests {
 		@Test("Mutating normalize()")
 		func mutatingNormalize() async throws {
 			var v = Vector2<Double>(x: 3.0, y: 4.0)
-			let expected = v.normalized
+			let expected = v.normalizedOrZero
 			v.normalize()
 			#expect(v.x.isApproximatelyEqual(to: expected.x))
 			#expect(v.y.isApproximatelyEqual(to: expected.y))

@@ -147,8 +147,8 @@ extension Vector2: AngleMeasurable where Component: Real & BinaryFloatingPoint {
 	public static func angle(from: Self, to: Self, by: Self?) -> Angle<Component> {
 		let by = by ?? Self.zero
 		
-		let fromNormalized = (from - by).normalized
-		let toNormalized = (to - by).normalized
+		let fromNormalized = (from - by).normalizedOrZero
+		let toNormalized = (to - by).normalizedOrZero
 		
 		let dotProduct = fromNormalized.dot(toNormalized).clamped(between: -1, and: 1)
 		
@@ -324,10 +324,12 @@ extension Vector2: Normalizable where Component: Real {
 /// is undefined.
 ///
 	@inlinable
-	public var normalized: Self {
-		let length = magnitude
-		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
-		return self / length
+	public var normalized: Self? {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return nil
+		}
+		
+		return self / magnitude
 	}
 
 /// Normalizes the vector, setting its magnitude to 1.0.
@@ -338,11 +340,14 @@ extension Vector2: Normalizable where Component: Real {
 /// - Warning: If the vector has zero length, the behavior of this function
 /// is undefined.
 ///
-	@inlinable
-	public mutating func normalize() {
-		let length = magnitude
-		precondition(length.isApproximatelyEqual(to: .zero) == false, "Attempted to normalize a zero-length vector.")
-		self /= length
+	@inlinable @discardableResult
+	public mutating func normalize() -> Bool {
+		guard magnitude.isApproximatelyEqual(to: .zero) == false else {
+			return false
+		}
+		
+		self /= magnitude
+		return true
 	}
 }
 
@@ -568,7 +573,7 @@ extension Vector2: VectorProtocol {
 extension Vector2: VectorReflectable where Component: Real {
 	@inlinable
 	public func reflection(withNormal normal: Self) -> Self {
-		let normal = normal.normalized
+		let normal = normal.normalizedOrZero
 		return self - (2 * dot(normal) * normal)
 	}
 }
@@ -576,8 +581,8 @@ extension Vector2: VectorReflectable where Component: Real {
 extension Vector2: VectorRefractable where Component: Real {
 	@inlinable
 	public func refraction(withNormal normal: Self, indexOfRefraction: Component) -> Self {
-		let rayDirection = self.normalized
-		let normal = normal.normalized
+		let rayDirection = self.normalizedOrZero
+		let normal = normal.normalizedOrZero
 		
 		let cosAngleOfIncidence = -rayDirection.dot(normal)
 		let sinSquaredAngleOfRefraction = Component.pow(indexOfRefraction, 2) * (1 - Component.pow(cosAngleOfIncidence, 2))

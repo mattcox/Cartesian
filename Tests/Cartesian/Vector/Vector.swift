@@ -342,7 +342,7 @@ extension VectorGenericTests {
 		func normalized() async throws {
 			guard #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) else { return }
 			let v = Vector<3, Double>(0.0, 3.0, 4.0)
-			let n = v.normalized
+			let n = v.normalizedOrZero
 			#expect(n.magnitude.isApproximatelyEqual(to: 1.0))
 			#expect(n[1].isApproximatelyEqual(to: 0.6))
 			#expect(n[2].isApproximatelyEqual(to: 0.8))
@@ -354,7 +354,7 @@ extension VectorGenericTests {
 		func normalize() async throws {
 			guard #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) else { return }
 			var v = Vector<3, Double>(0.0, 3.0, 4.0)
-			let expected = v.normalized
+			let expected = v.normalizedOrZero
 			v.normalize()
 			#expect(v == expected)
 		}
