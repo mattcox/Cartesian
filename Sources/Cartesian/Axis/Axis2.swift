@@ -112,6 +112,21 @@ extension Axis2 {
 	}
 }
 
+extension Axis2 {
+/// The axis as a unit direction vector.
+///
+/// - Returns: The axis as a unit direction vector.
+///
+	public func vector<T: VectorComponent>() -> Vector2<T> {
+		switch self {
+			case .u(let negative):
+				return Vector2(negative ? -1 : 1, 0)
+			case .v(let negative):
+				return Vector2(0, negative ? -1 : 1)
+		}
+	}
+}
+
 extension Axis2: Equatable {
 	
 }

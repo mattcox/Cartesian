@@ -118,6 +118,23 @@ extension Axis3 {
 	}
 }
 
+extension Axis3 {
+/// The axis as a unit direction vector.
+///
+/// - Returns: The axis as a unit direction vector.
+///
+	public func vector<T: VectorComponent>() -> Vector3<T> {
+		switch self {
+			case .x(let negative):
+				return Vector3(negative ? -1 : 1, 0, 0)
+			case .y(let negative):
+				return Vector3(0, negative ? -1 : 1, 0)
+			case .z(let negative):
+				return Vector3(0, 0, negative ? -1 : 1)
+		}
+	}
+}
+
 extension Axis3: Equatable {
 	
 }
